@@ -1,0 +1,5 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+recursive-include src/hlante/db *.tsv
+recursive-include tests *.py *.tsv *.json *.txt

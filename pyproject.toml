@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hlante"
+version = "0.1.0"
+description = "HLA genotype → disease/drug clinical annotation toolkit"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "HLAnte Developers" },
+]
+keywords = [
+    "bioinformatics",
+    "hla",
+    "immunogenetics",
+    "pharmacogenomics",
+    "annotation",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "click>=8.1",
+    "pandas>=1.5",
+    "tqdm>=4.64",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "mypy>=1.0",
+    "ruff>=0.1",
+    "black>=23.0",
+]
+
+[project.scripts]
+hlante = "hlante.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/efe3506/HLAnte"
+Issues = "https://github.com/efe3506/HLAnte/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["hlante*"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+hlante = ["db/*.tsv"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+markers = [
+    "integration: tests that require real local database dumps; skipped by default",
+    "qa: pre-publication QA panel — writes docs/QA_PANEL_RESULTS.{md,json}; skipped by default",
+]
+
+[tool.mypy]
+# Type-check target. Runtime support remains Python >= 3.9 (see
+# requires-python); current mypy releases require a >= 3.10 analysis target.
+python_version = "3.10"
+strict = true
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.black]
+line-length = 100
+target-version = ["py39"]

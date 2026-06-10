@@ -1,0 +1,5 @@
+gene	allele1	allele2	score1	score2
+HLA-A	A*02:01	A*24:02	98.5	97.2
+HLA-B	B*07:02	B*15:01	96.1	95.8
+HLA-C	C*07:01	*	94.3	0.0
+HLA-DRB1	DRB1*15:01	DRB1*04:01	92.7	91.4

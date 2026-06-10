@@ -1,0 +1,29 @@
+Allele	Population	Population Group	Frequency	Sample Size
+A*01:01	Germany pop 1	European	0.170	500
+A*01:01	UK pop 1	European	0.185	1000
+A*01:01	Japan pop 1	East Asian	0.020	400
+A*01:01	Saudi Arabia pop 1	Arab	0.060	250
+A*02:01	Germany pop 1	European	0.270	500
+A*02:01	UK pop 1	European	0.265	1000
+A*02:01	Japan pop 1	East Asian	0.085	300
+A*02:01	Saudi Arabia pop 1	Arab	0.220	250
+A*02:01	Lebanon pop 1	Middle Eastern	0.210	180
+A*02:01	India pop 1	South Asian	0.170	300
+A*03:01	Germany pop 1	European	0.140	500
+A*03:01	UK pop 1	European	0.150	1000
+A*03:01	Nigeria pop 1	African	0.060	200
+B*57:01	Germany pop 1	European	0.055	400
+B*57:01	UK pop 1	European	0.060	1000
+B*57:01	India pop 1	South Asian	0.080	300
+B*57:01	Saudi Arabia pop 1	Arab	0.045	250
+B*07:02	Germany pop 1	European	0.120	500
+B*07:02	Japan pop 1	East Asian	0.080	300
+B*15:01	Germany pop 1	European	0.060	500
+B*27:05	Germany pop 1	European	0.060	500
+B*27:05	UK pop 1	European	0.068	1000
+B*99:99	Germany pop 1	European	0.0005	1000
+DRB1*04:01	Germany pop 1	European	0.120	500
+DRB1*04:01	UK pop 1	European	0.130	1000
+DRB1*15:01	Germany pop 1	European	0.150	500
+DRB1*15:01	Japan pop 1	East Asian	0.090	300
+A*02:01	Small European Study	European	0.300	25

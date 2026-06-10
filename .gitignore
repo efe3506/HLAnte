@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local database snapshots (fetched via `hlante db-update`)
+~/.hlante/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Built docs site
+site/
+
+# Generated QA-panel output (run-time)
+docs/QA_PANEL_RESULTS.*
+
+# Regenerated benchmark fixtures (produced by scripts/benchmark/convert_1000g_to_tool_formats.py)
+benchmarks/fixtures_1000g/
+benchmarks/fixtures_subset/
+benchmarks/corrupt_alleles.log

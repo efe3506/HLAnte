@@ -1,0 +1,16 @@
+name: hlante
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - pip
+  - click>=8.1
+  - pandas>=1.5
+  - tqdm>=4.64
+  - pytest>=7.0
+  - pytest-cov>=4.0
+  - mypy>=1.0
+  - ruff>=0.1
+  - pip:
+      - -e .

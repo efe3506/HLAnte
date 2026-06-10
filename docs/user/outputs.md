@@ -1,0 +1,128 @@
+# Output Files
+
+HLAnte writes three output files per run. All three are written by default
+(`--format all`); use `--format tsv`, `--format json`, or `--format markdown`
+to write only one.
+
+```
+hlante_output/
+├── hlante_report.tsv       # main annotation table
+├── hlante_report.json      # full nested structure
+└── hlante_report.md        # human-readable per-sample summary
+```
+
+---
+
+## TSV output
+
+One row per `(sample_id, locus)` pair. Homozygous or single-allele loci
+have `NA` in the second-allele cells.
+
+The file begins with a `#`-prefixed metadata block recording the HLAnte
+version, generation timestamp, database versions, and research-use disclaimer.
+Strip it before parsing: `grep -v '^#' report.tsv`.
+
+### Column reference
+
+| # | Column | Description |
+|---|--------|-------------|
+| 1 | `sample_id` | Input sample identifier |
+| 2 | `locus` | Gene symbol (`HLA-A`, `HLA-B`, `HLA-DRB1`, …) |
+| 3 | `allele1` | First allele (e.g. `B*57:01`) |
+| 4 | `allele2` | Second allele, or `NA` |
+| 5 | `resolution` | Reported resolution (`2-field` / `4-field` / `6-field` / `8-field`) |
+| 6 | `tool` | Upstream HLA typer (`arcashla` / `t1k` / `hlahd` / `optitype`) |
+| 7 | `imgt_accession` | `HLA#####` IMGT accession per allele, pipe-joined |
+| 8 | `hla_class` | `I` or `II` |
+| 9 | `hla_serotype` | WHO serotype (`DR3`, `DQ8`, `B57`, …); `NA` when not covered |
+| 10 | `protein_group` | G or P group when known |
+| 11 | `gwas_traits` | GWAS trait names, pipe-joined (both alleles aggregated) |
+| 12 | `gwas_traits_allele1` | GWAS traits for allele1 only |
+| 13 | `gwas_traits_allele2` | GWAS traits for allele2 only |
+| 14 | `gwas_p_values` | p-values aligned with `gwas_traits`, 4-decimal |
+| 15 | `gwas_odds_ratios` | OR or β aligned with `gwas_traits`, 4-decimal |
+| 16 | `gwas_pmids` | PubMed IDs aligned with `gwas_traits` |
+| 17 | `gwas_annotation_resolution` | Resolution at which GWAS hit was found |
+| 18 | `gwas_annotation_scope` | `allele` / `subtype` / `locus` (breadth of match) |
+| 19 | `gwas_fallback_expansion` | Number of IMGT alleles sharing the matched prefix; `1` = exact |
+| 20 | `pharm_drugs` | Drug names from PharmGKB, pipe-joined (both alleles) |
+| 21 | `pharm_drugs_allele1` | PharmGKB drugs for allele1 only |
+| 22 | `pharm_drugs_allele2` | PharmGKB drugs for allele2 only |
+| 23 | `pharm_evidence` | PharmGKB evidence level (`1A` / `1B` / `2A`) per drug |
+| 24 | `pharm_cpic_action` | CPIC action verb per drug (e.g. `Contraindicated`) |
+| 25 | `pharm_pmids` | PMIDs per PharmGKB annotation |
+| 26 | `disease_risk_summary` | One-line human-readable disease association summary per allele |
+| 27 | `drug_response_summary` | One-line human-readable drug response summary per allele |
+| 28 | `clinical_significance` | Evidence-strength label (see below) |
+| 29 | `allele_frequency` | AFND population-group frequency, 6-decimal |
+| 30 | `allele_freq_population` | AFND group code (`EUR` / `AFR` / `EAS` / `SAS` / `MID` / `AMR` / `OCE` / `global`; `ASN` = alias for `EAS`) |
+| 31 | `confidence_score` | Heuristic score in `[0, 1]`, 4-decimal |
+| 32 | `confidence_tier` | `HIGH` (≥0.85) / `MODERATE` (0.70–0.84) / `LOW` (<0.70) |
+| 33 | `confidence_rationale` | Pipe-delimited reason codes explaining the score |
+
+### `clinical_significance` labels
+
+These are **evidence-strength descriptors**, not ACMG/AMP classifications.
+
+| Label | Meaning |
+|-------|---------|
+| `Actionable pharmacogenomic risk (CPIC 1A — avoid)` | CPIC 1A AVOID or SJS/TEN-level drug reaction in built-in curated table |
+| `Strong pharmacogenomic risk association` | Severe drug reaction (CPIC 1A), not SJS/TEN level |
+| `Suggestive risk factor` | Strong GWAS or PharmGKB (1A/1B) signal without an actionable curated entry |
+| `Inconclusive evidence` | Ambiguous or IMGT-unknown allele with no confirming source |
+| `No reported risk` | IMGT-known, unambiguous, at least one DB lookup returned no signal |
+| `Not assessed — insufficient coverage` | IMGT-known but every query returned zero hits |
+| `Not in IMGT` | Well-formed allele name absent from loaded IPD-IMGT/HLA release |
+
+### Separator conventions
+
+| Separator | Meaning |
+|-----------|---------|
+| `\|` (pipe) | Joins multiple values within one cell (hits, alleles) |
+| `,` (comma) | Joins PMIDs within a single PharmGKB record (`pharm_pmids` only) |
+| `;;` | Separates allele1 from allele2 in `confidence_rationale` |
+| `NA` | Explicit missing-value token; empty cells never appear |
+
+---
+
+## JSON output
+
+Fully nested structure with complete provenance. Use it when you need exact
+p-values (the TSV truncates to 4 decimal places) or programmatic access to
+individual annotation records.
+
+Top-level structure:
+
+```json
+{
+  "meta": {
+    "hlante_version": "0.1.0",
+    "generated": "2026-05-04T12:00:00Z",
+    "db_versions": {"imgt": "3.64.0", "gwas_cache_date": "2026-04-20"},
+    "input_source": "typing_tool",
+    "disclaimer": "RESEARCH USE ONLY …"
+  },
+  "records": [
+    {
+      "sample_id": "HG00096",
+      "locus": "HLA-B",
+      "allele1": { … },
+      "allele2": { … }
+    }
+  ]
+}
+```
+
+Each allele object contains `gwas_hits`, `pharm_annotations`, `disease_entries`,
+`confidence_score`, `confidence_tier`, `clinical_significance`, and
+`allele_frequency`.
+
+---
+
+## Markdown output
+
+Per-sample report formatted for human review. Includes a summary table,
+GWAS association section, PharmGKB drug-response section, and curated
+disease-entry section for each locus.
+
+The report always opens with the research-use disclaimer.

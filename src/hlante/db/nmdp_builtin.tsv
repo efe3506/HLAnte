@@ -1,0 +1,389 @@
+Allele	Population	Population Group	Frequency	Sample Size
+A*01:01	NMDP European	European	0.162	50000
+A*01:01	NMDP African American	African American	0.027	12000
+A*01:01	NMDP Asian Pacific Islander	Asian	0.013	8000
+A*01:01	NMDP Hispanic	Hispanic	0.040	15000
+A*02:01	NMDP European	European	0.283	50000
+A*02:01	NMDP African American	African American	0.173	12000
+A*02:01	NMDP Asian Pacific Islander	Asian	0.060	8000
+A*02:01	NMDP Hispanic	Hispanic	0.200	15000
+A*02:06	NMDP European	European	0.010	50000
+A*02:06	NMDP African American	African American	0.020	12000
+A*02:06	NMDP Asian Pacific Islander	Asian	0.080	8000
+A*02:06	NMDP Hispanic	Hispanic	0.015	15000
+A*02:07	NMDP European	European	0.002	50000
+A*02:07	NMDP Asian Pacific Islander	Asian	0.040	8000
+A*02:07	NMDP Hispanic	Hispanic	0.005	15000
+A*03:01	NMDP European	European	0.141	50000
+A*03:01	NMDP African American	African American	0.080	12000
+A*03:01	NMDP Asian Pacific Islander	Asian	0.005	8000
+A*03:01	NMDP Hispanic	Hispanic	0.050	15000
+A*11:01	NMDP European	European	0.050	50000
+A*11:01	NMDP African American	African American	0.010	12000
+A*11:01	NMDP Asian Pacific Islander	Asian	0.150	8000
+A*11:01	NMDP Hispanic	Hispanic	0.040	15000
+A*24:02	NMDP European	European	0.080	50000
+A*24:02	NMDP African American	African American	0.030	12000
+A*24:02	NMDP Asian Pacific Islander	Asian	0.260	8000
+A*24:02	NMDP Hispanic	Hispanic	0.100	15000
+A*25:01	NMDP European	European	0.020	50000
+A*25:01	NMDP African American	African American	0.005	12000
+A*25:01	NMDP Asian Pacific Islander	Asian	0.005	8000
+A*25:01	NMDP Hispanic	Hispanic	0.010	15000
+A*26:01	NMDP European	European	0.040	50000
+A*26:01	NMDP African American	African American	0.010	12000
+A*26:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+A*26:01	NMDP Hispanic	Hispanic	0.025	15000
+A*29:02	NMDP European	European	0.030	50000
+A*29:02	NMDP African American	African American	0.010	12000
+A*29:02	NMDP Hispanic	Hispanic	0.020	15000
+A*30:01	NMDP European	European	0.020	50000
+A*30:01	NMDP African American	African American	0.050	12000
+A*30:01	NMDP Hispanic	Hispanic	0.020	15000
+A*30:02	NMDP European	European	0.010	50000
+A*30:02	NMDP African American	African American	0.040	12000
+A*30:02	NMDP Hispanic	Hispanic	0.015	15000
+A*31:01	NMDP European	European	0.025	50000
+A*31:01	NMDP African American	African American	0.005	12000
+A*31:01	NMDP Asian Pacific Islander	Asian	0.025	8000
+A*31:01	NMDP Hispanic	Hispanic	0.025	15000
+A*32:01	NMDP European	European	0.030	50000
+A*32:01	NMDP African American	African American	0.010	12000
+A*32:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+A*32:01	NMDP Hispanic	Hispanic	0.015	15000
+A*33:01	NMDP European	European	0.010	50000
+A*33:01	NMDP African American	African American	0.020	12000
+A*33:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+A*33:01	NMDP Hispanic	Hispanic	0.015	15000
+A*33:03	NMDP European	European	0.005	50000
+A*33:03	NMDP African American	African American	0.020	12000
+A*33:03	NMDP Asian Pacific Islander	Asian	0.040	8000
+A*33:03	NMDP Hispanic	Hispanic	0.015	15000
+A*34:01	NMDP African American	African American	0.015	12000
+A*34:01	NMDP Hispanic	Hispanic	0.010	15000
+A*36:01	NMDP African American	African American	0.010	12000
+A*43:01	NMDP African American	African American	0.005	12000
+A*66:01	NMDP African American	African American	0.010	12000
+A*68:01	NMDP European	European	0.030	50000
+A*68:01	NMDP African American	African American	0.020	12000
+A*68:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+A*68:01	NMDP Hispanic	Hispanic	0.030	15000
+A*68:02	NMDP European	European	0.015	50000
+A*68:02	NMDP African American	African American	0.030	12000
+A*68:02	NMDP Asian Pacific Islander	Asian	0.015	8000
+A*68:02	NMDP Hispanic	Hispanic	0.020	15000
+A*74:01	NMDP African American	African American	0.010	12000
+A*80:01	NMDP African American	African American	0.020	12000
+B*07:02	NMDP European	European	0.130	50000
+B*07:02	NMDP African American	African American	0.030	12000
+B*07:02	NMDP Asian Pacific Islander	Asian	0.050	8000
+B*07:02	NMDP Hispanic	Hispanic	0.060	15000
+B*08:01	NMDP European	European	0.110	50000
+B*08:01	NMDP African American	African American	0.020	12000
+B*08:01	NMDP Asian Pacific Islander	Asian	0.002	8000
+B*08:01	NMDP Hispanic	Hispanic	0.030	15000
+B*13:01	NMDP European	European	0.020	50000
+B*13:01	NMDP African American	African American	0.020	12000
+B*13:01	NMDP Asian Pacific Islander	Asian	0.060	8000
+B*13:01	NMDP Hispanic	Hispanic	0.020	15000
+B*13:02	NMDP European	European	0.010	50000
+B*13:02	NMDP African American	African American	0.015	12000
+B*13:02	NMDP Asian Pacific Islander	Asian	0.030	8000
+B*13:02	NMDP Hispanic	Hispanic	0.015	15000
+B*14:01	NMDP European	European	0.010	50000
+B*14:02	NMDP European	European	0.030	50000
+B*14:02	NMDP Hispanic	Hispanic	0.015	15000
+B*15:01	NMDP European	European	0.050	50000
+B*15:01	NMDP African American	African American	0.020	12000
+B*15:01	NMDP Asian Pacific Islander	Asian	0.080	8000
+B*15:01	NMDP Hispanic	Hispanic	0.040	15000
+B*15:02	NMDP European	European	0.001	50000
+B*15:02	NMDP African American	African American	0.001	12000
+B*15:02	NMDP Asian Pacific Islander	Asian	0.060	8000
+B*15:02	NMDP Hispanic	Hispanic	0.005	15000
+B*15:21	NMDP European	European	0.001	50000
+B*15:21	NMDP African American	African American	0.001	12000
+B*15:21	NMDP Asian Pacific Islander	Asian	0.005	8000
+B*15:21	NMDP Hispanic	Hispanic	0.002	15000
+B*18:01	NMDP European	European	0.050	50000
+B*18:01	NMDP African American	African American	0.020	12000
+B*18:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+B*18:01	NMDP Hispanic	Hispanic	0.040	15000
+B*27:02	NMDP European	European	0.015	50000
+B*27:05	NMDP European	European	0.040	50000
+B*27:05	NMDP African American	African American	0.005	12000
+B*27:05	NMDP Asian Pacific Islander	Asian	0.020	8000
+B*27:05	NMDP Hispanic	Hispanic	0.020	15000
+B*31:01	NMDP European	European	0.020	50000
+B*31:01	NMDP African American	African American	0.010	12000
+B*31:01	NMDP Asian Pacific Islander	Asian	0.015	8000
+B*31:01	NMDP Hispanic	Hispanic	0.015	15000
+B*35:01	NMDP European	European	0.060	50000
+B*35:01	NMDP African American	African American	0.040	12000
+B*35:01	NMDP Asian Pacific Islander	Asian	0.030	8000
+B*35:01	NMDP Hispanic	Hispanic	0.100	15000
+B*35:03	NMDP European	European	0.020	50000
+B*35:03	NMDP African American	African American	0.020	12000
+B*35:03	NMDP Asian Pacific Islander	Asian	0.010	8000
+B*35:03	NMDP Hispanic	Hispanic	0.040	15000
+B*37:01	NMDP European	European	0.010	50000
+B*38:01	NMDP European	European	0.030	50000
+B*38:01	NMDP African American	African American	0.005	12000
+B*38:01	NMDP Hispanic	Hispanic	0.010	15000
+B*39:01	NMDP European	European	0.020	50000
+B*39:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+B*39:01	NMDP Hispanic	Hispanic	0.020	15000
+B*40:01	NMDP European	European	0.040	50000
+B*40:01	NMDP African American	African American	0.010	12000
+B*40:01	NMDP Asian Pacific Islander	Asian	0.080	8000
+B*40:01	NMDP Hispanic	Hispanic	0.040	15000
+B*40:02	NMDP European	European	0.020	50000
+B*40:02	NMDP Asian Pacific Islander	Asian	0.030	8000
+B*40:02	NMDP Hispanic	Hispanic	0.020	15000
+B*41:01	NMDP European	European	0.010	50000
+B*42:01	NMDP African American	African American	0.030	12000
+B*44:02	NMDP European	European	0.070	50000
+B*44:02	NMDP African American	African American	0.010	12000
+B*44:02	NMDP Asian Pacific Islander	Asian	0.010	8000
+B*44:02	NMDP Hispanic	Hispanic	0.035	15000
+B*44:03	NMDP European	European	0.040	50000
+B*44:03	NMDP African American	African American	0.020	12000
+B*44:03	NMDP Asian Pacific Islander	Asian	0.005	8000
+B*44:03	NMDP Hispanic	Hispanic	0.020	15000
+B*45:01	NMDP African American	African American	0.020	12000
+B*46:01	NMDP European	European	0.005	50000
+B*46:01	NMDP African American	African American	0.005	12000
+B*46:01	NMDP Asian Pacific Islander	Asian	0.060	8000
+B*46:01	NMDP Hispanic	Hispanic	0.010	15000
+B*48:01	NMDP Asian Pacific Islander	Asian	0.030	8000
+B*49:01	NMDP European	European	0.020	50000
+B*50:01	NMDP European	European	0.010	50000
+B*51:01	NMDP European	European	0.050	50000
+B*51:01	NMDP African American	African American	0.010	12000
+B*51:01	NMDP Asian Pacific Islander	Asian	0.060	8000
+B*51:01	NMDP Hispanic	Hispanic	0.050	15000
+B*52:01	NMDP European	European	0.010	50000
+B*52:01	NMDP Asian Pacific Islander	Asian	0.060	8000
+B*52:01	NMDP Hispanic	Hispanic	0.020	15000
+B*53:01	NMDP European	European	0.010	50000
+B*53:01	NMDP African American	African American	0.100	12000
+B*53:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+B*53:01	NMDP Hispanic	Hispanic	0.015	15000
+B*54:01	NMDP Asian Pacific Islander	Asian	0.040	8000
+B*55:01	NMDP European	European	0.010	50000
+B*55:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+B*56:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+B*57:01	NMDP European	European	0.030	50000
+B*57:01	NMDP African American	African American	0.006	12000
+B*57:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+B*57:01	NMDP Hispanic	Hispanic	0.018	15000
+B*57:03	NMDP African American	African American	0.020	12000
+B*58:01	NMDP European	European	0.005	50000
+B*58:01	NMDP African American	African American	0.008	12000
+B*58:01	NMDP Asian Pacific Islander	Asian	0.070	8000
+B*58:01	NMDP Hispanic	Hispanic	0.010	15000
+B*59:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+B*67:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+B*78:01	NMDP African American	African American	0.010	12000
+C*01:02	NMDP European	European	0.010	50000
+C*01:02	NMDP African American	African American	0.020	12000
+C*01:02	NMDP Asian Pacific Islander	Asian	0.100	8000
+C*01:02	NMDP Hispanic	Hispanic	0.020	15000
+C*02:02	NMDP European	European	0.010	50000
+C*02:02	NMDP Asian Pacific Islander	Asian	0.020	8000
+C*03:03	NMDP European	European	0.050	50000
+C*03:03	NMDP African American	African American	0.020	12000
+C*03:03	NMDP Asian Pacific Islander	Asian	0.050	8000
+C*03:03	NMDP Hispanic	Hispanic	0.040	15000
+C*03:04	NMDP European	European	0.020	50000
+C*03:04	NMDP Asian Pacific Islander	Asian	0.080	8000
+C*03:04	NMDP Hispanic	Hispanic	0.030	15000
+C*04:01	NMDP European	European	0.040	50000
+C*04:01	NMDP African American	African American	0.050	12000
+C*04:01	NMDP Asian Pacific Islander	Asian	0.050	8000
+C*04:01	NMDP Hispanic	Hispanic	0.060	15000
+C*05:01	NMDP European	European	0.050	50000
+C*05:01	NMDP African American	African American	0.010	12000
+C*05:01	NMDP Hispanic	Hispanic	0.030	15000
+C*06:02	NMDP European	European	0.060	50000
+C*06:02	NMDP African American	African American	0.040	12000
+C*06:02	NMDP Asian Pacific Islander	Asian	0.040	8000
+C*06:02	NMDP Hispanic	Hispanic	0.050	15000
+C*07:01	NMDP European	European	0.130	50000
+C*07:01	NMDP African American	African American	0.050	12000
+C*07:01	NMDP Asian Pacific Islander	Asian	0.040	8000
+C*07:01	NMDP Hispanic	Hispanic	0.090	15000
+C*07:02	NMDP European	European	0.100	50000
+C*07:02	NMDP African American	African American	0.100	12000
+C*07:02	NMDP Asian Pacific Islander	Asian	0.030	8000
+C*07:02	NMDP Hispanic	Hispanic	0.080	15000
+C*07:04	NMDP European	European	0.010	50000
+C*07:04	NMDP African American	African American	0.050	12000
+C*07:04	NMDP Hispanic	Hispanic	0.020	15000
+C*08:01	NMDP European	European	0.010	50000
+C*08:01	NMDP African American	African American	0.005	12000
+C*08:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+C*08:01	NMDP Hispanic	Hispanic	0.008	15000
+C*08:02	NMDP European	European	0.030	50000
+C*08:02	NMDP African American	African American	0.020	12000
+C*08:02	NMDP Hispanic	Hispanic	0.020	15000
+C*12:03	NMDP European	European	0.030	50000
+C*12:03	NMDP Asian Pacific Islander	Asian	0.030	8000
+C*14:02	NMDP European	European	0.010	50000
+C*14:02	NMDP Asian Pacific Islander	Asian	0.070	8000
+C*15:02	NMDP European	European	0.010	50000
+C*15:02	NMDP Asian Pacific Islander	Asian	0.050	8000
+C*16:01	NMDP European	European	0.020	50000
+C*16:01	NMDP African American	African American	0.030	12000
+DRB1*01:01	NMDP European	European	0.060	50000
+DRB1*01:01	NMDP African American	African American	0.020	12000
+DRB1*01:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+DRB1*01:01	NMDP Hispanic	Hispanic	0.040	15000
+DRB1*01:02	NMDP European	European	0.040	50000
+DRB1*01:02	NMDP Asian Pacific Islander	Asian	0.005	8000
+DRB1*01:02	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*03:01	NMDP European	European	0.115	50000
+DRB1*03:01	NMDP African American	African American	0.070	12000
+DRB1*03:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+DRB1*03:01	NMDP Hispanic	Hispanic	0.060	15000
+DRB1*04:01	NMDP European	European	0.080	50000
+DRB1*04:01	NMDP African American	African American	0.010	12000
+DRB1*04:01	NMDP Asian Pacific Islander	Asian	0.015	8000
+DRB1*04:01	NMDP Hispanic	Hispanic	0.040	15000
+DRB1*04:03	NMDP European	European	0.010	50000
+DRB1*04:03	NMDP Asian Pacific Islander	Asian	0.020	8000
+DRB1*04:03	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*04:04	NMDP European	European	0.030	50000
+DRB1*04:04	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*04:05	NMDP European	European	0.010	50000
+DRB1*04:05	NMDP Asian Pacific Islander	Asian	0.040	8000
+DRB1*04:05	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*04:07	NMDP European	European	0.010	50000
+DRB1*04:07	NMDP Hispanic	Hispanic	0.030	15000
+DRB1*07:01	NMDP European	European	0.120	50000
+DRB1*07:01	NMDP African American	African American	0.100	12000
+DRB1*07:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+DRB1*07:01	NMDP Hispanic	Hispanic	0.090	15000
+DRB1*08:01	NMDP European	European	0.010	50000
+DRB1*08:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+DRB1*08:01	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*08:02	NMDP European	European	0.020	50000
+DRB1*08:02	NMDP Asian Pacific Islander	Asian	0.020	8000
+DRB1*08:02	NMDP Hispanic	Hispanic	0.030	15000
+DRB1*08:04	NMDP European	European	0.010	50000
+DRB1*08:04	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*09:01	NMDP European	European	0.015	50000
+DRB1*09:01	NMDP African American	African American	0.020	12000
+DRB1*09:01	NMDP Asian Pacific Islander	Asian	0.080	8000
+DRB1*09:01	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*10:01	NMDP European	European	0.020	50000
+DRB1*10:01	NMDP Asian Pacific Islander	Asian	0.030	8000
+DRB1*10:01	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*11:01	NMDP European	European	0.080	50000
+DRB1*11:01	NMDP African American	African American	0.040	12000
+DRB1*11:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+DRB1*11:01	NMDP Hispanic	Hispanic	0.060	15000
+DRB1*11:04	NMDP European	European	0.020	50000
+DRB1*11:04	NMDP Hispanic	Hispanic	0.025	15000
+DRB1*12:01	NMDP European	European	0.010	50000
+DRB1*12:01	NMDP Asian Pacific Islander	Asian	0.030	8000
+DRB1*12:02	NMDP African American	African American	0.010	12000
+DRB1*12:02	NMDP Asian Pacific Islander	Asian	0.030	8000
+DRB1*13:01	NMDP European	European	0.060	50000
+DRB1*13:01	NMDP African American	African American	0.030	12000
+DRB1*13:01	NMDP Asian Pacific Islander	Asian	0.020	8000
+DRB1*13:01	NMDP Hispanic	Hispanic	0.050	15000
+DRB1*13:02	NMDP European	European	0.030	50000
+DRB1*13:02	NMDP Asian Pacific Islander	Asian	0.015	8000
+DRB1*13:02	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*13:03	NMDP African American	African American	0.030	12000
+DRB1*13:03	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*14:01	NMDP European	European	0.010	50000
+DRB1*14:01	NMDP Asian Pacific Islander	Asian	0.030	8000
+DRB1*15:01	NMDP European	European	0.140	50000
+DRB1*15:01	NMDP African American	African American	0.060	12000
+DRB1*15:01	NMDP Asian Pacific Islander	Asian	0.090	8000
+DRB1*15:01	NMDP Hispanic	Hispanic	0.080	15000
+DRB1*15:02	NMDP European	European	0.010	50000
+DRB1*15:02	NMDP African American	African American	0.020	12000
+DRB1*15:02	NMDP Asian Pacific Islander	Asian	0.040	8000
+DRB1*15:02	NMDP Hispanic	Hispanic	0.015	15000
+DRB1*16:01	NMDP European	European	0.020	50000
+DRB1*16:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+DRB1*16:01	NMDP Hispanic	Hispanic	0.020	15000
+DRB1*16:02	NMDP European	European	0.010	50000
+DRB1*16:02	NMDP African American	African American	0.020	12000
+DRB1*16:02	NMDP Asian Pacific Islander	Asian	0.020	8000
+DRB1*16:02	NMDP Hispanic	Hispanic	0.015	15000
+DQB1*02:01	NMDP European	European	0.120	50000
+DQB1*02:01	NMDP African American	African American	0.080	12000
+DQB1*02:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+DQB1*02:01	NMDP Hispanic	Hispanic	0.070	15000
+DQB1*02:02	NMDP European	European	0.060	50000
+DQB1*02:02	NMDP African American	African American	0.050	12000
+DQB1*02:02	NMDP Hispanic	Hispanic	0.040	15000
+DQB1*03:01	NMDP European	European	0.110	50000
+DQB1*03:01	NMDP African American	African American	0.050	12000
+DQB1*03:01	NMDP Asian Pacific Islander	Asian	0.130	8000
+DQB1*03:01	NMDP Hispanic	Hispanic	0.100	15000
+DQB1*03:02	NMDP European	European	0.080	50000
+DQB1*03:02	NMDP African American	African American	0.020	12000
+DQB1*03:02	NMDP Asian Pacific Islander	Asian	0.020	8000
+DQB1*03:02	NMDP Hispanic	Hispanic	0.060	15000
+DQB1*03:03	NMDP European	European	0.030	50000
+DQB1*03:03	NMDP African American	African American	0.030	12000
+DQB1*03:03	NMDP Asian Pacific Islander	Asian	0.080	8000
+DQB1*03:03	NMDP Hispanic	Hispanic	0.040	15000
+DQB1*04:02	NMDP European	European	0.015	50000
+DQB1*04:02	NMDP Asian Pacific Islander	Asian	0.060	8000
+DQB1*04:02	NMDP Hispanic	Hispanic	0.020	15000
+DQB1*05:01	NMDP European	European	0.110	50000
+DQB1*05:01	NMDP African American	African American	0.050	12000
+DQB1*05:01	NMDP Asian Pacific Islander	Asian	0.120	8000
+DQB1*05:01	NMDP Hispanic	Hispanic	0.080	15000
+DQB1*05:02	NMDP European	European	0.015	50000
+DQB1*05:02	NMDP African American	African American	0.020	12000
+DQB1*05:02	NMDP Hispanic	Hispanic	0.020	15000
+DQB1*06:01	NMDP African American	African American	0.020	12000
+DQB1*06:01	NMDP Asian Pacific Islander	Asian	0.050	8000
+DQB1*06:02	NMDP European	European	0.130	50000
+DQB1*06:02	NMDP African American	African American	0.050	12000
+DQB1*06:02	NMDP Asian Pacific Islander	Asian	0.080	8000
+DQB1*06:02	NMDP Hispanic	Hispanic	0.080	15000
+DQB1*06:03	NMDP European	European	0.020	50000
+DQB1*06:03	NMDP Asian Pacific Islander	Asian	0.030	8000
+DQB1*06:04	NMDP European	European	0.020	50000
+DQB1*06:04	NMDP Asian Pacific Islander	Asian	0.020	8000
+DPB1*01:01	NMDP European	European	0.060	50000
+DPB1*01:01	NMDP African American	African American	0.030	12000
+DPB1*02:01	NMDP European	European	0.130	50000
+DPB1*02:01	NMDP African American	African American	0.030	12000
+DPB1*02:01	NMDP Asian Pacific Islander	Asian	0.010	8000
+DPB1*02:01	NMDP Hispanic	Hispanic	0.050	15000
+DPB1*03:01	NMDP European	European	0.050	50000
+DPB1*03:01	NMDP African American	African American	0.100	12000
+DPB1*03:01	NMDP Asian Pacific Islander	Asian	0.030	8000
+DPB1*03:01	NMDP Hispanic	Hispanic	0.050	15000
+DPB1*04:01	NMDP European	European	0.380	50000
+DPB1*04:01	NMDP African American	African American	0.200	12000
+DPB1*04:01	NMDP Asian Pacific Islander	Asian	0.150	8000
+DPB1*04:01	NMDP Hispanic	Hispanic	0.250	15000
+DPB1*04:02	NMDP European	European	0.100	50000
+DPB1*04:02	NMDP African American	African American	0.040	12000
+DPB1*04:02	NMDP Asian Pacific Islander	Asian	0.060	8000
+DPB1*04:02	NMDP Hispanic	Hispanic	0.060	15000
+DPB1*05:01	NMDP Asian Pacific Islander	Asian	0.150	8000
+DPB1*05:01	NMDP Hispanic	Hispanic	0.030	15000
+DPB1*09:01	NMDP Asian Pacific Islander	Asian	0.060	8000
+DPB1*10:01	NMDP European	European	0.010	50000
+DPB1*10:01	NMDP Asian Pacific Islander	Asian	0.050	8000
+DPB1*11:01	NMDP European	European	0.015	50000
+DPB1*11:01	NMDP Asian Pacific Islander	Asian	0.060	8000
+DPB1*13:01	NMDP European	European	0.020	50000
+DPB1*13:01	NMDP Asian Pacific Islander	Asian	0.040	8000
+DPB1*14:01	NMDP European	European	0.020	50000
+DPB1*17:01	NMDP European	European	0.015	50000
+DPB1*17:01	NMDP Asian Pacific Islander	Asian	0.030	8000
+DPB1*19:01	NMDP African American	African American	0.020	12000
+DPB1*28:01	NMDP Asian Pacific Islander	Asian	0.030	8000
+DPB1*104:01	NMDP European	European	0.020	50000

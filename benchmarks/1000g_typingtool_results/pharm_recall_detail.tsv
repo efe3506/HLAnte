@@ -1,0 +1,17 @@
+tool	allele	expected_drug	carriers	hits	recall
+arcashla	B*57:01	abacavir	162	162	100.0%
+arcashla	B*58:01	allopurinol	176	176	100.0%
+arcashla	B*15:02	carbamazepine	98	98	100.0%
+arcashla	A*31:01	carbamazepine	131	131	100.0%
+t1k	B*57:01	abacavir	162	162	100.0%
+t1k	B*58:01	allopurinol	176	176	100.0%
+t1k	B*15:02	carbamazepine	98	98	100.0%
+t1k	A*31:01	carbamazepine	131	131	100.0%
+hlahd	B*57:01	abacavir	162	162	100.0%
+hlahd	B*58:01	allopurinol	176	176	100.0%
+hlahd	B*15:02	carbamazepine	98	98	100.0%
+hlahd	A*31:01	carbamazepine	131	131	100.0%
+optitype	B*57:01	abacavir	161	161	100.0%
+optitype	B*58:01	allopurinol	173	173	100.0%
+optitype	B*15:02	carbamazepine	98	98	100.0%
+optitype	A*31:01	carbamazepine	127	127	100.0%

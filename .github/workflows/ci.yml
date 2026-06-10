@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  quality:
+    name: test • mypy • ruff (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install (editable, with dev extras)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check src/hlante
+
+      - name: Type-check (mypy strict)
+        working-directory: src
+        run: mypy hlante
+
+      - name: Tests (pytest)
+        run: pytest -q

@@ -1,0 +1,47 @@
+# HLAnte built-in curated HLA–disease association table
+# Sources: CPIC guidelines, PharmGKB Level 1A/1B, peer-reviewed GWAS meta-analyses
+# Columns: Allele, Disease, ClinicalSignificance, OR, Population, Evidence, PMID, Citation
+# Evidence strength reflects the weight of INDEPENDENT REPLICATION, not the OR
+# magnitude alone — a well-replicated association (e.g. DRB1*15:01 / multiple
+# sclerosis, OR ~3) is "Strong" despite OR < 5. This matches the inclusion
+# criterion in the manuscript (genome-wide-significant replication in >=2
+# independent cohorts, OR >= 2.0):
+#   Strong   = established by >=2 independent genome-wide-significant or
+#              guideline-grade studies (CPIC Level 1A for drug entries)
+#   Moderate = single large study, or limited / heterogeneous replication
+# ClinicalSignificance values:
+#   pathogenic        — life-threatening drug reaction (SJS/TEN), CPIC Level 1A AVOID
+#   likely pathogenic — severe drug reaction or hypersensitivity, CPIC Level 1A
+#   risk factor       — statistical disease risk association; not directly causal
+Allele	Disease	ClinicalSignificance	OR	Population	Evidence	PMID	Citation
+B*57:01	Abacavir hypersensitivity	pathogenic	960.0	Global	Strong	11888582;11943262;18256392	Mallal 2002 Lancet; Hetherington 2002 Lancet; Mallal 2008 NEJM (PREDICT-1)
+B*58:01	Allopurinol-induced SJS/TEN	pathogenic	580.3	East Asian	Strong	15743917;19696695	Hung 2005 PNAS; Tassaneeyakul 2009 Pharmacogenet Genomics
+B*15:02	Carbamazepine-induced SJS/TEN	pathogenic	80.7	Southeast Asian	Strong	15057820;18637831	Chung 2004 Nature; Locharernkul 2008 Epilepsia
+A*31:01	Carbamazepine-induced hypersensitivity	likely pathogenic	10.4	European;Japanese	Strong	21428769;21149285	McCormack 2011 NEJM; Ozeki 2011 Hum Mol Genet
+B*13:01	Dapsone hypersensitivity syndrome	likely pathogenic	17.2	East Asian	Strong	24152261	Zhang 2013 NEJM
+B*27:05	Ankylosing spondylitis	risk factor	87.4	Global	Strong	4123836;23749187	Brewerton 1973 Lancet; IGAS/Cortes 2013 Nat Genet
+B*51:01	Behcet disease	risk factor	6.3	Mediterranean;East Asian	Strong	20622879;23291587	Mizuki 2010 Nat Genet; Kirino 2013 Nat Genet
+C*06:02	Psoriasis	risk factor	8.7	European	Strong	20953189;30578879	Stuart 2010 Nat Genet; Dand 2019 J Allergy Clin Immunol
+B*08:01	Myasthenia gravis	risk factor	4.2	European	Moderate	23055271	Gregersen 2012 Ann Neurol
+B*08:01	Graves disease	risk factor	2.8	European	Moderate	17597093	Simmonds 2007 Hum Mol Genet
+B*08:01	Primary biliary cholangitis	risk factor	2.3	European	Moderate	22961000	Liu 2012 Nat Genet
+B*52:01	Takayasu arteritis	risk factor	7.6	Japanese	Moderate	23830516	Terao 2013 Am J Hum Genet
+DRB1*15:01	Multiple sclerosis	risk factor	3.1	European	Strong	17660530;31604244	IMSGC 2007 NEJM; IMSGC 2019 Science
+DQB1*06:02	Narcolepsy with cataplexy	risk factor	251.0	Global	Strong	9456467;9459509	Mignot 1997 Sleep; Pelin 1998 Tissue Antigens
+DRB1*03:01	Type 1 diabetes mellitus	risk factor	4.8	European	Strong	18252895	Erlich 2008 Diabetes
+DRB1*04:01	Type 1 diabetes mellitus	risk factor	4.2	European	Strong	18252895	Erlich 2008 Diabetes
+DRB1*04:04	Rheumatoid arthritis	risk factor	3.8	European	Strong	22286218;15476204	Raychaudhuri 2012 Nat Genet; Padyukov 2004 Arthritis Rheum
+DRB1*04:01	Rheumatoid arthritis	risk factor	4.1	European	Strong	22286218;15476204	Raychaudhuri 2012 Nat Genet; Padyukov 2004 Arthritis Rheum
+DRB1*15:01	Anti-GBM disease (Goodpasture syndrome)	risk factor	15.9	European	Strong	10571772	Phelps & Rees 1999 Kidney Int
+DRB1*03:01	Primary Sjogren syndrome	risk factor	3.5	European	Moderate	11469461	Bolstad 2001 J Rheumatol
+DRB1*03:01	Systemic lupus erythematosus	risk factor	2.8	European	Moderate	17997607	Fernando 2007 PLoS Genet
+DQB1*02:01	Celiac disease	risk factor	7.2	European	Strong	12651074	Karell 2003 Hum Immunol (DQ2.5)
+DQB1*03:02	Celiac disease	risk factor	3.9	European	Strong	12651074	Karell 2003 Hum Immunol (DQ8)
+DQA1*05:01	Celiac disease	risk factor	6.8	European	Strong	12651074	Karell 2003 Hum Immunol (DQ2.5)
+DRB1*04:05	Type 1 diabetes mellitus	risk factor	9.8	East Asian	Strong	18252895	Erlich 2008 Diabetes
+DRB1*09:01	Type 1 diabetes mellitus	risk factor	5.4	East Asian	Moderate	18252895	Erlich 2008 Diabetes
+DRB1*14:01	Pemphigus vulgaris	risk factor	14.4	Various	Strong	22564118;30155467	Yan 2012 Br J Dermatol; Vodo 2018 Front Med
+DRB1*03:01	Autoimmune hepatitis type 1	risk factor	3.4	European	Moderate	9178696	Strettell 1997 Gastroenterology
+DRB1*15:03	Systemic lupus erythematosus	risk factor	3.1	African	Moderate	30085094	Hanscombe 2018 Hum Mol Genet
+DRB1*03:01	Myasthenia gravis	risk factor	3.1	European	Moderate	6968236	Compston 1980 Brain
+DQB1*03:02	Type 1 diabetes mellitus	risk factor	4.0	European;East Asian	Strong	18252895	Erlich 2008 Diabetes

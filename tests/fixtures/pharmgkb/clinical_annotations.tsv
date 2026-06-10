@@ -1,0 +1,8 @@
+Clinical Annotation ID	Variant/Haplotypes	Gene	Drug(s)	Phenotype Category	Level of Evidence	PMID	CPIC URL	URL
+CA000001	HLA-B*57:01	HLA-B	abacavir	Adverse Reaction	1A	18256392,18354102	https://cpicpgx.org/guidelines/guideline-for-abacavir-and-hla-b/	https://www.pharmgkb.org/clinicalAnnotation/CA000001
+CA000002	HLA-B*15:02	HLA-B	carbamazepine	Adverse Reaction	1A	15743917	https://cpicpgx.org/guidelines/guideline-for-carbamazepine-and-hla-b/	https://www.pharmgkb.org/clinicalAnnotation/CA000002
+CA000003	HLA-B*58:01	HLA-B	allopurinol	Adverse Reaction	1A	15743917		https://www.pharmgkb.org/clinicalAnnotation/CA000003
+CA000004	HLA-A*31:01	HLA-A	carbamazepine	Adverse Reaction	2A	21428769		https://www.pharmgkb.org/clinicalAnnotation/CA000004
+CA000005	HLA-DRB1*07:01	HLA-DRB1	lapatinib	Adverse Reaction	3	20861404		https://www.pharmgkb.org/clinicalAnnotation/CA000005
+CA000006	HLA-B*07:02	HLA-B	abacavir	Adverse Reaction	1A				https://www.pharmgkb.org/clinicalAnnotation/CA000006
+CA000007	CYP2C19*2	CYP2C19	clopidogrel	Efficacy	1A	20083681		https://www.pharmgkb.org/clinicalAnnotation/CA000007

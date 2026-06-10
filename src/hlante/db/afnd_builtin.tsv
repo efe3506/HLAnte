@@ -1,0 +1,372 @@
+Allele	Population	Population Group	Frequency	Sample Size
+A*01:01	European (literature)	European	0.162	500
+A*02:01	European (literature)	European	0.283	500
+A*03:01	European (literature)	European	0.141	500
+A*11:01	European (literature)	European	0.057	500
+A*24:02	European (literature)	European	0.098	500
+A*25:01	European (literature)	European	0.032	500
+A*26:01	European (literature)	European	0.042	500
+A*29:02	European (literature)	European	0.037	500
+A*30:01	European (literature)	European	0.015	500
+A*32:01	European (literature)	European	0.058	500
+A*68:01	European (literature)	European	0.045	500
+A*68:02	European (literature)	European	0.03	500
+A*02:01	African (literature)	African	0.115	500
+A*03:01	African (literature)	African	0.16	500
+A*23:01	African (literature)	African	0.072	500
+A*24:02	African (literature)	African	0.058	500
+A*30:01	African (literature)	African	0.072	500
+A*30:02	African (literature)	African	0.07	500
+A*33:01	African (literature)	African	0.058	500
+A*34:01	African (literature)	African	0.042	500
+A*36:01	African (literature)	African	0.025	500
+A*43:01	African (literature)	African	0.018	500
+A*68:01	African (literature)	African	0.072	500
+A*74:01	African (literature)	African	0.038	500
+A*02:01	East Asian (literature)	East Asian	0.098	500
+A*02:07	East Asian (literature)	East Asian	0.078	500
+A*11:01	East Asian (literature)	East Asian	0.178	500
+A*24:02	East Asian (literature)	East Asian	0.238	500
+A*26:01	East Asian (literature)	East Asian	0.048	500
+A*29:01	East Asian (literature)	East Asian	0.015	500
+A*31:01	East Asian (literature)	East Asian	0.058	500
+A*33:03	East Asian (literature)	East Asian	0.078	500
+A*02:03	East Asian (literature)	East Asian	0.025	500
+A*33:01	East Asian (literature)	East Asian	0.025	500
+A*02:01	South Asian (literature)	South Asian	0.148	500
+A*11:01	South Asian (literature)	South Asian	0.118	500
+A*24:02	South Asian (literature)	South Asian	0.098	500
+A*26:01	South Asian (literature)	South Asian	0.042	500
+A*33:01	South Asian (literature)	South Asian	0.048	500
+A*33:03	South Asian (literature)	South Asian	0.058	500
+A*01:01	South Asian (literature)	South Asian	0.078	500
+A*03:01	South Asian (literature)	South Asian	0.06	500
+A*31:01	South Asian (literature)	South Asian	0.038	500
+A*74:01	South Asian (literature)	South Asian	0.032	500
+A*68:01	South Asian (literature)	South Asian	0.035	500
+A*02:01	American (literature)	American	0.195	500
+A*24:02	American (literature)	American	0.128	500
+A*68:01	American (literature)	American	0.062	500
+A*03:01	American (literature)	American	0.072	500
+A*01:01	American (literature)	American	0.082	500
+A*11:01	American (literature)	American	0.058	500
+A*31:01	American (literature)	American	0.045	500
+A*30:02	American (literature)	American	0.035	500
+A*02:06	American (literature)	American	0.032	500
+A*29:02	American (literature)	American	0.028	500
+B*07:02	European (literature)	European	0.132	500
+B*08:01	European (literature)	European	0.098	500
+B*15:01	European (literature)	European	0.052	500
+B*18:01	European (literature)	European	0.058	500
+B*27:05	European (literature)	European	0.042	500
+B*35:01	European (literature)	European	0.068	500
+B*38:01	European (literature)	European	0.028	500
+B*39:01	European (literature)	European	0.022	500
+B*40:01	European (literature)	European	0.072	500
+B*44:02	European (literature)	European	0.118	500
+B*44:03	European (literature)	European	0.038	500
+B*51:01	European (literature)	European	0.048	500
+B*52:01	European (literature)	European	0.018	500
+B*55:01	European (literature)	European	0.022	500
+B*57:01	European (literature)	European	0.028	500
+B*58:01	European (literature)	European	0.01	500
+B*07:02	African (literature)	African	0.068	500
+B*15:03	African (literature)	African	0.038	500
+B*35:01	African (literature)	African	0.058	500
+B*42:01	African (literature)	African	0.072	500
+B*44:03	African (literature)	African	0.058	500
+B*45:01	African (literature)	African	0.052	500
+B*49:01	African (literature)	African	0.025	500
+B*53:01	African (literature)	African	0.072	500
+B*57:01	African (literature)	African	0.032	500
+B*58:01	African (literature)	African	0.038	500
+B*78:01	African (literature)	African	0.022	500
+B*08:01	African (literature)	African	0.025	500
+B*18:01	African (literature)	African	0.028	500
+B*51:01	African (literature)	African	0.028	500
+B*13:01	East Asian (literature)	East Asian	0.058	500
+B*15:01	East Asian (literature)	East Asian	0.042	500
+B*15:02	East Asian (literature)	East Asian	0.048	500
+B*35:01	East Asian (literature)	East Asian	0.038	500
+B*40:01	East Asian (literature)	East Asian	0.082	500
+B*40:02	East Asian (literature)	East Asian	0.048	500
+B*46:01	East Asian (literature)	East Asian	0.088	500
+B*51:01	East Asian (literature)	East Asian	0.062	500
+B*54:01	East Asian (literature)	East Asian	0.052	500
+B*55:02	East Asian (literature)	East Asian	0.038	500
+B*57:01	East Asian (literature)	East Asian	0.01	500
+B*58:01	East Asian (literature)	East Asian	0.048	500
+B*07:02	East Asian (literature)	East Asian	0.022	500
+B*07:02	South Asian (literature)	South Asian	0.058	500
+B*15:01	South Asian (literature)	South Asian	0.028	500
+B*15:02	South Asian (literature)	South Asian	0.028	500
+B*18:01	South Asian (literature)	South Asian	0.038	500
+B*35:01	South Asian (literature)	South Asian	0.052	500
+B*40:01	South Asian (literature)	South Asian	0.058	500
+B*44:03	South Asian (literature)	South Asian	0.042	500
+B*51:01	South Asian (literature)	South Asian	0.068	500
+B*57:01	South Asian (literature)	South Asian	0.042	500
+B*57:03	South Asian (literature)	South Asian	0.022	500
+B*58:01	South Asian (literature)	South Asian	0.028	500
+B*52:01	South Asian (literature)	South Asian	0.038	500
+B*35:01	American (literature)	American	0.075	500
+B*39:01	American (literature)	American	0.042	500
+B*40:02	American (literature)	American	0.048	500
+B*44:02	American (literature)	American	0.058	500
+B*07:02	American (literature)	American	0.055	500
+B*15:01	American (literature)	American	0.045	500
+B*18:01	American (literature)	American	0.042	500
+B*51:01	American (literature)	American	0.048	500
+B*57:01	American (literature)	American	0.018	500
+B*58:01	American (literature)	American	0.015	500
+B*39:06	American (literature)	American	0.028	500
+B*48:01	American (literature)	American	0.032	500
+C*01:02	European (literature)	European	0.025	500
+C*02:02	European (literature)	European	0.052	500
+C*03:03	European (literature)	European	0.068	500
+C*03:04	European (literature)	European	0.048	500
+C*04:01	European (literature)	European	0.122	500
+C*05:01	European (literature)	European	0.098	500
+C*06:02	European (literature)	European	0.102	500
+C*07:01	European (literature)	European	0.148	500
+C*07:02	European (literature)	European	0.128	500
+C*08:02	European (literature)	European	0.058	500
+C*12:02	European (literature)	European	0.038	500
+C*12:03	European (literature)	European	0.042	500
+C*02:02	African (literature)	African	0.025	500
+C*02:10	African (literature)	African	0.032	500
+C*03:02	African (literature)	African	0.042	500
+C*04:01	African (literature)	African	0.072	500
+C*06:02	African (literature)	African	0.082	500
+C*07:01	African (literature)	African	0.055	500
+C*07:02	African (literature)	African	0.048	500
+C*08:01	African (literature)	African	0.038	500
+C*16:01	African (literature)	African	0.078	500
+C*17:01	African (literature)	African	0.048	500
+C*18:01	African (literature)	African	0.052	500
+C*01:02	East Asian (literature)	East Asian	0.088	500
+C*03:02	East Asian (literature)	East Asian	0.048	500
+C*03:03	East Asian (literature)	East Asian	0.042	500
+C*03:04	East Asian (literature)	East Asian	0.062	500
+C*04:01	East Asian (literature)	East Asian	0.062	500
+C*06:02	East Asian (literature)	East Asian	0.048	500
+C*07:02	East Asian (literature)	East Asian	0.082	500
+C*08:01	East Asian (literature)	East Asian	0.038	500
+C*14:02	East Asian (literature)	East Asian	0.058	500
+C*15:02	East Asian (literature)	East Asian	0.052	500
+C*01:02	South Asian (literature)	South Asian	0.028	500
+C*03:02	South Asian (literature)	South Asian	0.042	500
+C*03:03	South Asian (literature)	South Asian	0.048	500
+C*04:01	South Asian (literature)	South Asian	0.082	500
+C*06:02	South Asian (literature)	South Asian	0.088	500
+C*07:01	South Asian (literature)	South Asian	0.062	500
+C*07:02	South Asian (literature)	South Asian	0.072	500
+C*08:02	South Asian (literature)	South Asian	0.048	500
+C*12:02	South Asian (literature)	South Asian	0.038	500
+C*15:02	South Asian (literature)	South Asian	0.038	500
+C*03:03	American (literature)	American	0.052	500
+C*04:01	American (literature)	American	0.098	500
+C*06:02	American (literature)	American	0.088	500
+C*07:01	American (literature)	American	0.082	500
+C*07:02	American (literature)	American	0.078	500
+C*08:02	American (literature)	American	0.048	500
+C*04:03	American (literature)	American	0.042	500
+C*02:02	American (literature)	American	0.038	500
+C*12:03	American (literature)	American	0.035	500
+DRB1*01:01	European (literature)	European	0.082	500
+DRB1*01:02	European (literature)	European	0.022	500
+DRB1*03:01	European (literature)	European	0.108	500
+DRB1*04:01	European (literature)	European	0.072	500
+DRB1*04:04	European (literature)	European	0.042	500
+DRB1*07:01	European (literature)	European	0.118	500
+DRB1*09:01	European (literature)	European	0.018	500
+DRB1*10:01	European (literature)	European	0.018	500
+DRB1*11:01	European (literature)	European	0.058	500
+DRB1*11:04	European (literature)	European	0.042	500
+DRB1*13:01	European (literature)	European	0.072	500
+DRB1*13:02	European (literature)	European	0.048	500
+DRB1*15:01	European (literature)	European	0.138	500
+DRB1*16:01	European (literature)	European	0.022	500
+DRB1*01:01	African (literature)	African	0.025	500
+DRB1*03:01	African (literature)	African	0.072	500
+DRB1*07:01	African (literature)	African	0.052	500
+DRB1*08:04	African (literature)	African	0.028	500
+DRB1*11:01	African (literature)	African	0.055	500
+DRB1*11:02	African (literature)	African	0.048	500
+DRB1*12:01	African (literature)	African	0.038	500
+DRB1*13:01	African (literature)	African	0.038	500
+DRB1*13:02	African (literature)	African	0.025	500
+DRB1*15:01	African (literature)	African	0.058	500
+DRB1*15:03	African (literature)	African	0.072	500
+DRB1*04:01	East Asian (literature)	East Asian	0.035	500
+DRB1*04:05	East Asian (literature)	East Asian	0.092	500
+DRB1*07:01	East Asian (literature)	East Asian	0.038	500
+DRB1*08:02	East Asian (literature)	East Asian	0.038	500
+DRB1*08:03	East Asian (literature)	East Asian	0.045	500
+DRB1*09:01	East Asian (literature)	East Asian	0.088	500
+DRB1*12:01	East Asian (literature)	East Asian	0.058	500
+DRB1*12:02	East Asian (literature)	East Asian	0.035	500
+DRB1*13:02	East Asian (literature)	East Asian	0.028	500
+DRB1*14:05	East Asian (literature)	East Asian	0.038	500
+DRB1*15:01	East Asian (literature)	East Asian	0.068	500
+DRB1*15:02	East Asian (literature)	East Asian	0.025	500
+DRB1*01:01	South Asian (literature)	South Asian	0.045	500
+DRB1*03:01	South Asian (literature)	South Asian	0.072	500
+DRB1*07:01	South Asian (literature)	South Asian	0.078	500
+DRB1*10:01	South Asian (literature)	South Asian	0.025	500
+DRB1*11:01	South Asian (literature)	South Asian	0.062	500
+DRB1*12:01	South Asian (literature)	South Asian	0.028	500
+DRB1*13:01	South Asian (literature)	South Asian	0.038	500
+DRB1*14:01	South Asian (literature)	South Asian	0.035	500
+DRB1*15:01	South Asian (literature)	South Asian	0.082	500
+DRB1*15:02	South Asian (literature)	South Asian	0.022	500
+DRB1*01:01	American (literature)	American	0.045	500
+DRB1*03:01	American (literature)	American	0.068	500
+DRB1*04:01	American (literature)	American	0.052	500
+DRB1*04:07	American (literature)	American	0.038	500
+DRB1*07:01	American (literature)	American	0.088	500
+DRB1*08:02	American (literature)	American	0.045	500
+DRB1*11:01	American (literature)	American	0.058	500
+DRB1*13:02	American (literature)	American	0.042	500
+DRB1*14:02	American (literature)	American	0.028	500
+DRB1*15:01	American (literature)	American	0.072	500
+DQA1*01:01	European (literature)	European	0.152	500
+DQA1*01:02	European (literature)	European	0.222	500
+DQA1*01:03	European (literature)	European	0.042	500
+DQA1*02:01	European (literature)	European	0.115	500
+DQA1*03:01	European (literature)	European	0.082	500
+DQA1*03:03	European (literature)	European	0.038	500
+DQA1*04:01	European (literature)	European	0.018	500
+DQA1*05:01	European (literature)	European	0.248	500
+DQA1*06:01	European (literature)	European	0.012	500
+DQA1*01:02	African (literature)	African	0.138	500
+DQA1*02:01	African (literature)	African	0.098	500
+DQA1*03:01	African (literature)	African	0.042	500
+DQA1*04:01	African (literature)	African	0.058	500
+DQA1*05:01	African (literature)	African	0.188	500
+DQA1*05:05	African (literature)	African	0.038	500
+DQA1*06:01	African (literature)	African	0.068	500
+DQA1*01:01	African (literature)	African	0.062	500
+DQA1*01:02	East Asian (literature)	East Asian	0.108	500
+DQA1*01:03	East Asian (literature)	East Asian	0.068	500
+DQA1*01:04	East Asian (literature)	East Asian	0.028	500
+DQA1*03:01	East Asian (literature)	East Asian	0.118	500
+DQA1*03:02	East Asian (literature)	East Asian	0.048	500
+DQA1*03:03	East Asian (literature)	East Asian	0.062	500
+DQA1*04:01	East Asian (literature)	East Asian	0.048	500
+DQA1*05:01	East Asian (literature)	East Asian	0.048	500
+DQA1*06:01	East Asian (literature)	East Asian	0.068	500
+DQA1*01:01	South Asian (literature)	South Asian	0.088	500
+DQA1*01:02	South Asian (literature)	South Asian	0.098	500
+DQA1*01:03	South Asian (literature)	South Asian	0.048	500
+DQA1*02:01	South Asian (literature)	South Asian	0.072	500
+DQA1*03:01	South Asian (literature)	South Asian	0.068	500
+DQA1*04:01	South Asian (literature)	South Asian	0.028	500
+DQA1*05:01	South Asian (literature)	South Asian	0.218	500
+DQA1*05:05	South Asian (literature)	South Asian	0.025	500
+DQA1*01:02	American (literature)	American	0.148	500
+DQA1*02:01	American (literature)	American	0.088	500
+DQA1*03:01	American (literature)	American	0.078	500
+DQA1*04:01	American (literature)	American	0.038	500
+DQA1*05:01	American (literature)	American	0.178	500
+DQA1*01:01	American (literature)	American	0.062	500
+DQA1*06:01	American (literature)	American	0.042	500
+DQB1*02:01	European (literature)	European	0.148	500
+DQB1*02:02	European (literature)	European	0.088	500
+DQB1*03:01	European (literature)	European	0.158	500
+DQB1*03:02	European (literature)	European	0.082	500
+DQB1*03:03	European (literature)	European	0.038	500
+DQB1*04:02	European (literature)	European	0.018	500
+DQB1*05:01	European (literature)	European	0.128	500
+DQB1*05:02	European (literature)	European	0.048	500
+DQB1*05:03	European (literature)	European	0.018	500
+DQB1*06:01	European (literature)	European	0.028	500
+DQB1*06:02	European (literature)	European	0.138	500
+DQB1*06:03	European (literature)	European	0.022	500
+DQB1*06:04	European (literature)	European	0.022	500
+DQB1*02:01	African (literature)	African	0.118	500
+DQB1*03:01	African (literature)	African	0.118	500
+DQB1*03:02	African (literature)	African	0.048	500
+DQB1*04:02	African (literature)	African	0.078	500
+DQB1*05:01	African (literature)	African	0.078	500
+DQB1*05:02	African (literature)	African	0.038	500
+DQB1*06:01	African (literature)	African	0.058	500
+DQB1*06:02	African (literature)	African	0.078	500
+DQB1*06:03	African (literature)	African	0.048	500
+DQB1*06:09	African (literature)	African	0.025	500
+DQB1*03:01	East Asian (literature)	East Asian	0.158	500
+DQB1*03:02	East Asian (literature)	East Asian	0.068	500
+DQB1*03:03	East Asian (literature)	East Asian	0.068	500
+DQB1*04:01	East Asian (literature)	East Asian	0.025	500
+DQB1*04:02	East Asian (literature)	East Asian	0.028	500
+DQB1*05:01	East Asian (literature)	East Asian	0.048	500
+DQB1*05:02	East Asian (literature)	East Asian	0.038	500
+DQB1*06:01	East Asian (literature)	East Asian	0.042	500
+DQB1*06:02	East Asian (literature)	East Asian	0.062	500
+DQB1*02:01	East Asian (literature)	East Asian	0.048	500
+DQB1*02:01	South Asian (literature)	South Asian	0.118	500
+DQB1*02:02	South Asian (literature)	South Asian	0.038	500
+DQB1*03:01	South Asian (literature)	South Asian	0.128	500
+DQB1*03:02	South Asian (literature)	South Asian	0.052	500
+DQB1*05:01	South Asian (literature)	South Asian	0.112	500
+DQB1*05:02	South Asian (literature)	South Asian	0.062	500
+DQB1*06:01	South Asian (literature)	South Asian	0.028	500
+DQB1*06:02	South Asian (literature)	South Asian	0.072	500
+DQB1*06:04	South Asian (literature)	South Asian	0.022	500
+DQB1*02:01	American (literature)	American	0.108	500
+DQB1*03:01	American (literature)	American	0.132	500
+DQB1*03:02	American (literature)	American	0.072	500
+DQB1*04:02	American (literature)	American	0.042	500
+DQB1*05:01	American (literature)	American	0.102	500
+DQB1*06:02	American (literature)	American	0.082	500
+DQB1*03:03	American (literature)	American	0.042	500
+DQB1*02:02	American (literature)	American	0.038	500
+DPB1*01:01	European (literature)	European	0.058	500
+DPB1*02:01	European (literature)	European	0.178	500
+DPB1*03:01	European (literature)	European	0.062	500
+DPB1*04:01	European (literature)	European	0.338	500
+DPB1*04:02	European (literature)	European	0.118	500
+DPB1*05:01	European (literature)	European	0.025	500
+DPB1*06:01	European (literature)	European	0.018	500
+DPB1*09:01	European (literature)	European	0.018	500
+DPB1*10:01	European (literature)	European	0.018	500
+DPB1*11:01	European (literature)	European	0.025	500
+DPB1*13:01	European (literature)	European	0.028	500
+DPB1*14:01	European (literature)	European	0.015	500
+DPB1*17:01	European (literature)	European	0.015	500
+DPB1*19:01	European (literature)	European	0.022	500
+DPB1*01:01	African (literature)	African	0.082	500
+DPB1*02:01	African (literature)	African	0.098	500
+DPB1*04:01	African (literature)	African	0.188	500
+DPB1*04:02	African (literature)	African	0.088	500
+DPB1*05:01	African (literature)	African	0.028	500
+DPB1*10:01	African (literature)	African	0.048	500
+DPB1*17:01	African (literature)	African	0.052	500
+DPB1*18:01	African (literature)	African	0.025	500
+DPB1*26:01	African (literature)	African	0.038	500
+DPB1*28:01	African (literature)	African	0.025	500
+DPB1*02:01	East Asian (literature)	East Asian	0.148	500
+DPB1*02:02	East Asian (literature)	East Asian	0.068	500
+DPB1*04:01	East Asian (literature)	East Asian	0.178	500
+DPB1*04:02	East Asian (literature)	East Asian	0.062	500
+DPB1*05:01	East Asian (literature)	East Asian	0.138	500
+DPB1*09:01	East Asian (literature)	East Asian	0.062	500
+DPB1*13:01	East Asian (literature)	East Asian	0.028	500
+DPB1*19:01	East Asian (literature)	East Asian	0.042	500
+DPB1*01:01	South Asian (literature)	South Asian	0.048	500
+DPB1*02:01	South Asian (literature)	South Asian	0.128	500
+DPB1*04:01	South Asian (literature)	South Asian	0.228	500
+DPB1*04:02	South Asian (literature)	South Asian	0.088	500
+DPB1*05:01	South Asian (literature)	South Asian	0.062	500
+DPB1*09:01	South Asian (literature)	South Asian	0.035	500
+DPB1*11:01	South Asian (literature)	South Asian	0.042	500
+DPB1*17:01	South Asian (literature)	South Asian	0.028	500
+DPB1*02:01	American (literature)	American	0.138	500
+DPB1*04:01	American (literature)	American	0.278	500
+DPB1*04:02	American (literature)	American	0.098	500
+DPB1*03:01	American (literature)	American	0.048	500
+DPB1*09:01	American (literature)	American	0.038	500
+DPB1*11:01	American (literature)	American	0.025	500
+DPB1*14:01	American (literature)	American	0.022	500
+DPB1*17:01	American (literature)	American	0.028	500
+DPB1*13:01	American (literature)	American	0.022	500
