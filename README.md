@@ -146,12 +146,7 @@ qualified clinician.
 ## About the name
 
 HLAnte is a portmanteau of **HLA** and ***andante*** — the musical
-tempo marking for a moderate, walking pace. It reflects the tool's
-design philosophy: a careful, deliberate traversal of curated HLA
-annotation sources (IPD-IMGT/HLA → GWAS Catalog → PharmGKB → AFND →
-curated table) rather than a speed-optimized shortcut. Each stage of the
-pipeline — parse, normalize, annotate, report — is treated like a
-movement of the same composition.
+tempo marking for a moderate, walking pace.
 
 ## License
 
