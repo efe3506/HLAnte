@@ -33,6 +33,8 @@ not diagnostic. See the disclaimer embedded in every report.
 ### Conda (Bioconda environment)
 
 ```bash
+git clone https://github.com/efe3506/HLAnte.git
+cd HLAnte
 conda env create -f environment.yml
 conda activate hlante
 ```
