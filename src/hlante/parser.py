@@ -53,6 +53,15 @@ _TOOL_ALIASES: Dict[str, str] = {
     "opti-type": TOOL_OPTITYPE,
 }
 
+#: Field-count labels for the TSV ``resolution`` column, keyed by the
+#: number of colon-separated fields.
+RESOLUTION_LABELS: Dict[int, str] = {
+    1: "one-field",
+    2: "two-field",
+    3: "three-field",
+    4: "four-field",
+}
+
 RESOLUTION_G_GROUP: str = "G-group"
 RESOLUTION_P_GROUP: str = "P-group"
 
@@ -135,10 +144,15 @@ class HLAGenotype:
     allele2 : str or None
         Second allele; ``None`` for homozygous or missing calls.
     resolution : str
-        Resolution level label: ``"2-field"``, ``"4-field"``,
-        ``"6-field"``, ``"8-field"`` (digit-based) or
+        Resolution label: ``"one-field"``, ``"two-field"``,
+        ``"three-field"``, ``"four-field"`` or
         ``"G-group"`` / ``"P-group"``.
-    quality_score : float or None
+    caller_quality1 : float or None
+        Per-allele quality reported by the typing tool for allele 1, when the
+        tool provides one. Populated only from the T1K native layout; arcasHLA
+        and HLA-HD report no per-allele quality, and OptiType reports a
+        solution-level objective rather than an allele quality.
+    caller_quality2 : float or None
         Quality score reported by the tool, if any.
     tool : str
         Name of the tool that produced the call (``"arcashla"``,
@@ -152,9 +166,10 @@ class HLAGenotype:
     allele1: str
     allele2: Optional[str]
     resolution: str
-    quality_score: Optional[float]
     tool: str
     raw_line: str
+    caller_quality1: Optional[float] = None
+    caller_quality2: Optional[float] = None
 
 
 # ---------------------------------------------------------------------------
@@ -318,20 +333,20 @@ def _determine_resolution(allele: str) -> str:
     """
     Determine the resolution label of an allele.
 
-    Returns ``"2-field"``, ``"4-field"``, ``"6-field"``, or
-    ``"8-field"`` based on the number of colon-separated fields,
+    Returns ``"one-field"``, ``"two-field"``, ``"three-field"`` or
+    ``"four-field"`` for the number of colon-separated fields,
     matching :func:`hlante.normalizer._resolution_of`. Returns
     ``"G-group"`` / ``"P-group"`` for group suffixes.
 
     Notes
     -----
-    Previously this helper counted *digits*, which miscategorised
-    alleles whose first field was three digits (e.g.
-    ``DPB1*104:01:01``): three colon-groups yet seven digits, which
-    the old digit-count rule labelled as ``"8-field"``. The
-    normalizer's integer resolution was already colon-group based
-    (fix P0-3); this helper is now aligned so the TSV ``resolution``
-    column agrees with ``NormalizedAllele.resolution_level``.
+    Releases up to v0.1.0 wrote these labels on a digit scale
+    (``"2-field"`` for a one-field call, ``"4-field"`` for a two-field
+    call), which conflated fields with digits — current HLA
+    nomenclature admits at most four fields. The word forms used here
+    cannot be confused with the old numeric labels, so a downstream
+    filter written against v0.1.0 fails loudly rather than silently
+    selecting the wrong resolution.
 
     Parameters
     ----------
@@ -356,16 +371,9 @@ def _determine_resolution(allele: str) -> str:
     # Strip a single trailing nomenclature letter (N/L/S/Q/C/A).
     rest = re.sub(r"[A-Z]$", "", rest)
     if not rest:
-        return "2-field"
-    fields = rest.split(":")
-    n = len(fields)
-    if n <= 1:
-        return "2-field"
-    if n == 2:
-        return "4-field"
-    if n == 3:
-        return "6-field"
-    return "8-field"
+        return RESOLUTION_LABELS[1]
+    n = len(rest.split(":"))
+    return RESOLUTION_LABELS[min(n, 4)]
 
 
 def _resolve_tool(tool: str) -> str:
@@ -502,7 +510,6 @@ def parse_arcashla(filepath: Union[str, Path]) -> List[HLAGenotype]:
                 allele1=allele1,
                 allele2=allele2,
                 resolution=_determine_resolution(allele1),
-                quality_score=None,
                 tool=TOOL_ARCASHLA,
                 raw_line=json.dumps({locus_key: calls}, ensure_ascii=False),
             )
@@ -583,10 +590,10 @@ def parse_t1k(filepath: Union[str, Path]) -> List[HLAGenotype]:
 
     def _primary_call(token: str) -> str:
         # T1K emits equivalence-class ambiguity lists as one
-        # comma-separated string, e.g.
+        # Comma-separated string, e.g.
         # "HLA-DRA*01:01:01,HLA-DRA*01:01:02,...". Take the first
-        # candidate as the primary call; the ambiguity itself is
-        # surfaced later by the normalizer's ambiguity handling.
+        # Candidate as the primary call; the ambiguity itself is
+        # Surfaced later by the normalizer's ambiguity handling.
         return token.split(",", 1)[0].strip() if "," in token else token
 
     sample_id = path.stem
@@ -602,6 +609,7 @@ def parse_t1k(filepath: Union[str, Path]) -> List[HLAGenotype]:
                     f"T1K row has missing columns (line {line_no}): {row!r} (source: {path})"
                 )
             gene, a1, a2, s1, s2 = parts[:5]
+            q1 = q2 = None
         else:
             # Native: gene count a1 s1 q1 a2 s2 q2
             if len(parts) < 5:
@@ -613,6 +621,12 @@ def parse_t1k(filepath: Union[str, Path]) -> List[HLAGenotype]:
             s1 = parts[3] if len(parts) > 3 else ""
             a2 = parts[5] if len(parts) > 5 else ""
             s2 = parts[6] if len(parts) > 6 else ""
+            # Columns 4 and 7 are T1K's per-allele quality values; columns 3
+            # And 6 (read above) are abundance. Only the quality values are
+            # Reported, and only for the native layout — the legacy headered
+            # Layout labels its two numbers "score" without saying which.
+            q1 = _parse_float(parts[4]) if len(parts) > 4 else None
+            q2 = _parse_float(parts[7]) if len(parts) > 7 else None
 
         allele1 = (
             None
@@ -634,7 +648,6 @@ def parse_t1k(filepath: Union[str, Path]) -> List[HLAGenotype]:
 
         score1 = _parse_float(s1)
         score2 = _parse_float(s2)
-        quality = score1 if score1 is not None else score2
 
         results.append(
             HLAGenotype(
@@ -643,7 +656,9 @@ def parse_t1k(filepath: Union[str, Path]) -> List[HLAGenotype]:
                 allele1=allele1,
                 allele2=allele2,
                 resolution=_determine_resolution(allele1),
-                quality_score=quality,
+                # A quality is only meaningful for a reported allele.
+                caller_quality1=q1 if allele1 else None,
+                caller_quality2=q2 if allele2 else None,
                 tool=TOOL_T1K,
                 raw_line=row,
             )
@@ -696,13 +711,13 @@ def parse_hlahd(filepath: Union[str, Path]) -> List[HLAGenotype]:
             if not line.strip() or line.lstrip().startswith("#"):
                 continue
             # Real HLA-HD final.result files are tab-delimited and contain
-            # the null marker ``"Not typed"`` (with a literal space). The
-            # former ``r"[\t ]+"`` split also treated that interior space
+            # The null marker ``"Not typed"`` (with a literal space). The
+            # Former ``r"[\t ]+"`` split also treated that interior space
             # as a column boundary, producing ``['DRB5', 'Not', 'typed',
             # 'Not', 'typed']`` and then tripping on ``"Not"`` as an
-            # allele. Prefer tab-only splitting when any tab is present;
-            # fall back to whitespace splitting for rare space-only
-            # variants (which never use the two-word null token).
+            # Allele. Prefer tab-only splitting when any tab is present;
+            # Fall back to whitespace splitting for rare space-only
+            # Variants (which never use the two-word null token).
             if "\t" in line:
                 parts = [p.strip() for p in line.split("\t") if p.strip()]
             else:
@@ -738,7 +753,6 @@ def parse_hlahd(filepath: Union[str, Path]) -> List[HLAGenotype]:
                     allele1=allele1,
                     allele2=allele2,
                     resolution=_determine_resolution(allele1),
-                    quality_score=None,
                     tool=TOOL_HLAHD,
                     raw_line=line,
                 )
@@ -754,7 +768,7 @@ def parse_optitype(filepath: Union[str, Path]) -> List[HLAGenotype]:
     """
     Parse an OptiType ``*_result.tsv`` output.
 
-    OptiType emits only HLA Class I (A, B, C) calls at 2-field
+    OptiType emits only HLA class I (A, B, C) calls at two-field
     resolution (e.g., ``A*02:01``). Expected header columns:
     ``A1``, ``A2``, ``B1``, ``B2``, ``C1``, ``C2``, ``Reads``,
     ``Objective``. A leading unnamed index column is tolerated.
@@ -791,6 +805,20 @@ def parse_optitype(filepath: Union[str, Path]) -> List[HLAGenotype]:
 
     header = [col.strip().lower() for col in lines[0].split("\t")]
     data_row = lines[1].split("\t")
+
+    # OptiType can enumerate several optimal solutions. Only the top-ranked
+    # One is annotated; the alternatives are not retained, and downstream
+    # Annotations could differ between them, so the collapse is announced
+    # Rather than performed silently.
+    solution_count = len(lines) - 1
+    if solution_count > 1:
+        logger.warning(
+            "OptiType output %s contains %d enumerated solutions; only the "
+            "top-ranked solution is annotated and the alternatives are not "
+            "retained.",
+            path,
+            solution_count,
+        )
 
     required = {"a1", "a2", "b1", "b2", "c1", "c2"}
     if not required.issubset(set(header)):
@@ -834,7 +862,6 @@ def parse_optitype(filepath: Union[str, Path]) -> List[HLAGenotype]:
                 allele1=allele1,
                 allele2=allele2,
                 resolution=_determine_resolution(allele1),
-                quality_score=objective,
                 tool=TOOL_OPTITYPE,
                 raw_line=raw_line,
             )

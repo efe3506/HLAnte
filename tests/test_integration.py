@@ -47,11 +47,18 @@ OPTITYPE_FIXTURE: Path = FIXTURES_DIR / "sample_result.tsv"
 @pytest.fixture()
 def runner() -> CliRunner:
     """
-    stderr is captured separately (Click 8.3+ default).
+    CliRunner that captures stderr separately on every supported Click
+    release.
+
+    Click <= 8.1 merges stderr into stdout unless ``mix_stderr=False`` is
+    passed, and accessing ``result.stderr`` then raises ``ValueError``.
+    Click 8.3 removed the argument and separates the streams by default.
+    Requesting the flag and falling back keeps the suite green on both.
     """
-    # The ``mix_stderr`` argument was removed in Click 8.3; separate
-    # streams are the default now.
-    return CliRunner()
+    try:
+        return CliRunner(mix_stderr=False)  # type: ignore[call-arg]
+    except TypeError:
+        return CliRunner()
 
 
 @pytest.fixture()
@@ -84,7 +91,7 @@ def _read_tsv(path: Path):
 
 
 # ---------------------------------------------------------------------------
-# version + validate (no network required)
+# Version + validate (no network required)
 # ---------------------------------------------------------------------------
 
 
@@ -190,7 +197,7 @@ class TestValidateCommand:
 
 
 # ---------------------------------------------------------------------------
-# annotate — end to end
+# Annotate — end to end
 # ---------------------------------------------------------------------------
 
 
@@ -281,7 +288,7 @@ class TestAnnotateEndToEnd:
         annotate_args: List[str],
     ) -> None:
         """
-        ``--resolution 6`` must drop 4-field T1K records.
+        ``--resolution 6`` must drop two-field T1K records.
         """
         out_dir = tmp_path / "out"
         result = runner.invoke(
@@ -297,7 +304,7 @@ class TestAnnotateEndToEnd:
             ],
         )
         assert result.exit_code == 0, result.output + result.stderr
-        # T1K fixture has 4-field calls → all dropped, TSV empty.
+        # T1K fixture has two-field calls → all dropped, TSV empty.
         header, rows = _read_tsv(out_dir / "hlante_report.tsv")
         assert rows == []
 
@@ -342,7 +349,7 @@ class TestAnnotateEndToEnd:
             [
                 "annotate",
                 "-i", str(HLAHD_FIXTURE),
-                "-t", "hla-hd",  # alias
+                "-t", "hla-hd",  # Alias
                 "-o", str(out_dir),
                 "--format", "tsv",
                 *annotate_args,
@@ -610,7 +617,7 @@ class TestDBUpdateCommand:
 
 
 # ---------------------------------------------------------------------------
-# main() entry point
+# Main() entry point
 # ---------------------------------------------------------------------------
 
 

@@ -169,7 +169,7 @@ class TestGWASRegression:
             f"No hit for DRB1*04:01 at any fallback level. "
             f"resolution={resolution}"
         )
-        assert resolution in ("4-field", "2-field"), (
+        assert resolution in ("two-field", "one-field"), (
             f"Unexpected fallback resolution: {resolution}"
         )
 
@@ -182,7 +182,7 @@ class TestGWASRegression:
         assert hits, (
             f"No hit for B*27:05 at any fallback level. resolution={resolution}"
         )
-        assert resolution in ("4-field", "2-field"), (
+        assert resolution in ("two-field", "one-field"), (
             f"Unexpected fallback resolution: {resolution}"
         )
         # Traits must be populated.
@@ -204,7 +204,7 @@ class TestFullAnnotationRegression:
         Against the real databases, B*57:01 should be classified as
         ``Risk factor`` (or ``Pathogenic``).
         """
-        _require_pharmgkb()  # without PharmGKB this test is meaningless
+        _require_pharmgkb()  # Without PharmGKB this test is meaningless
 
         from hlante.annotator import (
             AnnotatorConfig,
@@ -231,13 +231,13 @@ class TestFullAnnotationRegression:
             protein_group=None,
             hla_class="I",
             gene="HLA-B",
-            resolution_level=4,
+            resolution_level=2,
             is_ambiguous=False,
             is_novel=False,
             sample_id="regression",
             source_tool="debug",
             source_locus="HLA-B",
-            source_resolution="4-field",
+            source_resolution="two-field",
             allele_index=0,
         )
         config = AnnotatorConfig(

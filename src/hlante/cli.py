@@ -100,7 +100,15 @@ _TOOL_GLOBS: Dict[str, Tuple[str, ...]] = {
 }
 
 _FORMAT_CHOICES: List[str] = ["tsv", "json", "markdown", "all"]
-_RESOLUTION_CHOICES: List[str] = ["2", "4", "6", "8"]
+#: Accepted ``--resolution`` values. HLAnte reports resolution as a field
+#: count (1..4) from v0.2.0; releases up to v0.1.0 used a digit scale
+#: (2/4/6/8). The legacy values stay accepted so existing scripts keep
+#: running, but 6 and 8 are not valid field counts and are translated with a
+#: warning.
+_RESOLUTION_CHOICES: List[str] = ["1", "2", "3", "4", "6", "8"]
+
+#: Digit-scale values that cannot be field counts, and their field equivalent.
+_LEGACY_RESOLUTION: Dict[str, int] = {"6": 3, "8": 4}
 
 
 # ---------------------------------------------------------------------------
@@ -214,7 +222,7 @@ def _db_versions(
 
     Notes
     -----
-    P1-4: exposes the cache mtime for the GWAS Catalog bulk TSV as
+    exposes the cache mtime for the GWAS Catalog bulk TSV as
     ``gwas_cache_date`` so every report header records *when* the
     underlying data was downloaded. This is important because the
     GWAS Catalog updates continuously; without a snapshot date the
@@ -271,7 +279,7 @@ def cli(ctx: click.Context, log_level: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# annotate
+# Annotate
 # ---------------------------------------------------------------------------
 
 
@@ -323,7 +331,7 @@ def cli(ctx: click.Context, log_level: str) -> None:
     "--resolution",
     default=None,
     type=click.Choice(_RESOLUTION_CHOICES, case_sensitive=False),
-    help="Minimum accepted resolution (digit count).",
+    help="Minimum accepted resolution, in fields (1-4).",
 )
 @click.option(
     "--imgt-db-path",
@@ -367,7 +375,7 @@ def cli(ctx: click.Context, log_level: str) -> None:
 @click.option(
     "--no-afnd",
     is_flag=True,
-    help="Skip AFND allele-frequency lookups (affects confidence score).",
+    help="Skip AFND allele-frequency lookups (affects the input-quality score).",
 )
 @click.option(
     "-p",
@@ -421,7 +429,7 @@ def cli(ctx: click.Context, log_level: str) -> None:
         "typing_tool  (default) — output from arcasHLA / T1K / HLA-HD / OptiType. "
         "Resolution and ambiguity penalties apply normally.\n\n"
         "validated — lab-validated alleles (e.g. 1000 Genomes Sanger types, "
-        "IHIW reference panels). 2-field calls are not penalised for ambiguity; "
+        "IHIW reference panels). Two-field calls are not penalised for ambiguity; "
         "only the resolution penalty applies.\n\n"
         "simulated — synthetic alleles for testing. Same penalties as typing_tool.\n\n"
         "unknown — treated as typing_tool with a warning."
@@ -511,12 +519,29 @@ def annotate_cmd(
 
     # Resolution filter
     if resolution is not None:
-        min_res = int(resolution)
+        if resolution in _LEGACY_RESOLUTION:
+            min_res = _LEGACY_RESOLUTION[resolution]
+            _echo_warn(
+                f"--resolution {resolution} is a digit-scale value from v0.1.0 and is no "
+                f"longer a valid field count; interpreting it as {min_res} fields. "
+                f"Use --resolution {min_res}."
+            )
+        else:
+            min_res = int(resolution)
+            if resolution in {"2", "4"}:
+                _echo_warn(
+                    f"--resolution now counts fields, not digits: {min_res} means "
+                    f"{min_res} field(s). Before v0.2.0 this value meant "
+                    f"{min_res // 2} field(s)."
+                )
         filtered = [n for n in normalized if n.resolution_level >= min_res]
         dropped = len(normalized) - len(filtered)
         normalized = filtered
         if dropped:
-            _echo_warn(f"Resolution filter: dropped {dropped} allele(s) (<{min_res}-field).")
+            noun = "field" if min_res == 1 else "fields"
+            _echo_warn(
+                f"Resolution filter: dropped {dropped} allele(s) below {min_res} {noun}."
+            )
 
     _echo_success(f"Normalization complete: {len(normalized)} allele(s)")
 
@@ -528,7 +553,7 @@ def annotate_cmd(
     if src == InputSource.VALIDATED:
         logger.info(
             "Input source: validated. Ambiguity penalty suppressed for "
-            "2-field alleles. Resolution penalties unchanged."
+            "two-field alleles. Resolution penalties unchanged."
         )
     if curated_tsv_path is not None:
         _echo_info(f"Custom curated table: {curated_tsv_path}")
@@ -631,7 +656,7 @@ def _write_reports(
 
 
 # ---------------------------------------------------------------------------
-# validate
+# Validate
 # ---------------------------------------------------------------------------
 
 
@@ -663,7 +688,7 @@ def validate_cmd(input_path: Path, tool: str) -> None:
         sys.exit(1)
 
     try:
-        # validate is a strict pre-flight check: any unparseable file fails.
+        # Validate is a strict pre-flight check: any unparseable file fails.
         genotypes, _ = _parse_all(files, tool_key, strict=True)
     except (HLAnteParseError, UnsupportedToolError, FileNotFoundError) as exc:
         _echo_error(f"Invalid input: {exc}")
@@ -820,7 +845,7 @@ def db_update_cmd(
 
 
 # ---------------------------------------------------------------------------
-# version
+# Version
 # ---------------------------------------------------------------------------
 
 

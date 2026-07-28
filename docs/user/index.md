@@ -9,7 +9,12 @@ curated table), and population allele frequencies (AFND).
 
 ## Documentation
 
+- [Step-by-step tutorial](TUTORIAL.md) — a guided first session for users new to
+  Python and the command line
 - [Quickstart](quickstart.md) — install, first annotation, common flags
+- [Worked examples](EXAMPLES.md) — runnable recipes: one per typing tool, batch
+  and mixed-tool cohorts, pharmacogenomic and disease screening of the TSV,
+  population-stratified runs, and reference-release pinning
 - [Inputs](inputs.md) — supported typing-tool formats and how they are parsed
 - [Outputs](outputs.md) — the TSV/JSON/Markdown schema and every column
 - [TSV Interpretation Guide](TSV_INTERPRETATION_GUIDE.md) — a column-by-column
@@ -20,4 +25,6 @@ curated table), and population allele frequencies (AFND).
 - [API reference](api_reference.md)
 
 !!! note
-    Documentation is being actively developed. See [Quickstart](quickstart.md) to get started.
+    Documentation is being actively developed. New users should start with the
+    [step-by-step tutorial](TUTORIAL.md); see [Quickstart](quickstart.md) for the
+    condensed version.

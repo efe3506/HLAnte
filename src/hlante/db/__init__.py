@@ -15,7 +15,7 @@ curated
 imgt
     Local IPD-IMGT/HLA allele/G-group/P-group database management.
 afnd
-    Allele Frequency Net Database (AFND) lookups for confidence
+    Allele Frequency Net Database (AFND) lookups for input-quality
     scoring.
 
 Each submodule exposes a client class that follows a common
@@ -88,7 +88,7 @@ def atomic_install(tmp: Path, dest: Path, *, keep_backup: bool = True) -> str:
     actual = sha256_file(dest_path)
     if actual != expected:
         if had_existing and keep_backup and backup.exists():
-            backup.replace(dest_path)  # roll back
+            backup.replace(dest_path)  # Roll back
         raise DatabaseIntegrityError(
             f"Checksum mismatch installing {dest_path}: "
             f"staged {expected[:12]}… != installed {actual[:12]}… "

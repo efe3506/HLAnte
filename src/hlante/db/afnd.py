@@ -79,7 +79,7 @@ SLOWIKOWSKI_URL: str = (
 )
 
 # Built-in fallback: literature-derived 7-locus × 5-population frequency table
-# bundled with the package so that AFND works offline without a manual download.
+# Bundled with the package so that AFND works offline without a manual download.
 # Source: AFND (Gonzalez-Galarza et al. 2020, NAR) and Pappas et al. 2016.
 # Replaced by the full Slowikowski dataset after `hlante db-update --db afnd`.
 BUILTIN_AFND_TSV: Path = Path(__file__).parent / "afnd_builtin.tsv"
@@ -99,8 +99,8 @@ _GEO_CLASSIFICATION_RULES: List[Tuple[str, List[str]]] = [
         "cape verde", "sub-saharan", "black south",
     ]),
     # Keyed "EAS" to match the 1000 Genomes super-population convention used
-    # throughout the manuscript and benchmark. "ASN" is accepted as a
-    # backward-compatible alias (see :data:`_GROUP_ALIASES`).
+    # Throughout the manuscript and benchmark. "ASN" is accepted as a
+    # Backward-compatible alias (see :data:`_GROUP_ALIASES`).
     ("EAS", [
         "japan", "japanese", "china", "chinese", "korea", "korean",
         "taiwan", "taiwanese", "vietnam", "thai", "thailand", "myanmar",
@@ -609,9 +609,9 @@ class AFNDClient:
         if target_group in POPULATION_GROUPS:
             # Resolve the row to its single canonical group by precedence
             # (AFR before AMR), then compare for equality. A naive substring
-            # match would mis-assign "African American" to AMR via the
+            # Match would mis-assign "African American" to AMR via the
             # "american" substring, double-counting it into AMR (and AFR) and
-            # skewing AMR frequencies.
+            # Skewing AMR frequencies.
             return _classify_population_group(row_population) == target_group
         # Custom (non-predefined) string — direct substring filter.
         return target_group.lower() in row_population.lower()

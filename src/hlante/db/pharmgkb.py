@@ -214,7 +214,7 @@ class PharmGKBClient:
         Return all PharmGKB annotations for an HLA allele.
 
         The query is tried against several candidate forms (full,
-        4-/2-field truncations, ``*``-prefixed forms). Results are
+        two- and one-field truncations, ``*``-prefixed forms). Results are
         de-duplicated by (annotation_id, drug, evidence_level, allele);
         each returned record stores the matched form in
         ``matched_form``.
@@ -252,8 +252,8 @@ class PharmGKBClient:
     # ---- Internal helpers ----
 
     # File names present in the PharmGKB bulk dump that are *not* the
-    # main clinical_annotations table. They must not be picked up by
-    # glob fallbacks.
+    # Main clinical_annotations table. They must not be picked up by
+    # Glob fallbacks.
     _SIDE_FILENAMES: FrozenSet[str] = frozenset(
         {
             "clinical_ann_alleles.tsv",
@@ -467,8 +467,8 @@ def _candidate_allele_forms(allele: str) -> List[str]:
     Produce the ordered set of candidate forms a query allele might
     match in the PharmGKB dump.
 
-    PharmGKB typically stores 2-field entries (``B*57:01``) while
-    callers may pass 6/8-field identifiers or G/P-suffixed forms from
+    PharmGKB typically stores two-field entries (``B*57:01``) while
+    callers may pass three- or four-field identifiers or G/P-suffixed forms from
     arcasHLA (e.g. ``B*57:01G``). This helper generates the full
     truncation list with and without G/P suffix, plus gene-prefix-less
     and ``HLA-`` prefixed variants. The original form comes first.
@@ -490,7 +490,7 @@ def _candidate_allele_forms(allele: str) -> List[str]:
     # Build both suffixed and suffix-free truncation sets
     suffixes_to_try: List[str] = [suffix] if suffix else [""]
     if suffix:
-        suffixes_to_try.append("")  # also try without G/P suffix
+        suffixes_to_try.append("")  # Also try without G/P suffix
 
     truncations: List[str] = []
     for sfx in suffixes_to_try:

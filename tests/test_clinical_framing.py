@@ -4,12 +4,12 @@ tests.test_clinical_framing
 
 Tests for the clinical-safety framing fixes C4–C8:
 
-- C4: the confidence score is documented as an uncalibrated genotyping-quality
+- the input-quality score is documented as an uncalibrated heuristic
   heuristic, not clinical certainty (disclaimer + JSON metadata).
-- C5: direction of effect — any OR < 1.0 is an inverse (protective) association.
-- C6: significance labels avoid ACMG/AMP vocabulary ("pathogenic", "VUS").
-- C7: every JSON record carries a machine-readable research_use_only flag.
-- C8: a GWAS hit with a missing p-value does not pass the genome-wide
+- direction of effect — any OR < 1.0 is an inverse (protective) association.
+- significance labels avoid ACMG/AMP vocabulary ("pathogenic", "VUS").
+- every JSON record carries a machine-readable research_use_only flag.
+- a GWAS hit with a missing p-value does not pass the genome-wide
   significance filter, nor escalate the significance label.
 """
 
@@ -43,7 +43,7 @@ def _allele() -> NormalizedAllele:
         protein_group=None,
         hla_class="I",
         gene="HLA-A",
-        resolution_level=4,
+        resolution_level=2,
         is_ambiguous=False,
         is_novel=False,
     )
@@ -61,7 +61,7 @@ def _hit(p_value, *, trait="Some disease", oddsr=2.0) -> GWASHit:
 
 
 # ---------------------------------------------------------------------------
-# C5 — direction of effect
+# Direction of effect
 # ---------------------------------------------------------------------------
 
 
@@ -85,7 +85,7 @@ class TestSeverityDirection:
 
 
 # ---------------------------------------------------------------------------
-# C6 — non-ACMG vocabulary
+# Non-ACMG vocabulary
 # ---------------------------------------------------------------------------
 
 
@@ -102,7 +102,7 @@ class TestSignificanceVocabulary:
 
 
 # ---------------------------------------------------------------------------
-# C8 — missing p-value does not pass the significance filter
+# Missing p-value does not pass the significance filter
 # ---------------------------------------------------------------------------
 
 
@@ -117,33 +117,41 @@ class TestNullPValueFilter:
 
     def test_classify_significance_ignores_null_p(self) -> None:
         # A present-but-not-significant (null-p) GWAS hit must not escalate to
-        # the risk-factor label.
-        label = _classify_significance(_allele(), [_hit(None)], [], [], gwas_resolution="2-field")
+        # The risk-factor label.
+        label = _classify_significance(_allele(), [_hit(None)], [], [], gwas_resolution="one-field")
         assert label != SIGNIFICANCE_RISK_FACTOR
         assert label == SIGNIFICANCE_VUS
 
     def test_classify_significance_accepts_real_significant_hit(self) -> None:
-        label = _classify_significance(_allele(), [_hit(1e-12)], [], [], gwas_resolution="2-field")
+        label = _classify_significance(_allele(), [_hit(1e-12)], [], [], gwas_resolution="one-field")
         assert label == SIGNIFICANCE_RISK_FACTOR
 
 
 # ---------------------------------------------------------------------------
-# C4 + C7 — confidence framing & per-record research-use flag
+# C4 + C7 — input-quality framing & per-record research-use flag
 # ---------------------------------------------------------------------------
 
 
-def test_disclaimer_documents_uncalibrated_confidence() -> None:
+def test_disclaimer_documents_uncalibrated_input_quality() -> None:
+    """
+    The disclaimer must say what the input-quality score is not: a measure
+    of genotype accuracy, or a probability. The former "confidence" wording
+    invited reading it as a claim about the annotation.
+    """
     low = DISCLAIMER.lower()
     assert "uncalibrated" in low
-    assert "genotyping-quality" in low or "genotyping quality" in low
+    assert "input-quality" in low
+    assert "not a measure of genotype accuracy" in low
+    assert "not a posterior probability" in low
+    assert "never down-weights an actionable association" in low
 
 
 def _annotated() -> AnnotatedHLA:
     na = NormalizedAllele(
         allele_name="A*02:01", imgt_accession="HLA00001", protein_group=None,
-        hla_class="I", gene="HLA-A", resolution_level=4, is_ambiguous=False,
+        hla_class="I", gene="HLA-A", resolution_level=2, is_ambiguous=False,
         is_novel=False, sample_id="S1", source_tool="t1k", source_locus="HLA-A",
-        source_resolution="4-field", allele_index=0,
+        source_resolution="two-field", allele_index=0,
     )
     return AnnotatedHLA(
         normalized_allele=na, gwas_hits=[], pharm_annotations=[], disease_entries=[],
@@ -156,25 +164,28 @@ def test_json_carries_research_use_flags(tmp_path: Path) -> None:
     generate_json([_annotated()], out, overwrite=True)
     payload = json.loads(out.read_text(encoding="utf-8"))
     assert payload["metadata"]["research_use_only"] is True
-    assert "confidence_score_definition" in payload["metadata"]
-    assert "uncalibrated" in payload["metadata"]["confidence_score_definition"].lower()
-    # every locus record is individually flagged
+    assert "input_quality_score_definition" in payload["metadata"]
+    definition = payload["metadata"]["input_quality_score_definition"].lower()
+    assert "heuristic" in definition
+    assert "not a measure of genotype accuracy" in definition
+    assert "not a posterior probability" in definition
+    # Every locus record is individually flagged
     for sample in payload["samples"]:
         for locus in sample["loci"]:
             assert locus["research_use_only"] is True
 
 
 # ---------------------------------------------------------------------------
-# D14/D15 — diplotype/zygosity transparency
+# Diplotype / zygosity transparency
 # ---------------------------------------------------------------------------
 
 
 def _annot_named(name: str, index: int) -> AnnotatedHLA:
     na = NormalizedAllele(
         allele_name=name, imgt_accession="HLA00001", protein_group=None,
-        hla_class="II", gene="HLA-DQB1", resolution_level=4, is_ambiguous=False,
+        hla_class="II", gene="HLA-DQB1", resolution_level=2, is_ambiguous=False,
         is_novel=False, sample_id="S1", source_tool="t1k", source_locus="HLA-DQB1",
-        source_resolution="4-field", allele_index=index,
+        source_resolution="two-field", allele_index=index,
     )
     return AnnotatedHLA(
         normalized_allele=na, gwas_hits=[], pharm_annotations=[], disease_entries=[],
@@ -184,7 +195,7 @@ def _annot_named(name: str, index: int) -> AnnotatedHLA:
 
 def _row(a1: str, a2) -> GenotypeRow:
     return GenotypeRow(
-        sample_id="S1", locus="HLA-DQB1", tool="t1k", resolution="4-field",
+        sample_id="S1", locus="HLA-DQB1", tool="t1k", resolution="two-field",
         allele1=_annot_named(a1, 0),
         allele2=_annot_named(a2, 1) if a2 is not None else None,
     )
@@ -198,7 +209,7 @@ class TestZygosity:
         assert _zygosity(_row("DQB1*06:02", "DQB1*03:01")) == "heterozygous"
 
     def test_single_allele_not_assumed_homozygous(self) -> None:
-        # The key D15 guarantee: a missing 2nd allele is NOT homozygous.
+        # The key guarantee: a missing 2nd allele is NOT homozygous.
         assert _zygosity(_row("DQB1*06:02", None)) == "single_allele_reported"
 
 

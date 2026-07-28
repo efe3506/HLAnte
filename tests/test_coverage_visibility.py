@@ -102,13 +102,13 @@ def _make_annotated(locus: str, tool: str = "arcashla") -> AnnotatedHLA:
         protein_group=None,
         hla_class="I",
         gene=locus,
-        resolution_level=4,
+        resolution_level=2,
         is_ambiguous=False,
         is_novel=False,
         sample_id="S1",
         source_tool=tool,
         source_locus=locus,
-        source_resolution="4-field",
+        source_resolution="two-field",
         allele_index=0,
     )
     return AnnotatedHLA(
@@ -125,7 +125,7 @@ def _make_annotated(locus: str, tool: str = "arcashla") -> AnnotatedHLA:
 def test_json_lists_not_typed_loci(tmp_path: Path) -> None:
     import json
 
-    annotated = [_make_annotated("HLA-A")]  # only HLA-A typed
+    annotated = [_make_annotated("HLA-A")]  # Only HLA-A typed
     out = tmp_path / "out.json"
     generate_json(annotated, out, overwrite=True)
     payload = json.loads(out.read_text(encoding="utf-8"))

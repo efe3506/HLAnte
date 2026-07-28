@@ -55,7 +55,7 @@ FIXTURE_EXT = {
 # Tools that provide Class I only (limits expected allele count)
 CLASS_I_ONLY_TOOLS = {"optitype"}
 
-# super-population code mapping: 1000G → HLAnte AFND code
+# Super-population code mapping: 1000G → HLAnte AFND code
 REGION_TO_AFND: Dict[str, str] = {
     "AFR": "AFR",
     "AMR": "AMR",
@@ -65,7 +65,7 @@ REGION_TO_AFND: Dict[str, str] = {
 }
 
 # ── CPIC Level 1A recall targets ─────────────────────────────────────────────
-# allele → expected drug name (case-insensitive substring in the pharm_drugs /
+# Allele → expected drug name (case-insensitive substring in the pharm_drugs /
 # drug_response_summary columns) that HLAnte should return for a carrier.
 CPIC_TARGETS: Dict[str, str] = {
     "B*57:01": "abacavir",
@@ -75,7 +75,7 @@ CPIC_TARGETS: Dict[str, str] = {
 }
 
 # ── GWAS / curated disease recall targets ────────────────────────────────────
-# allele → list of keyword substrings (ANY match counts as a hit)
+# Allele → list of keyword substrings (ANY match counts as a hit)
 GWAS_TARGETS: Dict[str, List[str]] = {
     "DRB1*03:01": ["lupus", "diabetes", "type 1", "t1d", "sle"],
     "DRB1*04:01": ["arthritis", "rheumatoid"],
@@ -250,14 +250,14 @@ class ToolMetrics:
 
             for ann in annotated:
                 # Count as normalised when IMGT recognises the allele (exact or
-                # prefix match).  2-field inputs always have imgt_accession=None
+                # prefix match).  Two-field inputs always have imgt_accession=None
                 # (ambiguous) but is_novel=False — both are "normalised" in the
                 # sense that IMGT knows the allele.
                 if not ann.normalized_allele.is_novel:
                     self.alleles_normalized += 1
                 if ann.allele_frequency is not None:
                     self.alleles_with_freq += 1
-                tier = getattr(ann, "confidence_tier", "NA") or "NA"
+                tier = getattr(ann, "input_quality_tier", "NA") or "NA"
                 self.tier_counts[tier] += 1
 
             # CPIC recall
@@ -334,7 +334,7 @@ def write_markdown_summary(
         "\n## Normalisation Success (IMGT-HLA recognised; exact or prefix match)\n"
     )
     lines.append(
-        "Note: 2-field input alleles have no exact IMGT accession (ambiguous "
+        "Note: two-field input alleles have no exact IMGT accession (ambiguous "
         "by design) but are counted as recognised when a prefix match exists "
         "(`is_novel=False`).  Novel alleles are those with no IMGT prefix.\n"
     )
@@ -397,7 +397,7 @@ def write_markdown_summary(
         lines.append(
             f"| {pop:<9} | {pm.get('n', 0):>3} "
             f"| {pm.get('freq_pct', 'N/A'):>13} "
-            f"| {pm.get('mean_conf', 'N/A'):>15} "
+            f"| {pm.get('mean_input_quality', 'N/A'):>15} "
             f"| {pm.get('low_pct', 'N/A'):>10} |"
         )
 
@@ -406,18 +406,18 @@ def write_markdown_summary(
     lines.append(
         "Note: This benchmark uses --input-source validated because the 1000 "
         "Genomes types are Sanger-validated reference data. Under this mode, "
-        "the ambiguity penalty (×0.75) is suppressed for 2-field inputs since "
+        "the ambiguity penalty (×0.75) is suppressed for two-field inputs since "
         "the call is exactly correct at its reported resolution; only the "
-        "resolution penalty (×0.90 for 4-field-equivalent matching) applies. "
+        "two-field resolution penalty (×0.90) applies. "
         "This produces predominantly HIGH-tier scores. For typing-tool inputs "
-        "(--input-source typing_tool, default), 2-field outputs would receive "
+        "(--input-source typing_tool, default), two-field outputs would receive "
         "both penalties and score in the LOW range.\n"
     )
     lines.append("| Tier | Count | Percentage |")
     lines.append("|------|-------|------------|")
     if ref:
         total_alleles = sum(ref.tier_counts.values())
-        for tier in ("HIGH", "MODERATE", "LOW", "NA"):
+        for tier in ("detailed", "partial", "limited", "NA"):
             count = ref.tier_counts.get(tier, 0)
             lines.append(
                 f"| {tier:<8} | {count:>5} | {_pct(count, total_alleles):>10} |"
@@ -537,7 +537,7 @@ def main() -> None:
     all_metrics: Dict[str, ToolMetrics] = {}
 
     # Per-population tracking for arcashla (representative tool)
-    pop_allele_counts: Dict[str, Counter] = defaultdict(Counter)  # region → {stat: count}
+    pop_allele_counts: Dict[str, Counter] = defaultdict(Counter)  # Region → {stat: count}
 
     for tool in tools_to_run:
         tool_dir = args.fixtures_dir / tool
@@ -555,7 +555,7 @@ def main() -> None:
         # Build clients for the default population; per-sample population is
         # handled by building a lightweight config overriding population_group.
         # For efficiency, we build one global config and override population per
-        # sample via a separate config instance (cheap to construct).
+        # Sample via a separate config instance (cheap to construct).
         input_src = InputSource(args.input_source)
         base_config = AnnotatorConfig(
             offline=args.offline,
@@ -610,11 +610,11 @@ def main() -> None:
                 c["n_freq"] += sum(
                     1 for a in annotated if a.allele_frequency is not None
                 )
-                conf_sum = sum(a.confidence_score or 0 for a in annotated)
+                conf_sum = sum(a.input_quality_score or 0 for a in annotated)
                 c["conf_sum"] += conf_sum
                 c["n_low"] += sum(
                     1 for a in annotated
-                    if getattr(a, "confidence_tier", "NA") == "LOW"
+                    if getattr(a, "input_quality_tier", "NA") == "limited"
                 )
                 c["n_samples"] = c.get("n_samples", 0) + 1
 
@@ -646,7 +646,7 @@ def main() -> None:
         pop_metrics[region] = {
             "n":        c.get("n_samples", 0),
             "freq_pct": _pct(c.get("n_freq", 0), n),
-            "mean_conf": (
+            "mean_input_quality": (
                 f"{c.get('conf_sum', 0) / n:.3f}" if n else "N/A"
             ),
             "low_pct": _pct(c.get("n_low", 0), n),
@@ -666,9 +666,9 @@ def main() -> None:
             "norm_rate":          _pct(m.alleles_normalized, m.alleles_parsed),
             "alleles_with_freq":  m.alleles_with_freq,
             "freq_rate":          _pct(m.alleles_with_freq, m.alleles_parsed),
-            "tier_HIGH":          m.tier_counts.get("HIGH", 0),
-            "tier_MODERATE":      m.tier_counts.get("MODERATE", 0),
-            "tier_LOW":           m.tier_counts.get("LOW", 0),
+            "tier_detailed":          m.tier_counts.get("detailed", 0),
+            "tier_partial":      m.tier_counts.get("partial", 0),
+            "tier_limited":           m.tier_counts.get("limited", 0),
             "tier_NA":            m.tier_counts.get("NA", 0),
         })
     write_tsv(tool_rows, args.output_dir / "per_tool_metrics.tsv")
@@ -727,9 +727,9 @@ def main() -> None:
                 "count": ref_m.tier_counts.get(tier, 0),
                 "pct": _pct(ref_m.tier_counts.get(tier, 0), total_a),
             }
-            for tier in ("HIGH", "MODERATE", "LOW", "NA")
+            for tier in ("detailed", "partial", "limited", "NA")
         ]
-        write_tsv(conf_rows, args.output_dir / "confidence_distribution.tsv")
+        write_tsv(conf_rows, args.output_dir / "input_quality_distribution.tsv")
 
     # JSON summary
     summary = {
@@ -774,7 +774,7 @@ def main() -> None:
     print("  per_tool_metrics.tsv")
     print("  pharm_recall_detail.tsv")
     print("  gwas_recall_detail.tsv")
-    print("  confidence_distribution.tsv")
+    print("  input_quality_distribution.tsv")
     print("  failed_samples.log")
 
 

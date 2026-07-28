@@ -22,7 +22,7 @@ from hlante.db.gwas import (
 
 
 # ---------------------------------------------------------------------------
-# P0-1 — obsolete EFO remapping
+# Obsolete EFO remapping
 # ---------------------------------------------------------------------------
 
 
@@ -147,7 +147,7 @@ class TestRemapTrait:
 
 
 # ---------------------------------------------------------------------------
-# P0-7 — extreme / quantitative-trait effect-size classification
+# Extreme / quantitative-trait effect-size classification
 # ---------------------------------------------------------------------------
 
 
@@ -214,4 +214,4 @@ class TestGWASHitDefaults:
         assert hit.trait_was_deprecated is False
         assert hit.effect_size_warning == ""
         assert hit.annotation_scope == "allele"
-        assert hit.fallback_expansion_size == 1
+        assert hit.index_siblings == 1

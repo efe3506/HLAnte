@@ -204,8 +204,8 @@ class PairMetrics:
             {e.condition for e in ann_a.disease_entries if e.condition},
             {e.condition for e in ann_b.disease_entries if e.condition},
         )
-        tier_a = getattr(ann_a, "confidence_tier", "NA")
-        tier_b = getattr(ann_b, "confidence_tier", "NA")
+        tier_a = getattr(ann_a, "input_quality_tier", "NA")
+        tier_b = getattr(ann_b, "input_quality_tier", "NA")
         if tier_a == tier_b:
             self.n_tier_match += 1
         if ann_a.clinical_significance == ann_b.clinical_significance:

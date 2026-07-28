@@ -1,4 +1,4 @@
-sentinel	population	n_carriers	mean_conf	min_conf	tier_HIGH	tier_MODERATE	tier_LOW
+sentinel	population	n_carriers	mean_input_quality	min_input_quality	tier_detailed	tier_partial	tier_limited
 B*57:01	EUR	45	0.900	0.900	45	0	0
 B*57:01	EAS	12	0.900	0.900	12	0	0
 B*57:01	AMR	13	0.900	0.900	13	0	0

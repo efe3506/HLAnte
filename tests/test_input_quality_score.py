@@ -1,12 +1,12 @@
 """
-tests.test_confidence_score
+tests.test_input_quality_score
 ===========================
 
 Unit tests for AFND integration and confidence score computation.
 
 Coverage
 --------
-- ``_compute_confidence_score`` deterministic across all combinations.
+- ``_compute_input_quality_score`` deterministic across all combinations.
 - ``AFNDClient`` population-group filtering (universal, no country
   aliasing).
 - ``get_frequency_with_fallback`` sets ``is_estimated`` when needed.
@@ -26,7 +26,7 @@ from hlante.annotator import (
     AnnotatedHLA,
     AnnotatorClients,
     AnnotatorConfig,
-    _compute_confidence_score,
+    _compute_input_quality_score,
     annotate_genotype,
     build_clients,
 )
@@ -101,7 +101,7 @@ def _make_freq(
 
 
 # ---------------------------------------------------------------------------
-# _compute_confidence_score
+# _compute_input_quality_score
 # ---------------------------------------------------------------------------
 
 
@@ -113,11 +113,11 @@ class TestComputeConfidenceScore:
 
     def test_standard_allele_full_confidence(self) -> None:
         """
-        8-field + known in IMGT + common allele → score close to 1.0.
+        four-field + known in IMGT + common allele → score close to 1.0.
         """
-        norm = _make_normalized(resolution_level=8)
+        norm = _make_normalized(resolution_level=4)
         freq = _make_freq(0.15)
-        score, rationale = _compute_confidence_score(norm, freq)
+        score, rationale = _compute_input_quality_score(norm, freq)
         assert score == 1.0
         assert rationale == "standard"
 
@@ -126,9 +126,9 @@ class TestComputeConfidenceScore:
         Novel → ×0.3 → score < 0.5 (spec assertion).
         """
         norm = _make_normalized(
-            resolution_level=8, is_novel=True, imgt_accession=None
+            resolution_level=4, is_novel=True, imgt_accession=None
         )
-        score, rationale = _compute_confidence_score(norm, _make_freq(0.15))
+        score, rationale = _compute_input_quality_score(norm, _make_freq(0.15))
         assert score < 0.5
         assert score == pytest.approx(0.3)
         assert "novel_allele" in rationale
@@ -137,8 +137,8 @@ class TestComputeConfidenceScore:
         """
         freq < 0.001 → ×0.5 → score < 0.6.
         """
-        norm = _make_normalized(resolution_level=8)
-        score, rationale = _compute_confidence_score(norm, _make_freq(0.0005))
+        norm = _make_normalized(resolution_level=4)
+        score, rationale = _compute_input_quality_score(norm, _make_freq(0.0005))
         assert score < 0.6
         assert score == pytest.approx(0.5)
         assert "rare_allele" in rationale
@@ -147,16 +147,16 @@ class TestComputeConfidenceScore:
         """
         0.001 ≤ freq < 0.01 → ×0.8.
         """
-        norm = _make_normalized(resolution_level=8)
-        score, _ = _compute_confidence_score(norm, _make_freq(0.005))
+        norm = _make_normalized(resolution_level=4)
+        score, _ = _compute_input_quality_score(norm, _make_freq(0.005))
         assert score == pytest.approx(0.8)
 
     def test_unknown_frequency_small_penalty(self) -> None:
         """
         Unknown frequency → ×0.85.
         """
-        norm = _make_normalized(resolution_level=8)
-        score, rationale = _compute_confidence_score(norm, None)
+        norm = _make_normalized(resolution_level=4)
+        score, rationale = _compute_input_quality_score(norm, None)
         assert score == pytest.approx(0.85)
         assert rationale == "freq_unknown"
 
@@ -165,18 +165,18 @@ class TestComputeConfidenceScore:
         freq > 0.1 + 4-field + known in IMGT → score > 0.8
         (spec assertion).
         """
-        norm = _make_normalized(resolution_level=4)
-        score, rationale = _compute_confidence_score(norm, _make_freq(0.15))
+        norm = _make_normalized(resolution_level=2)
+        score, rationale = _compute_input_quality_score(norm, _make_freq(0.15))
         assert score > 0.8
         assert score == pytest.approx(0.9)
-        assert "medium_resolution(4-field)" in rationale
+        assert "medium_resolution(two-field)" in rationale
 
     def test_low_resolution_penalty(self) -> None:
         """
-        2-field → ×0.7.
+        one-field → ×0.7.
         """
-        norm = _make_normalized(resolution_level=2)
-        score, rationale = _compute_confidence_score(norm, _make_freq(0.15))
+        norm = _make_normalized(resolution_level=1)
+        score, rationale = _compute_input_quality_score(norm, _make_freq(0.15))
         assert score == pytest.approx(0.7)
         assert "low_resolution" in rationale
 
@@ -184,23 +184,23 @@ class TestComputeConfidenceScore:
         """
         is_ambiguous=True → ×0.75.
         """
-        norm = _make_normalized(resolution_level=8, is_ambiguous=True)
-        score, rationale = _compute_confidence_score(norm, _make_freq(0.15))
+        norm = _make_normalized(resolution_level=4, is_ambiguous=True)
+        score, rationale = _compute_input_quality_score(norm, _make_freq(0.15))
         assert score == pytest.approx(0.75)
         assert "ambiguous" in rationale
 
     def test_combined_penalties_multiply(self) -> None:
         """
-        Novel + rare + 2-field + ambiguous penalties must compose:
+        Novel + rare + one-field + ambiguous penalties must compose:
         1.0 × 0.3 × 0.5 × 0.7 × 0.75 = 0.07875 → 0.0788.
         """
         norm = _make_normalized(
-            resolution_level=2,
+            resolution_level=1,
             is_ambiguous=True,
             is_novel=True,
             imgt_accession=None,
         )
-        score, rationale = _compute_confidence_score(
+        score, rationale = _compute_input_quality_score(
             norm, _make_freq(0.0005)
         )
         assert score == pytest.approx(0.0788, abs=1e-4)
@@ -214,13 +214,13 @@ class TestComputeConfidenceScore:
         The same inputs must produce the same score / rationale on
         every call.
         """
-        norm = _make_normalized(resolution_level=4, is_ambiguous=True)
+        norm = _make_normalized(resolution_level=2, is_ambiguous=True)
         freq = _make_freq(0.005)
         for _ in range(5):
-            s, r = _compute_confidence_score(norm, freq)
+            s, r = _compute_input_quality_score(norm, freq)
             assert s == pytest.approx(0.8 * 0.9 * 0.75)  # 0.54
             assert r == (
-                "uncommon_allele(freq=0.0050)|medium_resolution(4-field)"
+                "uncommon_allele(freq=0.0050)|medium_resolution(two-field)"
                 "|ambiguous"
             )
 
@@ -234,51 +234,51 @@ class TestSourceAwareConfidence:
     """Ambiguity penalty is source-dependent; resolution penalty is always applied."""
 
     def test_typing_tool_2field_keeps_ambiguity_penalty(self) -> None:
-        """2-field with typing_tool source: ambiguity ×0.75 applies."""
-        norm = _make_normalized(resolution_level=2, is_ambiguous=True)
+        """one-field with typing_tool source: ambiguity ×0.75 applies."""
+        norm = _make_normalized(resolution_level=1, is_ambiguous=True)
         freq = _make_freq(0.05)
-        score, rationale = _compute_confidence_score(
+        score, rationale = _compute_input_quality_score(
             norm, freq, InputSource.TYPING_TOOL
         )
         assert "ambiguous" in rationale
-        # 1.0 × 0.70 (2-field) × 0.75 (ambiguous) = 0.525
+        # 1.0 × 0.70 (one-field) × 0.75 (ambiguous) = 0.525
         assert score == pytest.approx(0.525, abs=1e-4)
         assert score < 0.60
 
     def test_validated_2field_suppresses_ambiguity_penalty(self) -> None:
-        """2-field with validated source: ambiguity penalty NOT applied."""
-        norm = _make_normalized(resolution_level=2, is_ambiguous=True)
+        """one-field with validated source: ambiguity penalty NOT applied."""
+        norm = _make_normalized(resolution_level=1, is_ambiguous=True)
         freq = _make_freq(0.05)
-        score, rationale = _compute_confidence_score(
+        score, rationale = _compute_input_quality_score(
             norm, freq, InputSource.VALIDATED
         )
         assert "ambiguity_suppressed(validated_source)" in rationale
         # "ambiguous" must not appear outside the suppressed message
         bare = rationale.replace("ambiguity_suppressed(validated_source)", "")
         assert "ambiguous" not in bare
-        # 1.0 × 0.70 (2-field only) = 0.70
+        # 1.0 × 0.70 (one-field only) = 0.70
         assert score == pytest.approx(0.70, abs=1e-4)
         assert 0.65 <= score <= 0.75
 
     def test_validated_4field_no_ambiguity_high_tier(self) -> None:
-        """4-field validated, not ambiguous: only medium-resolution penalty applies."""
-        norm = _make_normalized(resolution_level=4, is_ambiguous=False)
+        """two-field validated, not ambiguous: only medium-resolution penalty applies."""
+        norm = _make_normalized(resolution_level=2, is_ambiguous=False)
         freq = _make_freq(0.05)
-        score, _ = _compute_confidence_score(norm, freq, InputSource.VALIDATED)
-        # 1.0 × 0.90 (4-field) = 0.90
+        score, _ = _compute_input_quality_score(norm, freq, InputSource.VALIDATED)
+        # 1.0 × 0.90 (two-field) = 0.90
         assert score == pytest.approx(0.90, abs=1e-4)
         assert score >= 0.85  # HIGH tier
 
     def test_validated_does_not_suppress_resolution(self) -> None:
-        """Resolution penalty must still apply for validated 2-field."""
+        """Resolution penalty must still apply for validated one-field."""
         freq = _make_freq(0.05)
-        score_2f, _ = _compute_confidence_score(
-            _make_normalized(resolution_level=2, is_ambiguous=True),
+        score_2f, _ = _compute_input_quality_score(
+            _make_normalized(resolution_level=1, is_ambiguous=True),
             freq,
             InputSource.VALIDATED,
         )
-        score_4f, _ = _compute_confidence_score(
-            _make_normalized(resolution_level=4, is_ambiguous=False),
+        score_4f, _ = _compute_input_quality_score(
+            _make_normalized(resolution_level=2, is_ambiguous=False),
             freq,
             InputSource.VALIDATED,
         )
@@ -287,10 +287,10 @@ class TestSourceAwareConfidence:
     def test_validated_does_not_suppress_novel(self) -> None:
         """Novel penalty must still apply regardless of source."""
         norm = _make_normalized(
-            resolution_level=4, is_ambiguous=False,
+            resolution_level=2, is_ambiguous=False,
             is_novel=True, imgt_accession=None,
         )
-        score, rationale = _compute_confidence_score(
+        score, rationale = _compute_input_quality_score(
             norm, None, InputSource.VALIDATED
         )
         assert "novel_allele" in rationale
@@ -298,12 +298,12 @@ class TestSourceAwareConfidence:
 
     def test_simulated_applies_ambiguity_penalty(self) -> None:
         """SIMULATED is treated identically to TYPING_TOOL for penalties."""
-        norm = _make_normalized(resolution_level=2, is_ambiguous=True)
+        norm = _make_normalized(resolution_level=1, is_ambiguous=True)
         freq = _make_freq(0.05)
-        score_sim, rationale_sim = _compute_confidence_score(
+        score_sim, rationale_sim = _compute_input_quality_score(
             norm, freq, InputSource.SIMULATED
         )
-        score_tt, rationale_tt = _compute_confidence_score(
+        score_tt, rationale_tt = _compute_input_quality_score(
             norm, freq, InputSource.TYPING_TOOL
         )
         assert score_sim == score_tt
@@ -311,12 +311,12 @@ class TestSourceAwareConfidence:
 
     def test_unknown_applies_ambiguity_penalty(self) -> None:
         """UNKNOWN is treated identically to TYPING_TOOL for penalties."""
-        norm = _make_normalized(resolution_level=2, is_ambiguous=True)
+        norm = _make_normalized(resolution_level=1, is_ambiguous=True)
         freq = _make_freq(0.05)
-        score_unk, rationale_unk = _compute_confidence_score(
+        score_unk, rationale_unk = _compute_input_quality_score(
             norm, freq, InputSource.UNKNOWN
         )
-        score_tt, rationale_tt = _compute_confidence_score(
+        score_tt, rationale_tt = _compute_input_quality_score(
             norm, freq, InputSource.TYPING_TOOL
         )
         assert score_unk == score_tt
@@ -324,10 +324,10 @@ class TestSourceAwareConfidence:
 
     def test_default_is_typing_tool(self) -> None:
         """Default input_source must be TYPING_TOOL (backward-compatible)."""
-        norm = _make_normalized(resolution_level=2, is_ambiguous=True)
+        norm = _make_normalized(resolution_level=1, is_ambiguous=True)
         freq = _make_freq(0.05)
-        score_default, rationale_default = _compute_confidence_score(norm, freq)
-        score_tt, rationale_tt = _compute_confidence_score(
+        score_default, rationale_default = _compute_input_quality_score(norm, freq)
+        score_tt, rationale_tt = _compute_input_quality_score(
             norm, freq, InputSource.TYPING_TOOL
         )
         assert score_default == score_tt
@@ -480,7 +480,7 @@ class TestAFNDClient:
 
     def test_get_frequency_with_fallback_uses_2field(self) -> None:
         """
-        Fixture holds only 4-field alleles. A 6-field query must fall
+        Fixture holds only two-field alleles. A three-field query must fall
         back and set ``is_estimated=True``.
         """
         client = AFNDClient(
@@ -527,7 +527,7 @@ class TestAFNDClient:
     ) -> None:
         """When local_dir doesn't exist, load() uses the built-in TSV fallback."""
         client = AFNDClient(local_dir=tmp_path / "none")
-        client.load()  # must not raise
+        client.load()  # Must not raise
         assert client._loaded  # type: ignore[attr-defined]
 
     def test_missing_directory_and_builtin_raises(
@@ -552,7 +552,7 @@ class TestAFNDClient:
 
 
 # ---------------------------------------------------------------------------
-# annotate_genotype end to end
+# Annotate_genotype end to end
 # ---------------------------------------------------------------------------
 
 
@@ -567,7 +567,7 @@ class TestEndToEnd:
         A*02:01 is common in European populations → high confidence.
         """
         norm = _make_normalized(
-            "A*02:01", resolution_level=4, gene="HLA-A",
+            "A*02:01", resolution_level=2, gene="HLA-A",
             imgt_accession="HLA00004",
         )
         config = AnnotatorConfig(
@@ -584,11 +584,11 @@ class TestEndToEnd:
         assert result.frequency_population is not None
         assert result.allele_frequency is not None
         assert result.allele_frequency > 0.1
-        assert result.confidence_score > 0.8
+        assert result.input_quality_score > 0.8
 
     def test_rare_allele_lower_confidence(self) -> None:
         norm = _make_normalized(
-            "B*99:99", resolution_level=4, gene="HLA-B",
+            "B*99:99", resolution_level=2, gene="HLA-B",
             imgt_accession=None, is_novel=False,
         )
         config = AnnotatorConfig(
@@ -604,12 +604,12 @@ class TestEndToEnd:
         )[0]
         assert result.allele_frequency is not None
         assert result.allele_frequency < 0.001
-        assert result.confidence_score < 0.6
-        assert "rare_allele" in result.confidence_rationale
+        assert result.input_quality_score < 0.6
+        assert "rare_allele" in result.input_quality_rationale
 
     def test_novel_allele_very_low_confidence(self) -> None:
         norm = _make_normalized(
-            "A*99:99", resolution_level=4, gene="HLA-A",
+            "A*99:99", resolution_level=2, gene="HLA-A",
             imgt_accession=None, is_novel=True,
         )
         config = AnnotatorConfig(
@@ -624,11 +624,11 @@ class TestEndToEnd:
             [norm], config, clients=build_clients(config)
         )[0]
         # Novel + no freq → 0.3 * 0.85 * 0.9 = 0.2295
-        assert result.confidence_score < 0.5
-        assert "novel_allele" in result.confidence_rationale
+        assert result.input_quality_score < 0.5
+        assert "novel_allele" in result.input_quality_rationale
 
     def test_afnd_disabled_leaves_freq_none(self) -> None:
-        norm = _make_normalized("A*02:01", resolution_level=4)
+        norm = _make_normalized("A*02:01", resolution_level=2)
         config = AnnotatorConfig(
             offline=True,
             enable_gwas=False,
@@ -640,7 +640,7 @@ class TestEndToEnd:
         assert clients.afnd is None
         result = annotate_genotype([norm], config, clients=clients)[0]
         assert result.allele_frequency is None
-        assert "freq_unknown" in result.confidence_rationale
+        assert "freq_unknown" in result.input_quality_rationale
 
 
 # ---------------------------------------------------------------------------
@@ -657,24 +657,25 @@ class TestReporterColumns:
         for col in (
             "allele_frequency",
             "allele_freq_population",
-            "confidence_score",
-            "confidence_rationale",
+            "input_quality_score",
+            "input_quality_rationale",
         ):
             assert col in TSV_COLUMNS
 
     def test_columns_after_clinical_significance(self) -> None:
         idx_sig = TSV_COLUMNS.index("clinical_significance")
         for i, col in enumerate([
+            "significance_basis",
             "allele_frequency",
             "allele_freq_population",
-            "confidence_score",
-            "confidence_tier",
-            "confidence_rationale",
+            "input_quality_score",
+            "input_quality_tier",
+            "input_quality_rationale",
         ], start=1):
             assert TSV_COLUMNS[idx_sig + i] == col
 
     def test_values_written_in_tsv(self, tmp_path: Path) -> None:
-        norm = _make_normalized("B*57:01", resolution_level=4)
+        norm = _make_normalized("B*57:01", resolution_level=2)
         annot = AnnotatedHLA(
             normalized_allele=norm,
             gwas_hits=[],
@@ -686,8 +687,8 @@ class TestReporterColumns:
             allele_frequency=0.0509,
             frequency_population="EUR",
             frequency_sample_size=550,
-            confidence_score=0.9,
-            confidence_rationale="medium_resolution(4-field)",
+            input_quality_score=0.9,
+            input_quality_rationale="medium_resolution(two-field)",
         )
         out = tmp_path / "r.tsv"
         generate_tsv([annot], out)
@@ -700,5 +701,5 @@ class TestReporterColumns:
         idx = {col: i for i, col in enumerate(TSV_COLUMNS)}
         assert cells[idx["allele_frequency"]] == "0.050900|NA"
         assert cells[idx["allele_freq_population"]] == "EUR|NA"
-        assert cells[idx["confidence_score"]] == "0.9000|NA"
-        assert "medium_resolution" in cells[idx["confidence_rationale"]]
+        assert cells[idx["input_quality_score"]] == "0.9000|NA"
+        assert "medium_resolution" in cells[idx["input_quality_rationale"]]

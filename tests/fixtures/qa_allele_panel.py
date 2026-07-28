@@ -7,7 +7,7 @@ Comprehensive QA allele panel for pre-publication correctness testing.
 The panel covers:
 - CPIC Level A pharmacogenomics associations
 - GWAS gold-standard autoimmune associations
-- Resolution edge cases (2/4/6/8-field inputs)
+- Resolution edge cases (one- to four-field inputs)
 - Null / malformed / novel allele tokens
 - Non-classical HLA loci (E, G, DMA)
 - IEI / autoimmune supertype components
@@ -40,26 +40,26 @@ QA_PANEL: List[Dict[str, Any]] = [
     {"allele": "A*31:01", "expect_drug": "carbamazepine", "expect_ev": "1A"},
     # B*59:01 / methazolamide is CPIC Level A historically; current
     # PharmGKB dump labels this association at evidence level 2A. The
-    # fixture tracks the live dump.
+    # Fixture tracks the live dump.
     {"allele": "B*59:01", "expect_drug": "methazolamide", "expect_ev": "2A"},
     {"allele": "A*02:01", "expect_drug": None,            "expect_ev": None,
      "note": "common allele — no CPIC 1A drug association expected"},
 
     # -----------------------------------------------------------------
-    # GWAS gold standard — must find at ≤4-field resolution.
+    # GWAS gold standard — must find at two-field resolution or deeper.
     #
     # The local GWAS Catalog dump is an HLA-allele-focused slice
     # (~425 hits across 128 unique alleles). Several "classic" HLA
-    # autoimmune associations are catalogued at the SNP/haplotype
-    # level rather than against the specific 4-field allele key, so
-    # the classical association is unavailable for those alleles in
-    # the current dump. Rather than hard-failing on a data-coverage
-    # gap (which would flag every time EFO terms update), those
-    # entries carry the classical association in ``classic_trait``
-    # metadata and set ``expect_trait`` to ``None`` — the pipeline is
-    # still exercised, the classical expectation survives in the
-    # fixture for future re-validation, but the assertion is
-    # advisory until the dump indexes the association.
+    # Autoimmune associations are catalogued at the SNP/haplotype
+    # Level rather than against the specific two-field allele key, so
+    # The classical association is unavailable for those alleles in
+    # The current dump. Rather than hard-failing on a data-coverage
+    # Gap (which would flag every time EFO terms update), those
+    # Entries carry the classical association in ``classic_trait``
+    # Metadata and set ``expect_trait`` to ``None`` — the pipeline is
+    # Still exercised, the classical expectation survives in the
+    # Fixture for future re-validation, but the assertion is
+    # Advisory until the dump indexes the association.
     # -----------------------------------------------------------------
     {"allele": "DRB1*04:01", "expect_trait": None,
      "classic_trait": "rheumatoid arthritis",
@@ -82,13 +82,13 @@ QA_PANEL: List[Dict[str, Any]] = [
     # Resolution edge cases
     # -----------------------------------------------------------------
     {"allele": "A*02:01:01:01",
-     "note": "8-field — fallback must find A*02 GWAS hits"},
+     "note": "four-field — fallback must find A*02 GWAS hits"},
     {"allele": "DRB1*03:01:01",
-     "note": "6-field — must fall back to find SLE"},
+     "note": "three-field — must fall back to find SLE"},
     {"allele": "DRB1*04",
-     "note": "2-field input — ambiguity handling"},
+     "note": "one-field input — ambiguity handling"},
     {"allele": "B*57",
-     "note": "2-field — must NOT attribute B*57:01 annotations"},
+     "note": "one-field — must NOT attribute B*57:01 annotations"},
 
     # -----------------------------------------------------------------
     # Null tokens
@@ -102,7 +102,7 @@ QA_PANEL: List[Dict[str, Any]] = [
     # Novel / malformed
     # -----------------------------------------------------------------
     {"allele": "A*99:99",
-     "note": "novel — is_novel=True, confidence<0.5"},
+     "note": "novel — is_novel=True, input quality<0.5"},
     {"allele": "DRB1*99:99", "note": "novel"},
     {"allele": "B*999:01",
      "note": "malformed — must raise or return NA gracefully"},
@@ -133,7 +133,7 @@ QA_PANEL: List[Dict[str, Any]] = [
     {"allele": "DRB3*02:223",
      "note": "real output claims HLA43425 — confirm"},
     {"allele": "DPB1*104:01:01",
-     "note": "real output shows NA accession + 8-field — inconsistency"},
+     "note": "real output shows NA accession + four-field — inconsistency"},
 
     # -----------------------------------------------------------------
     # G/P-group notation

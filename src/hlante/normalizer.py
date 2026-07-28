@@ -123,7 +123,7 @@ class NormalizedAllele:
         Gene name with the ``HLA-`` prefix (e.g., ``"HLA-A"``,
         ``"HLA-DRB1"``).
     resolution_level : int
-        Digit-based resolution (2, 4, 6, or 8).
+        Number of colon-separated fields (1-4).
     is_ambiguous : bool
         Ambiguous call (low resolution, G/P group, or multiple IMGT
         matches).
@@ -165,6 +165,11 @@ class NormalizedAllele:
     source_resolution: Optional[str] = None
     allele_index: Optional[int] = None
     expression_suffix: Optional[str] = None
+    imgt_match_category: str = ""
+    imgt_match_candidates: int = 0
+    #: Per-allele quality reported by the typing tool, when it provides one.
+    #: Only T1K's native layout carries this; see :class:`hlante.parser.HLAGenotype`.
+    caller_quality: Optional[float] = None
 
     @property
     def is_null(self) -> bool:
@@ -237,20 +242,20 @@ def _resolution_of(allele_clean: str) -> int:
     """
     Return the field-level resolution of an HLA allele.
 
-    Resolution is determined by the number of colon-separated fields
-    after the asterisk, per IPD-IMGT/HLA nomenclature (Marsh et al.
-    2010). The returned integer preserves the historical
-    "digit-count" naming (2 / 4 / 6 / 8) used throughout the codebase,
-    so that one colon-group → 2, two colon-groups → 4, and so on.
+    Resolution is the number of colon-separated fields after the
+    asterisk, per IPD-IMGT/HLA nomenclature (Marsh et al. 2010).
+    Current nomenclature admits at most four fields, so the returned
+    integer is in 1..4. Earlier releases reported this on a digit
+    scale (2 / 4 / 6 / 8), which conflated fields with digits.
 
     Examples
     --------
-    - ``A*02``              → 2  (one field)
-    - ``A*02:01``           → 4  (two fields)
-    - ``A*02:01:01``        → 6  (three fields)
-    - ``A*02:01:01:01``     → 8  (four fields)
-    - ``DPB1*104:01:01``    → 6  (three fields; was 8 before P0-3)
-    - ``B*57:01G`` / ``B*57:01P`` → 4  (G/P suffix stripped)
+    - ``A*02``              → 1  (one field)
+    - ``A*02:01``           → 2  (two fields)
+    - ``A*02:01:01``        → 3  (three fields)
+    - ``A*02:01:01:01``     → 4  (four fields)
+    - ``DPB1*104:01:01``    → 3  (three fields, seven digits)
+    - ``B*57:01G`` / ``B*57:01P`` → 2  (G/P suffix stripped)
 
     The G/P-group suffix (``G``/``P``) and nomenclature suffix
     letters (``N``/``L``/``S``/``Q``/``C``/``A``) are stripped before
@@ -264,9 +269,8 @@ def _resolution_of(allele_clean: str) -> int:
     rest = _ALLELE_SUFFIX_RE.sub("", rest)
     rest = _NOMENCLATURE_SUFFIX_RE.sub("", rest)
     if not rest:
-        return 2
-    n_fields = len(rest.split(":"))
-    return {1: 2, 2: 4, 3: 6, 4: 8}.get(n_fields, 8)
+        return 1
+    return min(len(rest.split(":")), 4)
 
 
 def _is_group_allele(allele_clean: str) -> Optional[str]:
@@ -312,8 +316,8 @@ def _is_not_present_placeholder(allele_clean: str) -> bool:
     if "*" not in allele_clean:
         return False
     _, rest = allele_clean.split("*", 1)
-    rest = _ALLELE_SUFFIX_RE.sub("", rest)  # strip any G/P group suffix
-    rest = _NOMENCLATURE_SUFFIX_RE.sub("", rest)  # strip any expression suffix
+    rest = _ALLELE_SUFFIX_RE.sub("", rest)  # Strip any G/P group suffix
+    rest = _NOMENCLATURE_SUFFIX_RE.sub("", rest)  # Strip any expression suffix
     fields = [f for f in rest.split(":") if f]
     return bool(fields) and all(set(f) == {"0"} for f in fields)
 
@@ -364,8 +368,13 @@ def load_imgt_db(db_path: Optional[Path] = None) -> Dict[str, Any]:
 
     if not allele_path.is_file():
         raise IMGTDatabaseMissingError(
-            f"IPD-IMGT/HLA Allelelist not found: {allele_path}. "
-            f"Download it first with `download_imgt_db()`."
+            f"IPD-IMGT/HLA Allelelist not found: {allele_path}.\n"
+            f"The IPD-IMGT/HLA release is a required, one-time download "
+            f"(~10 MB). Install it with:\n"
+            f"    hlante db-update --db imgt\n"
+            f"To reproduce a specific release, pin it with "
+            f"`--imgt-ref` (for example: "
+            f"`hlante db-update --db imgt --imgt-ref 3.64.0`)."
         )
 
     try:
@@ -447,7 +456,7 @@ def _read_version_meta(root: Path, allele_path: Path) -> Tuple[Optional[str], Op
                 downloaded_at = None
 
     if version is None:
-        from hlante.db.imgt import _parse_allelelist_version  # local import
+        from hlante.db.imgt import _parse_allelelist_version  # Local import
 
         version = _parse_allelelist_version(allele_path)
 
@@ -477,6 +486,64 @@ def _is_stale(downloaded_at: Optional[datetime]) -> bool:
 # ---------------------------------------------------------------------------
 # Single-allele normalization
 # ---------------------------------------------------------------------------
+
+
+#: How a submitted allele name resolves against the loaded IPD-IMGT/HLA
+#: release. The categories are mutually exclusive and exhaustive:
+#:
+#: - ``exact`` — the name is listed verbatim in ``Allelelist.txt``.
+#: - ``prefix_unique`` — not listed, but exactly one listed allele extends it.
+#:   This is a property of the current release, not evidence that the call
+#:   identifies a single allele in general.
+#: - ``prefix_multiple`` — several listed alleles extend the name; the call
+#:   denotes a set, and ``imgt_match_candidates`` gives its size.
+#: - ``g_group`` / ``p_group`` — a G- or P-suffixed name found in the
+#:   corresponding WHO nomenclature file; the count is the group's membership.
+#: - ``unmatched`` — nothing in the release matches, including a G/P-suffixed
+#:   name whose group is absent. Reported as putatively novel.
+MATCH_CATEGORIES: Tuple[str, ...] = (
+    "exact",
+    "prefix_unique",
+    "prefix_multiple",
+    "g_group",
+    "p_group",
+    "unmatched",
+)
+
+
+def classify_imgt_match(
+    clean: str,
+    alleles_map: Dict[str, str],
+    g_groups: Dict[str, List[str]],
+    p_groups: Dict[str, List[str]],
+) -> Tuple[str, int, List[str]]:
+    """
+    Classify how *clean* resolves against the loaded release.
+
+    Returns the category, the number of IPD-IMGT/HLA alleles the name
+    denotes, and the matching allele names for a prefix match (empty for
+    the other categories, which do not need the list).
+
+    Reporting these separately answers a question the aggregate
+    "normalisation rate" cannot: a rate of 100% is compatible with almost
+    every call denoting a large set of alleles rather than one.
+    """
+    suffix = _is_group_allele(clean)
+    if suffix == "G":
+        members = g_groups.get(clean) or []
+        return ("g_group", len(members), []) if members else ("unmatched", 0, [])
+    if suffix == "P":
+        members = p_groups.get(clean) or []
+        return ("p_group", len(members), []) if members else ("unmatched", 0, [])
+
+    if clean in alleles_map:
+        return ("exact", 1, [])
+
+    prefix = clean + ":"
+    matches = [a for a in alleles_map if a.startswith(prefix)]
+    if not matches:
+        return ("unmatched", 0, [])
+    return ("prefix_unique" if len(matches) == 1 else "prefix_multiple", len(matches), matches)
 
 
 def normalize_allele(
@@ -518,7 +585,7 @@ def normalize_allele(
         logger.debug("Null allele token skipped: %r", allele)
         return None
 
-    assert allele is not None  # for mypy/ruff
+    assert allele is not None  # For mypy/ruff
     clean = _strip_hla_prefix(allele.strip())
     if not _ALLELE_BASIC_RE.match(clean):
         raise InvalidAlleleError(f"Does not conform to IMGT nomenclature: {allele!r}")
@@ -546,11 +613,18 @@ def normalize_allele(
     is_ambiguous: bool = False
     is_novel: bool = False
 
+    category, candidates, prefix_matches = classify_imgt_match(
+        clean, alleles_map, g_groups, p_groups
+    )
+
     if group_suffix == "G":
-        protein_group = clean
         members = g_groups.get(clean)
         if members:
             imgt_accession = alleles_map.get(members[0])
+            # Only assert the group when the release actually lists it; a
+            # G-suffixed name absent from hla_nom_g.txt must not be echoed
+            # Back as though it were a recognised group.
+            protein_group = clean
         else:
             is_novel = True
         is_ambiguous = True
@@ -563,29 +637,24 @@ def normalize_allele(
         else:
             is_novel = True
         is_ambiguous = True
-    else:
+    elif category == "exact":
         imgt_accession = alleles_map.get(clean)
-        if imgt_accession is not None:
-            protein_group = allele_to_g.get(clean)
-            if protein_group is None and resolution_level < 8:
-                # Try to infer a G-group from longer equivalents.
-                for longer, group in allele_to_g.items():
-                    if longer.startswith(clean + ":"):
-                        protein_group = group
-                        break
-            is_ambiguous = resolution_level < 4
-        else:
-            # Any prefix match?
-            prefix = clean + ":"
-            prefix_matches = [a for a in alleles_map if a.startswith(prefix)]
-            if prefix_matches:
-                is_ambiguous = True
-                g_of_first = allele_to_g.get(prefix_matches[0])
-                if g_of_first and all(allele_to_g.get(a) == g_of_first for a in prefix_matches):
-                    protein_group = g_of_first
-            else:
-                is_novel = True
-                is_ambiguous = True
+        protein_group = allele_to_g.get(clean)
+        if protein_group is None and resolution_level < 4:
+            # Try to infer a G-group from longer equivalents.
+            for longer, group in allele_to_g.items():
+                if longer.startswith(clean + ":"):
+                    protein_group = group
+                    break
+        is_ambiguous = resolution_level < 2
+    elif prefix_matches:
+        is_ambiguous = True
+        g_of_first = allele_to_g.get(prefix_matches[0])
+        if g_of_first and all(allele_to_g.get(a) == g_of_first for a in prefix_matches):
+            protein_group = g_of_first
+    else:
+        is_novel = True
+        is_ambiguous = True
 
     return NormalizedAllele(
         allele_name=clean,
@@ -597,6 +666,8 @@ def normalize_allele(
         is_ambiguous=is_ambiguous,
         is_novel=is_novel,
         expression_suffix=expression_suffix,
+        imgt_match_category=category,
+        imgt_match_candidates=candidates,
     )
 
 
@@ -721,6 +792,11 @@ def batch_normalize(
                 norm.source_locus = genotype.locus
                 norm.source_resolution = genotype.resolution
                 norm.allele_index = allele_idx
+                norm.caller_quality = (
+                    genotype.caller_quality1
+                    if allele_idx == 0
+                    else genotype.caller_quality2
+                )
             results[idx] = norm
         except BaseException as exc:  # noqa: BLE001
             errors.append(exc)
@@ -743,6 +819,8 @@ def batch_normalize(
 
 __all__ = [
     "NormalizedAllele",
+    "MATCH_CATEGORIES",
+    "classify_imgt_match",
     "HLANormalizerError",
     "IMGTDatabaseMissingError",
     "InvalidAlleleError",

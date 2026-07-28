@@ -33,19 +33,19 @@ from typing import Dict, List, Set, Tuple
 
 SUPERPOPS = ["AFR", "AMR", "EAS", "EUR", "SAS"]
 
-# target allele (gene*fields) → minimum carriers in subset
+# Target allele (gene*fields) → minimum carriers in subset
 CLINICAL_TARGETS: Dict[str, int] = {
-    "B*57:01":    3,   # abacavir CPIC 1A
-    "B*58:01":    3,   # allopurinol CPIC 1A
-    "B*15:02":    2,   # carbamazepine CPIC 1A
-    "A*31:01":    2,   # carbamazepine CPIC 1A
-    "B*27:05":    3,   # ankylosing spondylitis
+    "B*57:01":    3,   # Abacavir CPIC 1A
+    "B*58:01":    3,   # Allopurinol CPIC 1A
+    "B*15:02":    2,   # Carbamazepine CPIC 1A
+    "A*31:01":    2,   # Carbamazepine CPIC 1A
+    "B*27:05":    3,   # Ankylosing spondylitis
     "B*51:01":    2,   # Behcet disease
     "DRB1*03:01": 3,   # SLE / type 1 diabetes
-    "DRB1*04:01": 3,   # rheumatoid arthritis
-    "DRB1*15:01": 3,   # multiple sclerosis
-    "DQB1*06:02": 3,   # narcolepsy
-    "DQB1*02:01": 2,   # celiac disease
+    "DRB1*04:01": 3,   # Rheumatoid arthritis
+    "DRB1*15:01": 3,   # Multiple sclerosis
+    "DQB1*06:02": 3,   # Narcolepsy
+    "DQB1*02:01": 2,   # Celiac disease
 }
 
 LOCI = ["A", "B", "C", "DQB1", "DRB1"]
@@ -150,7 +150,7 @@ def select_subset(
 
     # ── Phase 2: top up unmet clinical minimums ───────────────────────────────
     # Process alleles by rarity (fewest carriers first) so that hard-to-find
-    # alleles are prioritised when the budget is tight.
+    # Alleles are prioritised when the budget is tight.
     for allele, min_count in sorted(CLINICAL_TARGETS.items(), key=lambda x: len(carriers[x[0]])):
         have = sum(1 for s in selected if _carried(s, allele))
         if have >= min_count:

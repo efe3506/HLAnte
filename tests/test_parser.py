@@ -128,21 +128,21 @@ class TestResolution:
     @pytest.mark.parametrize(
         "allele,expected",
         [
-            ("A*02", "2-field"),
-            ("A*02:01", "4-field"),
-            ("A*02:01:01", "6-field"),
-            ("A*02:01:01:01", "8-field"),
+            ("A*02", "one-field"),
+            ("A*02:01", "two-field"),
+            ("A*02:01:01", "three-field"),
+            ("A*02:01:01:01", "four-field"),
             ("A*02:01:01G", "G-group"),
             ("A*02:01P", "P-group"),
-            ("DRB1*15:01", "4-field"),
-            ("HLA-A*02:01", "4-field"),
-            # Three-digit first field: three colon-groups → 6-field.
-            # The pre-fix digit-count rule labelled this 8-field
-            # because 104+01+01 is 7 digits > 6.
-            ("DPB1*104:01:01", "6-field"),
-            ("DPB1*02:01:02", "6-field"),
-            ("DPB1*104:01", "4-field"),
-            ("DPB1*104", "2-field"),
+            ("DRB1*15:01", "two-field"),
+            ("HLA-A*02:01", "two-field"),
+            # Three-digit first field: three colon-groups → three-field.
+            # The pre-fix digit-count rule labelled this four-field
+            # Because 104+01+01 is 7 digits > 6.
+            ("DPB1*104:01:01", "three-field"),
+            ("DPB1*02:01:02", "three-field"),
+            ("DPB1*104:01", "two-field"),
+            ("DPB1*104", "one-field"),
         ],
     )
     def test_resolution(self, allele: str, expected: str) -> None:
@@ -156,15 +156,15 @@ class TestResolution:
         The parser-side resolution label (string) and the normalizer's
         integer resolution must agree on colon-group semantics. This
         guards the DPB1\\*104:01:01 regression where the parser still
-        returned ``"8-field"`` after the normalizer was fixed to use
+        returned ``"four-field"`` after the normalizer was fixed to use
         colon-group count.
         """
         from hlante.normalizer import _resolution_of
         cases = {
-            "DPB1*104:01:01": ("6-field", 6),
-            "A*02:01:01:01":  ("8-field", 8),
-            "A*02:01":        ("4-field", 4),
-            "A*02":           ("2-field", 2),
+            "DPB1*104:01:01": ("three-field", 3),
+            "A*02:01:01:01":  ("four-field", 4),
+            "A*02:01":        ("two-field", 2),
+            "A*02":           ("one-field", 1),
         }
         for allele, (label, level) in cases.items():
             assert _determine_resolution(allele) == label
@@ -203,7 +203,9 @@ class TestParseArcasHLA:
         assert a_record.resolution == "G-group"
         assert a_record.tool == TOOL_ARCASHLA
         assert a_record.sample_id == "sample"
-        assert a_record.quality_score is None
+        # ArcasHLA reports no per-allele quality.
+        assert a_record.caller_quality1 is None
+        assert a_record.caller_quality2 is None
         assert "HLA-A" in a_record.raw_line
 
     def test_nested_alleles_schema(self) -> None:
@@ -293,8 +295,11 @@ class TestParseT1K:
         a = by_locus["HLA-A"]
         assert a.allele1 == "A*02:01"
         assert a.allele2 == "A*24:02"
-        assert a.quality_score == pytest.approx(98.5)
-        assert a.resolution == "4-field"
+        # The legacy headered layout labels its two numbers only as
+        # "score", so they are not claimed as quality values.
+        assert a.caller_quality1 is None
+        assert a.caller_quality2 is None
+        assert a.resolution == "two-field"
         assert a.tool == TOOL_T1K
 
     def test_missing_second_allele(self) -> None:
@@ -331,7 +336,7 @@ class TestParseT1K:
         by_locus = _by_locus(records)
         assert by_locus["HLA-A"].allele1 == "A*11:01:01"
         assert by_locus["HLA-A"].allele2 == "A*02:01:01"
-        # count=1 with "." for the second allele must map to None.
+        # Count=1 with "." for the second allele must map to None.
         assert by_locus["HLA-J"].allele1 == "J*01:01:01"
         assert by_locus["HLA-J"].allele2 is None
 
@@ -417,7 +422,7 @@ class TestParseHLAHD:
         assert "HLA-DPB1" not in by_locus
         assert by_locus["HLA-A"].allele1 == "A*02:01:01"
         assert by_locus["HLA-A"].allele2 == "A*24:02:01"
-        assert by_locus["HLA-A"].resolution == "6-field"
+        assert by_locus["HLA-A"].resolution == "three-field"
         assert by_locus["HLA-A"].tool == TOOL_HLAHD
 
     def test_ambiguous_second_allele(self) -> None:
@@ -559,9 +564,11 @@ class TestParseOptiType:
         a = by_locus["HLA-A"]
         assert a.allele1 == "A*02:01"
         assert a.allele2 == "A*24:02"
-        assert a.resolution == "4-field"
+        assert a.resolution == "two-field"
         assert a.tool == TOOL_OPTITYPE
-        assert a.quality_score == pytest.approx(1456.78)
+        # OptiType reports a solution-level objective, not an allele
+        # Quality, so nothing is recorded per allele.
+        assert a.caller_quality1 is None
         assert a.sample_id == "sample"
 
     def test_missing_file(self, tmp_path: Path) -> None:
@@ -644,3 +651,28 @@ class TestDispatcher:
             TOOL_HLAHD,
             TOOL_OPTITYPE,
         }
+
+
+class TestCallerReportedQuality:
+    """
+    Caller-provided quality must survive into the
+    report. Only T1K's native layout supplies a per-allele quality; it sits
+    in columns 5 and 8, while columns 4 and 7 hold abundance. Reading the
+    wrong pair would report abundance as if it were a quality.
+    """
+
+    def test_native_layout_reads_quality_not_abundance(self) -> None:
+        fixture = FIXTURES_DIR / "sample_t1k_native_genotype.tsv"
+        records = {g.locus: g for g in parse_hla_output(fixture, "t1k")}
+        a_locus = records["HLA-A"]
+        # Row: HLA-A  2  A*02:01  145.30  28.4  A*24:02  131.70  26.1
+        assert a_locus.caller_quality1 == pytest.approx(28.4)
+        assert a_locus.caller_quality2 == pytest.approx(26.1)
+
+    def test_no_quality_is_reported_for_an_absent_allele(self) -> None:
+        fixture = FIXTURES_DIR / "sample_t1k_native_genotype.tsv"
+        records = {g.locus: g for g in parse_hla_output(fixture, "t1k")}
+        c_locus = records["HLA-C"]
+        assert c_locus.allele2 is None
+        assert c_locus.caller_quality2 is None
+

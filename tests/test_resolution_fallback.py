@@ -63,12 +63,12 @@ class TestTruncation:
         [
             ("A*02:01:01:01", 2, "A*02:01"),
             ("A*02:01:01:01", 1, "A*02"),
-            ("A*02:01:01:01", 4, "A*02:01:01:01"),  # already ≤4 groups
-            ("DRB1*03:01:01", 4, "DRB1*03:01:01"),  # already ≤4, unchanged
+            ("A*02:01:01:01", 4, "A*02:01:01:01"),  # Already ≤4 groups
+            ("DRB1*03:01:01", 4, "DRB1*03:01:01"),  # Already ≤4, unchanged
             ("DRB1*03:01:01", 2, "DRB1*03:01"),
             ("B*57:01G", 2, "B*57:01G"),  # G-group suffix preserved
             ("B*57:01P", 2, "B*57:01P"),  # P-group suffix preserved
-            ("A*02:01N", 1, "A*02N"),     # null-allele suffix preserved
+            ("A*02:01N", 1, "A*02N"),     # Null-allele suffix preserved
             ("HLA-A*02:01:01:01", 2, "A*02:01"),  # HLA- prefix stripped
         ],
     )
@@ -82,7 +82,7 @@ class TestTruncation:
             ("A*02:01:01", [3, 2, 1]),
             ("A*02:01", [2, 1]),
             ("A*02", [1]),
-            ("B*57:01G", [2, 1]),  # suffix is not counted
+            ("B*57:01G", [2, 1]),  # Suffix is not counted
             ("HLA-DRB1*03:01:01", [3, 2, 1]),
         ],
     )
@@ -104,10 +104,10 @@ class TestTruncation:
     @pytest.mark.parametrize(
         "colon_groups,expected_label",
         [
-            (1, "2-field"),
-            (2, "4-field"),
-            (3, "6-field"),
-            (4, "8-field"),
+            (1, "one-field"),
+            (2, "two-field"),
+            (3, "three-field"),
+            (4, "four-field"),
         ],
     )
     def test_field_label_mapping(
@@ -136,7 +136,7 @@ class TestGWASFallback:
         client = GWASClient(local_dir=GWAS_FIXTURE_DIR)
         hits, resolution = client.query_allele_with_fallback("B*57:01:01:01")
         assert hits, "Fallback should find a hit at B*57:01."
-        assert resolution == "4-field"
+        assert resolution == "two-field"
 
     def test_exact_match_returns_same_resolution(self) -> None:
         """
@@ -145,7 +145,7 @@ class TestGWASFallback:
         client = GWASClient(local_dir=GWAS_FIXTURE_DIR)
         hits, resolution = client.query_allele_with_fallback("B*57:01")
         assert hits
-        assert resolution == "4-field"
+        assert resolution == "two-field"
 
     def test_no_match_at_any_level(self) -> None:
         """
@@ -158,7 +158,7 @@ class TestGWASFallback:
 
     def test_min_resolution_limits_descent(self) -> None:
         """
-        ``min_resolution=4`` must prevent descent to the 2-field
+        ``min_resolution=4`` must prevent descent to the one-field
         (``A*02``) level.
         """
         client = GWASClient(local_dir=GWAS_FIXTURE_DIR)
@@ -192,7 +192,7 @@ class TestPharmGKBCandidateForms:
 
     def test_candidate_forms_for_4field(self) -> None:
         """
-        ``A*02:01`` must produce full, 2-field, HLA-prefixed, and
+        ``A*02:01`` must produce full, one-field, HLA-prefixed, and
         gene-prefixless variants.
         """
         forms = _candidate_allele_forms("A*02:01")
@@ -217,7 +217,7 @@ class TestPharmGKBCandidateForms:
         self, tmp_path: Path
     ) -> None:
         """
-        PharmGKB stores 4-field alleles. A 6-field query must match a
+        PharmGKB stores two-field alleles. A three-field query must match a
         truncated variant, and ``matched_form`` must be populated.
         """
         client = PharmGKBClient(local_dir=PHARMGKB_FIXTURE_DIR)
@@ -225,7 +225,7 @@ class TestPharmGKBCandidateForms:
         assert hits, "A 6-field query should match the 4-field record."
         drugs = {h.drug for h in hits}
         assert "abacavir" in drugs
-        # matched_form must be the truncated 4-field form.
+        # Matched_form must be the truncated two-field form.
         assert any(h.matched_form == "B*57:01" for h in hits)
 
     def test_exact_match_records_exact_form(self) -> None:
@@ -272,13 +272,13 @@ class TestResolutionColumnInReport:
             protein_group=None,
             hla_class="I",
             gene="HLA-B",
-            resolution_level=4,
+            resolution_level=2,
             is_ambiguous=False,
             is_novel=False,
             sample_id="S1",
             source_tool="t1k",
             source_locus="HLA-B",
-            source_resolution="4-field",
+            source_resolution="two-field",
             allele_index=0,
         )
         return AnnotatedHLA(
@@ -314,7 +314,7 @@ class TestResolutionColumnInReport:
                 study_accession="GCST000001",
                 allele="B*57:01",
             )],
-            gwas_resolution="4-field",
+            gwas_resolution="two-field",
         )
         out = tmp_path / "r.tsv"
         generate_tsv([annot], out)
@@ -325,7 +325,7 @@ class TestResolutionColumnInReport:
         )
         cells = data_line.split("\t")
         idx = TSV_COLUMNS.index("gwas_annotation_resolution")
-        assert cells[idx] == "4-field"
+        assert cells[idx] == "two-field"
 
     def test_tsv_resolution_none_when_no_hits(self, tmp_path: Path) -> None:
         """
@@ -362,8 +362,8 @@ class TestAnnotatorPropagatesResolution:
 
     def test_annotator_picks_up_fallback_resolution(self) -> None:
         """
-        Using the real ``GWASClient`` + fixture, a 6-field query must
-        fall back and produce ``gwas_resolution_used == "4-field"``.
+        Using the real ``GWASClient`` + fixture, a three-field query must
+        fall back and produce ``gwas_resolution_used == "two-field"``.
         """
         norm = NormalizedAllele(
             allele_name="B*57:01:01:01",
@@ -371,13 +371,13 @@ class TestAnnotatorPropagatesResolution:
             protein_group=None,
             hla_class="I",
             gene="HLA-B",
-            resolution_level=8,
+            resolution_level=4,
             is_ambiguous=False,
             is_novel=False,
             sample_id="S1",
             source_tool="t1k",
             source_locus="HLA-B",
-            source_resolution="8-field",
+            source_resolution="four-field",
             allele_index=0,
         )
         gwas_client = GWASClient(local_dir=GWAS_FIXTURE_DIR)
@@ -385,5 +385,36 @@ class TestAnnotatorPropagatesResolution:
                                  enable_pharmgkb=False, enable_afnd=False)
         clients = AnnotatorClients(gwas=gwas_client, pharmgkb=None)
         result = annotate_genotype([norm], config, clients=clients)[0]
-        assert result.gwas_resolution_used == "4-field"
+        assert result.gwas_resolution_used == "two-field"
         assert result.gwas_hits, "Fallback should have produced hits."
+
+
+class TestCascadeDoesNotMutateIndex:
+    """
+    The cascade annotates its hits with scope and broadening information.
+    Those hit objects live in the client's index and are shared by every
+    query, so the annotation has to be applied to copies — otherwise a later
+    query silently rewrites results already handed to a caller.
+    """
+
+    def test_earlier_result_survives_a_later_query(self) -> None:
+        from hlante.db.gwas import GWASClient
+
+        client = GWASClient(local_dir=GWAS_FIXTURE_DIR)
+        client.load()
+
+        # B*57:01:01 is not a key in the fixture, so it matches only after
+        # Truncation to B*57:01 — the case where the cascade writes scope and
+        # Broadening onto the hits.
+        first, _ = client.query_allele_with_fallback("B*57:01:01")
+        assert first, "fixture must yield a broadened hit for B*57:01:01"
+        assert first[0].match_was_broadened is True
+        snapshot = [
+            (h.annotation_scope, h.index_siblings, h.matched_allele) for h in first
+        ]
+
+        client.query_allele_with_fallback("B*57")
+
+        assert [
+            (h.annotation_scope, h.index_siblings, h.matched_allele) for h in first
+        ] == snapshot

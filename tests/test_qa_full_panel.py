@@ -84,7 +84,7 @@ class PanelRow:
     gwas_hits_count: int = 0
     pharm_hits_count: int = 0
     disease_hits_count: int = 0
-    confidence_score: Optional[float] = None
+    input_quality_score: Optional[float] = None
     gwas_annotation_resolution: Optional[str] = None
     clinical_significance: Optional[str] = None
     gwas_traits_snippet: List[str] = field(default_factory=list)
@@ -121,13 +121,13 @@ def _synthetic_normalized(allele_name: str) -> NormalizedAllele:
         protein_group=None,
         hla_class="I" if not gene_letter.startswith(("DR", "DQ", "DP", "DM", "DO")) else "II",
         gene=f"HLA-{gene_letter}",
-        resolution_level=4,
+        resolution_level=2,
         is_ambiguous=True,
         is_novel=True,
         sample_id="qa_panel",
         source_tool="qa",
         source_locus=f"HLA-{gene_letter}",
-        source_resolution="4-field",
+        source_resolution="two-field",
         allele_index=0,
     )
 
@@ -275,7 +275,7 @@ def run_panel() -> List[PanelRow]:
         row.gwas_hits_count = len(ann.gwas_hits)
         row.pharm_hits_count = len(ann.pharm_annotations)
         row.disease_hits_count = len(ann.disease_entries)
-        row.confidence_score = ann.confidence_score
+        row.input_quality_score = ann.input_quality_score
         row.gwas_annotation_resolution = ann.gwas_resolution_used
         row.clinical_significance = ann.clinical_significance
         row.gwas_traits_snippet = _snippet([h.trait for h in ann.gwas_hits])
@@ -315,7 +315,7 @@ def write_markdown(rows: List[PanelRow], out_path: Path) -> None:
         imgt = (r.imgt_accession or "")[:10]
         novel = "-" if r.is_novel is None else ("T" if r.is_novel else "F")
         ambig = "-" if r.is_ambiguous is None else ("T" if r.is_ambiguous else "F")
-        conf = f"{r.confidence_score:.3f}" if r.confidence_score is not None else "-"
+        conf = f"{r.input_quality_score:.3f}" if r.input_quality_score is not None else "-"
         gres = r.gwas_annotation_resolution or "-"
         sig = (r.clinical_significance or "-").replace("|", "/")
         msg = r.issue or r.note or ""
@@ -337,7 +337,7 @@ def write_json(rows: List[PanelRow], out_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# pytest integration — does not run by default (needs -m qa)
+# Pytest integration — does not run by default (needs -m qa)
 # ---------------------------------------------------------------------------
 
 

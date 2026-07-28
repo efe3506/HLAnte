@@ -15,14 +15,14 @@ not diagnostic. See the disclaimer embedded in every report.
 ## Features
 
 - Multi-tool HLA typing parser (ARCAS-HLA, T1K, HLA-HD, OptiType)
-- IPD-IMGT/HLA-compliant allele normalization (2/4/6/8 digit,
+- IPD-IMGT/HLA-compliant allele normalization (one to four fields,
   G and P groups)
 - Resolution-aware fallback for GWAS / PharmGKB / AFND lookups
 - Built-in connectors for GWAS Catalog, PharmGKB (CPIC 1A/1B), AFND, and
   a curated HLA–disease/drug table
 - Population-aware allele-frequency scoring via AFND with a universal
   geographic taxonomy (EUR / AFR / EAS / SAS / MID / AMR / OCE / global)
-- Confidence score combining novelty, rarity, resolution, and
+- Input-quality score combining novelty, rarity, resolution, and
   ambiguity signals
 - TSV / CSV machine-readable output + Markdown research-annotation summary + JSON
 - Batch mode, local database update, configurable log levels
@@ -39,32 +39,61 @@ conda env create -f environment.yml
 conda activate hlante
 ```
 
-### Developer / user install (pip)
+### pip (from source)
+
+HLAnte is installed from this repository, not from PyPI — `pip install hlante`
+will not work. Clone first, then install:
 
 ```bash
 git clone https://github.com/efe3506/HLAnte.git
 cd HLAnte
-pip install -e .
+pip install .
 ```
 
-For development (includes linters and test runner):
+For development (editable install with linters and test runner):
 
 ```bash
 pip install -e ".[dev]"
 ```
 
+### Required one-time database download
+
+HLAnte normalises every allele call against a local IPD-IMGT/HLA release, so
+this download is **required before the first annotation run** (~10 MB):
+
+```bash
+hlante db-update --db imgt
+```
+
+Without it, `hlante annotate` stops with an error and writes no report. To
+reproduce a specific release, pin it: `hlante db-update --db imgt --imgt-ref 3.64.0`.
+The GWAS Catalog, PharmGKB, and AFND downloads are optional — see
+[INSTALL.md](INSTALL.md#5-database-setup).
+
 ## Usage
+
+New to Python or the command line? Work through
+[`docs/user/TUTORIAL.md`](docs/user/TUTORIAL.md) instead — it walks through
+install, the one-time database download, a first annotation and how to read
+the report, one command at a time.
 
 ### Single-sample annotation
 
+arcasHLA emits JSON, so the input file is the genotype JSON produced by
+`arcasHLA genotype` (a ready-made example ships in `tests/fixtures/`):
+
 ```bash
 hlante annotate \
-  -i sample.genotype.tsv \
-  -t arcas-hla \
+  -i tests/fixtures/sample.genotype.json \
+  -t arcashla \
   -o results/ \
   -p EUR \
   --format tsv
 ```
+
+This writes `results/hlante_report.tsv`. With `--format all` (the default) you
+additionally get `hlante_report.md` and `hlante_report.json`. Use `--prefix` to
+change the `hlante_report` stem.
 
 ### Directory batch
 

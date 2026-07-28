@@ -6,11 +6,12 @@ NMDP (National Marrow Donor Program / Be The Match) allele-frequency
 client. Supplements AFND with NMDP registry-derived frequencies when
 AFND data is unavailable.
 
-A built-in frequency table for ~280 common alleles across four NMDP
-ethnic groups (European, African American, Asian/Pacific Islander,
-Hispanic) is bundled with the package. For full registry coverage,
-download the official NMDP tables from https://frequency.nmdp.org/
-and save them as ``~/.hlante/nmdp/nmdp_frequencies.tsv``.
+NMDP frequency data are **not** redistributed with HLAnte: the
+resource is licensed by NMDP/Be The Match and its terms do not permit
+redistribution. This client is therefore inert by default. To enable
+it, obtain an extract from https://frequency.nmdp.org/ under the terms
+of that resource and save it as ``~/.hlante/nmdp/nmdp_frequencies.tsv``;
+HLAnte will then use it as a secondary frequency source.
 
 TSV format expected (same as AFND):
 - ``Allele``          — e.g. ``B*57:01``
@@ -38,7 +39,6 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 NMDP_DEFAULT_DIR: Path = Path.home() / ".hlante" / "nmdp"
 NMDP_TSV_FILENAME: str = "nmdp_frequencies.tsv"
-BUILTIN_NMDP_TSV: Path = Path(__file__).parent / "nmdp_builtin.tsv"
 
 
 class NMDPClient(AFNDClient):
@@ -78,29 +78,26 @@ class NMDPClient(AFNDClient):
         """
         Load the NMDP frequency TSV (idempotent).
 
-        Falls back to the bundled built-in table when no user-supplied
-        TSV is found. Never raises — NMDP is a secondary source.
+        NMDP frequency data are **not** redistributed with HLAnte. The
+        client stays inert unless the user supplies their own extract
+        (see :data:`NMDP_DEFAULT_DIR`). Never raises — NMDP is an
+        optional secondary source.
         """
         if self._loaded:
             return
         path = self._locate_tsv()
         if path is None:
-            if BUILTIN_NMDP_TSV.is_file():
-                path = BUILTIN_NMDP_TSV
-                logger.info(
-                    "NMDP: no local TSV found; using built-in data (%s). "
-                    "For full registry coverage download from "
-                    "https://frequency.nmdp.org/ and save as "
-                    "%s/%s",
-                    path,
-                    NMDP_DEFAULT_DIR,
-                    NMDP_TSV_FILENAME,
-                )
-            else:
-                logger.debug("NMDP: built-in data not found; skipping.")
-                self._rows = []
-                self._loaded = True
-                return
+            logger.info(
+                "NMDP: no local frequency table found; skipping this source. "
+                "NMDP data are not redistributed with HLAnte. To enable it, "
+                "obtain an extract from https://frequency.nmdp.org/ under the "
+                "terms of that resource and save it as %s/%s",
+                NMDP_DEFAULT_DIR,
+                NMDP_TSV_FILENAME,
+            )
+            self._rows = []
+            self._loaded = True
+            return
         try:
             self._rows = self._parse_tsv(path)
         except AFNDDatabaseError as exc:
@@ -125,5 +122,4 @@ __all__ = [
     "NMDPClient",
     "NMDP_DEFAULT_DIR",
     "NMDP_TSV_FILENAME",
-    "BUILTIN_NMDP_TSV",
 ]

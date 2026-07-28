@@ -1,0 +1,51 @@
+{
+  "cohort_distinct_alleles": 513,
+  "annotated": 155,
+  "not_annotated_negative_controls": 358,
+  "broadened": 97,
+  "broadened_pct": 62.6,
+  "exact": 58,
+  "exact_pct": 37.4,
+  "scope_distribution": {
+    "subtype": 58,
+    "allele_group": 97
+  },
+  "mean_traits_exact_match": 2.88,
+  "mean_traits_broadened_match": 1.0,
+  "mean_cohort_alleles_sharing_a_broadened_match": 17.93,
+  "carrier_weighted": {
+    "annotated_calls": 15620,
+    "not_annotated_calls": 10690,
+    "exact_calls": 13052,
+    "exact_pct": 83.6,
+    "broadened_calls": 2568,
+    "broadened_pct": 16.4
+  },
+  "per_locus": {
+    "HLA-A": {
+      "distinct_alleles": 114,
+      "annotated": 8,
+      "broadened": 0
+    },
+    "HLA-B": {
+      "distinct_alleles": 182,
+      "annotated": 60,
+      "broadened": 47
+    },
+    "HLA-C": {
+      "distinct_alleles": 83,
+      "annotated": 8,
+      "broadened": 0
+    },
+    "HLA-DQB1": {
+      "distinct_alleles": 50,
+      "annotated": 37,
+      "broadened": 26
+    },
+    "HLA-DRB1": {
+      "distinct_alleles": 84,
+      "annotated": 42,
+      "broadened": 24
+    }
+  }
+}

@@ -19,7 +19,7 @@ This benchmark evaluates HLAnte's annotation pipeline using Sanger-validated HLA
 
 ## Normalisation Success (IMGT-HLA recognised; exact or prefix match)
 
-Note: 2-field input alleles have no exact IMGT accession (ambiguous by design) but are counted as recognised when a prefix match exists (`is_novel=False`).  Novel alleles are those with no IMGT prefix.
+Note: two-field input alleles have no exact IMGT accession (ambiguous by design) but are counted as recognised when a prefix match exists (`is_novel=False`).  Novel alleles are those with no IMGT prefix.
 
 | Tool | Allele count | IMGT recognised | Rate |
 |------|--------------|-----------------|------|
@@ -53,7 +53,7 @@ Results shown for arcashla (representative; other tools similar).
 
 ## Population-Stratified Performance (arcashla)
 
-| Super-pop | N | AFND coverage | Mean confidence | LOW tier % |
+| Super-pop | N | AFND coverage | Mean confidence | limited tier % |
 |-----------|---|---------------|-----------------|------------|
 | EUR       | 529 |        100.0% |           0.671 |     100.0% |
 | AFR       | 712 |        100.0% |           0.662 |      99.1% |
@@ -63,13 +63,13 @@ Results shown for arcashla (representative; other tools similar).
 
 ## Confidence Tier Distribution (arcashla)
 
-Note: This benchmark uses --input-source validated because the 1000 Genomes types are Sanger-validated reference data. Under this mode, the ambiguity penalty (×0.75) is suppressed for 2-field inputs since the call is exactly correct at its reported resolution; only the resolution penalty (×0.90 for 4-field-equivalent matching) applies. This produces predominantly HIGH-tier scores. For typing-tool inputs (--input-source typing_tool, default), 2-field outputs would receive both penalties and score in the LOW range.
+Note: This benchmark uses --input-source validated because the 1000 Genomes types are Sanger-validated reference data. Under this mode, the ambiguity penalty (×0.75) is suppressed for two-field inputs since the call is exactly correct at its reported resolution; only the two-field resolution penalty (×0.90) applies. This produces predominantly detailed-tier scores. For typing-tool inputs (--input-source typing_tool, default), two-field outputs would receive both penalties and score in the limited range.
 
 | Tier | Count | Percentage |
 |------|-------|------------|
-| HIGH     |    58 |       0.2% |
-| MODERATE |    85 |       0.3% |
-| LOW      | 26165 |      99.5% |
+| detailed     |    58 |       0.2% |
+| partial |    85 |       0.3% |
+| limited      | 26165 |      99.5% |
 | NA       |     0 |       0.0% |
 
 ---

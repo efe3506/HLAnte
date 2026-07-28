@@ -30,6 +30,7 @@ Operating modes
 from __future__ import annotations
 
 import csv
+import dataclasses
 import io
 import logging
 import re
@@ -54,11 +55,11 @@ GWAS_CATALOG_FULL_ZIP_URL: str = (
 )
 
 # Backward compatibility: the REST URL constant is kept so that imports
-# from older code keep working, but it is no longer used.
+# From older code keep working, but it is no longer used.
 GWAS_CATALOG_API_BASE: str = "https://www.ebi.ac.uk/gwas/rest/api"
 
 DEFAULT_LOCAL_DIR: Path = Path.home() / ".hlante" / "gwas"
-DEFAULT_CACHE_DIR: Path = DEFAULT_LOCAL_DIR  # backward-compat alias
+DEFAULT_CACHE_DIR: Path = DEFAULT_LOCAL_DIR  # Backward-compat alias
 
 DEFAULT_P_VALUE_THRESHOLD: float = 5e-8
 DEFAULT_MAX_RETRIES: int = 3
@@ -147,8 +148,19 @@ class GWASHit:
     url: Optional[str] = None
     trait_was_deprecated: bool = False
     effect_size_warning: str = ""
+    #: Resolution of the catalogue record that matched, as a statement about
+    #: the record itself: ``allele`` (three or four fields), ``subtype`` (two
+    #: fields) or ``allele_group`` (one field). It does NOT say whether the
+    #: query was broadened — see :attr:`match_was_broadened` for that.
     annotation_scope: str = "allele"
-    fallback_expansion_size: int = 1
+    #: Number of keys in the GWAS index that sit under the matched prefix.
+    index_siblings: int = 1
+    #: The catalogue key that actually matched, after any truncation.
+    matched_allele: str = ""
+    #: True when the query allele had to be truncated before a record was
+    #: found, i.e. the association is reported for a less specific name than
+    #: the one submitted.
+    match_was_broadened: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -220,8 +232,8 @@ def _remap_trait(trait: str) -> Tuple[str, bool]:
     if "obsolete_" not in trait:
         return trait, False
     # Compound path: split the Catalog cell on ", " and remap each
-    # part independently. A single obsolete token anywhere in the
-    # cell is enough to set ``was_deprecated``.
+    # Part independently. A single obsolete token anywhere in the
+    # Cell is enough to set ``was_deprecated``.
     parts = trait.split(", ")
     if len(parts) == 1:
         return trait, True
@@ -345,10 +357,10 @@ _NOMENCLATURE_SUFFIX_RE: re.Pattern[str] = re.compile(r"[A-Z]$")
 
 #: Colon-group count → user-facing TSV label (digit-based).
 _FIELD_LABELS: Dict[int, str] = {
-    1: "2-field",
-    2: "4-field",
-    3: "6-field",
-    4: "8-field",
+    1: "one-field",
+    2: "two-field",
+    3: "three-field",
+    4: "four-field",
 }
 
 #: Placeholder returned when no match was found at any fallback level.
@@ -376,7 +388,7 @@ def _truncate_to_fields(allele: str, n_fields: int) -> str:
     Truncate an allele to at most ``n_fields`` colon-groups.
 
     ``n_fields`` here denotes the *colon-group count*, which is distinct
-    from the "N-field" digit label used in the user-facing report.
+    from the field-count label used in the user-facing report.
     Examples:
 
     - ``_truncate_to_fields("A*02:01:01:01", 2)`` → ``"A*02:01"``
@@ -427,7 +439,7 @@ def _field_label(colon_groups: int) -> str:
     """
     Map a colon-group count to the digit-based label used by the report.
     """
-    return _FIELD_LABELS.get(colon_groups, f"{colon_groups * 2}-field")
+    return _FIELD_LABELS.get(colon_groups, f"{colon_groups}-field")
 
 
 # ---------------------------------------------------------------------------
@@ -475,7 +487,7 @@ class GWASClient:
         cache_ttl: Any = None,  # noqa: ARG002
     ) -> None:
         if local_dir is None and cache_dir is not None:
-            local_dir = cache_dir  # support the legacy keyword name
+            local_dir = cache_dir  # Support the legacy keyword name
         self.local_dir: Path = Path(local_dir) if local_dir else DEFAULT_LOCAL_DIR
         self.p_value_threshold: float = p_value_threshold
         self.offline: bool = offline
@@ -570,8 +582,8 @@ class GWASClient:
         bare = _strip_hla(allele)
         hits = self._by_allele.get(bare, [])
         # A genome-wide-significance filter must require an actual p-value at or
-        # below threshold. A hit whose p-value cell did not parse (None) has not
-        # demonstrably met the bar and is excluded, rather than passed through
+        # Below threshold. A hit whose p-value cell did not parse (None) has not
+        # Demonstrably met the bar and is excluded, rather than passed through
         # as if significant.
         return [h for h in hits if h.p_value is not None and h.p_value <= self.p_value_threshold]
 
@@ -600,7 +612,7 @@ class GWASClient:
         (hits, resolution_label) : tuple
             - ``hits``: hits passing the p-value threshold (possibly empty).
             - ``resolution_label``: the resolution tier at which a match
-              was found (``"2-field"``, ``"4-field"``, …) or ``"none"``
+              was found (``"one-field"`` … ``"four-field"``) or ``"none"``
               when no tier matched.
         """
         # Translate the digit-count limit to a colon-group floor.
@@ -612,12 +624,16 @@ class GWASClient:
             hits = self.query_allele(truncated)
             if hits:
                 label = _field_label(n_colon)
-                # P0-10: annotation_scope + fallback_expansion_size.
-                # scope: 6/8-field => "allele"; 4-field => "subtype";
-                # 2-field => "locus".
-                scope = "allele" if n_colon >= 3 else ("subtype" if n_colon == 2 else "locus")
-                # fallback_expansion_size = number of IMGT alleles
-                # sharing the truncated prefix in this client's index.
+                # Scope describes the matched catalogue record's own
+                # Resolution; broadening is recorded separately.
+                scope = (
+                    "allele"
+                    if n_colon >= 3
+                    else ("subtype" if n_colon == 2 else "allele_group")
+                )
+                broadened = n_colon < _colon_group_count(allele)
+                # Index_siblings counts keys in THIS GWAS index under the
+                # Truncated prefix — not IPD-IMGT/HLA alleles.
                 expansion = (
                     1
                     if n_colon == _colon_group_count(allele)
@@ -627,9 +643,19 @@ class GWASClient:
                         if key == truncated or key.startswith(truncated + ":")
                     )
                 )
-                for hit in hits:
-                    hit.annotation_scope = scope
-                    hit.fallback_expansion_size = max(1, expansion)
+                # Copy rather than mutate: the hit objects live in the
+                # Client's index and are shared by every query, so assigning
+                # to them corrupts results already returned to a caller.
+                hits = [
+                    dataclasses.replace(
+                        hit,
+                        annotation_scope=scope,
+                        index_siblings=max(1, expansion),
+                        matched_allele=truncated,
+                        match_was_broadened=broadened,
+                    )
+                    for hit in hits
+                ]
                 logger.debug(
                     "GWAS fallback: %r → %r (%s, scope=%s, exp=%d) %d hit(s)",
                     allele,
@@ -700,11 +726,11 @@ class GWASClient:
                 ).strip()
                 if not raw_trait:
                     continue
-                # P0-1: remap deprecated EFO terms at ingestion time.
+                # Remap deprecated EFO terms at ingestion time.
                 trait, trait_was_deprecated = _remap_trait(raw_trait)
                 p_value = _coerce_float(row.get(f_pvalue) if f_pvalue else None)
                 or_val = _coerce_float(row.get(f_or) if f_or else None)
-                # P0-7: flag extreme / likely-quantitative effect sizes.
+                # Flag extreme / likely-quantitative effect sizes.
                 effect_size_warning = _classify_effect_size(or_val, trait)
                 pmid = ((row.get(f_pmid) or "").strip() if f_pmid else "") or None
                 study = ((row.get(f_study) or "").strip() if f_study else "") or None

@@ -147,8 +147,8 @@ The central result object. Key attributes:
 | `pharm_annotations` | list of `PharmAnnotation` | PharmGKB records |
 | `disease_entries` | list of `DiseaseEntry` | Built-in curated records |
 | `clinical_significance` | str | Evidence-strength label |
-| `confidence_score` | float | Score in `[0, 1]` |
-| `confidence_tier` | str | `HIGH` / `MODERATE` / `LOW` |
+| `input_quality_score` | float | Score in `[0, 1]` |
+| `input_quality_tier` | str | `detailed` / `partial` / `limited` |
 | `allele_frequency` | float or None | AFND frequency |
 
 ---

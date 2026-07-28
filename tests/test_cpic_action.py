@@ -34,7 +34,7 @@ class TestTwoFieldKey:
             ("HLA-B*15:02:01", "B*15:02"),
             ("B*15:02:01:02N", "B*15:02"),
             ("A*31:01:01G", "A*31:01"),
-            ("B*57", None),  # only one field
+            ("B*57", None),  # Only one field
             ("not-an-allele", None),
             (None, None),
             ("", None),
@@ -71,7 +71,7 @@ class TestAlleleAwareCpicAction:
         assert action is not None and "ontraindicated" in action
 
     def test_two_field_reduction_on_high_resolution_input(self) -> None:
-        # A 4-field, HLA-prefixed call still resolves to the 2-field rule.
+        # A two-field, HLA-prefixed call still resolves to the one-field rule.
         assert _cpic_action("HLA-B*15:02:01", "carbamazepine") == _cpic_action(
             "B*15:02", "carbamazepine"
         )

@@ -205,7 +205,7 @@ PY
 ## 5. Worked example B — Multi-cohort ancestry-aware analysis
 
 Goal: compute HLA-B*57:01 carrier frequency per population group,
-with confidence-weighted aggregation.
+with input-quality-weighted aggregation.
 
 Given the manifest from §1 and its companion cohort directory,
 the script below runs one `hlante annotate` call per group, joins
@@ -250,7 +250,7 @@ rate_by_group = (
             .groupby("population_group")
             .agg(carrier_rate=("has_b5701", "mean"),
                  n_samples=("sample_id", "nunique"),
-                 mean_confidence=("confidence_score", "mean"))
+                 mean_confidence=("input_quality_score", "mean"))
 )
 print(rate_by_group)
 ```
@@ -274,7 +274,7 @@ captured:
       download date.
 
 HLAnte embeds the DB versions into every report header so post-hoc
-audit is straightforward — reviewers can confirm which GWAS /
+audit is straightforward — a reader can confirm which GWAS /
 PharmGKB / IPD-IMGT/HLA release produced each finding.
 
 ---

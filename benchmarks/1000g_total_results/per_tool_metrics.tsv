@@ -1,4 +1,4 @@
-tool	n_samples	alleles_expected	alleles_parsed	parse_rate	alleles_normalized	norm_rate	alleles_with_freq	freq_rate	tier_HIGH	tier_MODERATE	tier_LOW	tier_NA
+tool	n_samples	alleles_expected	alleles_parsed	parse_rate	alleles_normalized	norm_rate	alleles_with_freq	freq_rate	tier_detailed	tier_partial	tier_limited	tier_NA
 arcashla	2692	26332	26308	99.9%	26304	100.0%	23481	89.3%	23480	2824	4	0
 t1k	2692	26332	26284	99.8%	26280	100.0%	23459	89.3%	23458	2822	4	0
 hlahd	2692	26332	26284	99.8%	26280	100.0%	23459	89.3%	23458	2822	4	0

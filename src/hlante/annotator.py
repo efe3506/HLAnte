@@ -8,7 +8,7 @@ queries for a list of :class:`NormalizedAllele` records.
 For every input allele the engine queries the configured database
 clients and produces a unified :class:`AnnotatedHLA` record that
 includes a disease-risk summary, drug-response summary, overall
-clinical significance, and a confidence score.
+clinical significance, and an input-quality score.
 """
 
 from __future__ import annotations
@@ -25,7 +25,15 @@ from hlante.db.afnd import (
 )
 from hlante.db.nmdp import NMDPClient
 from hlante.db.curated import CuratedDiseaseClient
-from hlante.types import DiseaseEntry
+from hlante.types import (
+    LAYER_CURATED_BUILTIN,
+    LAYER_DB_GWAS,
+    LAYER_DB_PHARMGKB,
+    LAYER_GUIDELINE_CPIC,
+    LAYER_NONE,
+    DiseaseEntry,
+    order_layers,
+)
 from hlante.db.gwas import (
     DEFAULT_P_VALUE_THRESHOLD,
     GWASClient,
@@ -41,9 +49,9 @@ from hlante.normalizer import NormalizedAllele
 from hlante.types import InputSource
 
 # Association-strength prefixes and no-hit placeholders. These strings
-# are also re-exported from ``hlante.reporter``; any change must be
-# mirrored there so TSV / Markdown / JSON consumers stay in sync.
-# P0-8: values were reworded from risk-magnitude language
+# Are also re-exported from ``hlante.reporter``; any change must be
+# Mirrored there so TSV / Markdown / JSON consumers stay in sync.
+# Values were reworded from risk-magnitude language
 # ("High risk") to association-strength language ("Strong association").
 RISK_PREFIX_HIGH: str = "Strong association"
 RISK_PREFIX_MODERATE: str = "Moderate association"
@@ -69,13 +77,13 @@ class HLAAnnotationError(Exception):
 
 
 # ---------------------------------------------------------------------------
-# Evidence-strength labels (P0-8)
+# Evidence-strength labels
 # ---------------------------------------------------------------------------
 #
 # HLAnte does NOT implement ACMG/AMP criteria. The labels below are
-# evidence-strength descriptors, not clinical classifications. The
-# constant names (``SIGNIFICANCE_PATHOGENIC`` etc.) are preserved for
-# backward compatibility with imports; the string values were revised
+# Evidence-strength descriptors, not clinical classifications. The
+# Constant names (``SIGNIFICANCE_PATHOGENIC`` etc.) are preserved for
+# Backward compatibility with imports; the string values were revised
 # to remove ACMG-adjacent language
 # (``Pathogenic`` / ``Likely Pathogenic`` / ``VUS`` / ``Benign`` /
 # ``Novel``) and replace them with neutral evidence-strength phrasing.
@@ -84,11 +92,18 @@ class HLAAnnotationError(Exception):
 SIGNIFICANCE_NOVEL: str = "Not in IMGT"
 SIGNIFICANCE_NULL_ALLELE: str = "Null allele (not expressed) — risk not assessed"
 # NOTE: these are evidence-strength / actionability descriptors, deliberately
-# phrased to AVOID ACMG/AMP variant-classification vocabulary ("pathogenic",
+# Phrased to AVOID ACMG/AMP variant-classification vocabulary ("pathogenic",
 # "likely pathogenic", "VUS"), which does not apply to statistical HLA
-# disease/PGx associations.
+# Disease/PGx associations.
 SIGNIFICANCE_PATHOGENIC: str = "Actionable pharmacogenomic risk (CPIC 1A — avoid)"
 SIGNIFICANCE_LIKELY_PATHOGENIC: str = "Strong pharmacogenomic risk association"
+#: Emitted when the only actionable evidence is the curated reference table.
+#: It deliberately does NOT assert a CPIC level: the curated table is a
+#: transcription maintained by the authors, not a live CPIC/PharmGKB lookup,
+#: and the two carry different curation frameworks.
+SIGNIFICANCE_CURATED_ACTIONABLE: str = (
+    "Actionable pharmacogenomic risk (curated reference)"
+)
 SIGNIFICANCE_RISK_FACTOR: str = "Suggestive risk factor"
 SIGNIFICANCE_BENIGN: str = "No reported risk"
 SIGNIFICANCE_BENIGN_LIMITED: str = "Not assessed — insufficient coverage"
@@ -125,7 +140,7 @@ class AnnotatorConfig:
     enable_pharmgkb : bool
         Toggle PharmGKB queries.
     enable_afnd : bool
-        Toggle AFND lookups (used for confidence scoring).
+        Toggle AFND lookups (used for input-quality scoring).
     gwas_p_threshold : float
         p-value threshold for GWAS hits.
     pharmgkb_evidence_levels : frozenset of str
@@ -185,8 +200,8 @@ class AnnotatedHLA:
         ACMG/AMP classifications. See the module-level constant block
         for definitions.
     gwas_resolution_used : str
-        Resolution tier at which GWAS hits were found (``"2-field"``,
-        ``"4-field"``, ``"6-field"``, ``"8-field"``) or ``"none"``.
+        Resolution tier at which GWAS hits were found
+        (``"one-field"`` … ``"four-field"``) or ``"none"``.
     allele_frequency : float or None
         Population-specific frequency from AFND.
     frequency_population : str or None
@@ -195,10 +210,10 @@ class AnnotatedHLA:
         Aggregate sample size behind the frequency estimate.
     frequency_is_estimated : bool
         ``True`` when fallback resolution was required to find a frequency.
-    confidence_score : float
+    input_quality_score : float
         Confidence score in ``[0.0, 1.0]``. Lowered for novel, rare,
         low-resolution, or ambiguous calls.
-    confidence_rationale : str
+    input_quality_rationale : str
         Pipe-delimited reason codes explaining the score
         (e.g., ``"rare_allele(0.0003)|novel_allele"``).
     """
@@ -215,9 +230,10 @@ class AnnotatedHLA:
     frequency_population: Optional[str] = None
     frequency_sample_size: Optional[int] = None
     frequency_is_estimated: bool = False
-    confidence_score: float = 1.0
-    confidence_rationale: str = "standard"
-    confidence_tier: str = "HIGH"
+    input_quality_score: float = 1.0
+    input_quality_rationale: str = "standard"
+    input_quality_tier: str = "detailed"
+    significance_basis: str = LAYER_NONE
 
 
 # ---------------------------------------------------------------------------
@@ -354,10 +370,10 @@ def annotate_genotype(
         disease_entries: List[DiseaseEntry]
         if allele.is_null:
             # Null (non-expressed) allele: the antigen is absent from the
-            # cell surface, so the surface-expression-dependent HLA disease
-            # and drug-hypersensitivity associations do not apply. Suppress
-            # those lookups to avoid emitting a false risk alert. The allele
-            # frequency is still meaningful and is retained below.
+            # Cell surface, so the surface-expression-dependent HLA disease
+            # And drug-hypersensitivity associations do not apply. Suppress
+            # Those lookups to avoid emitting a false risk alert. The allele
+            # Frequency is still meaningful and is retained below.
             gwas_hits, gwas_resolution = [], RESOLUTION_LABEL_NONE
             pharm_anns = []
             disease_entries = []
@@ -400,8 +416,8 @@ def annotate_genotype(
         gwas_hits = [h for h in gwas_hits if h.pmid]
         pharm_anns = [p for p in pharm_anns if p.pmid]
 
-        confidence, rationale = _compute_confidence_score(allele, freq, config.input_source)
-        tier = _confidence_tier(confidence)
+        confidence, rationale = _compute_input_quality_score(allele, freq, config.input_source)
+        tier = _input_quality_tier(confidence)
 
         if allele.is_null:
             clinical_significance = SIGNIFICANCE_NULL_ALLELE
@@ -414,9 +430,9 @@ def annotate_genotype(
                 "associations not applicable."
             )
             # A non-expressed allele must never be presented at HIGH
-            # confidence, regardless of its frequency/resolution typing score.
-            if tier == "HIGH":
-                tier = "MODERATE"
+            # Input quality, regardless of its frequency/resolution score.
+            if tier == "detailed":
+                tier = "partial"
         else:
             clinical_significance = _classify_significance(
                 allele,
@@ -438,32 +454,41 @@ def annotate_genotype(
                 disease_risk_summary=disease_risk_summary,
                 drug_response_summary=drug_response_summary,
                 clinical_significance=clinical_significance,
+                significance_basis=_significance_basis(
+                    gwas_hits,
+                    pharm_anns,
+                    disease_entries,
+                    curated_layer=getattr(
+                        clients.curated, "layer_token", LAYER_CURATED_BUILTIN
+                    ),
+                    p_threshold=config.gwas_p_threshold,
+                ),
                 gwas_resolution_used=(gwas_resolution if gwas_hits else RESOLUTION_LABEL_NONE),
                 allele_frequency=freq.frequency if freq else None,
                 frequency_population=(f"{freq.population} ({freq.source})" if freq else None),
                 frequency_sample_size=freq.sample_size if freq else None,
                 frequency_is_estimated=freq.is_estimated if freq else False,
-                confidence_score=confidence,
-                confidence_rationale=rationale,
-                confidence_tier=tier,
+                input_quality_score=confidence,
+                input_quality_rationale=rationale,
+                input_quality_tier=tier,
             )
         )
     return results
 
 
-def _compute_confidence_score(
+def _compute_input_quality_score(
     normalized: NormalizedAllele,
     freq: Optional[AllelFrequency],
     input_source: InputSource = InputSource.TYPING_TOOL,
 ) -> Tuple[float, str]:
     """
-    Compute ``(confidence_score, rationale)`` for an allele.
+    Compute ``(input_quality_score, rationale)`` for an allele.
 
     Deterministic, pure function. The score starts at 1.0 and is
     multiplied by stated penalties that reflect the annotation
     uncertainty introduced by each signal. Penalty values align with
     published HLA-typing concordance gaps (arcasHLA/HLA-HD ~99 % at
-    2-field vs ~92 % at 4-field; Illing et al. 2022 Frontiers Immunol)
+    two-field vs ~92 % at four-field; Illing et al. 2022 Frontiers Immunol)
     and AFND rarity classifications. Because HLAnte is a research
     annotation aid — not a clinical decision tool — these criteria are
     explicitly declared rather than empirically calibrated against a
@@ -476,8 +501,8 @@ def _compute_confidence_score(
     Rare allele (freq < 0.001)          × 0.50                   all sources
     Uncommon (0.001 ≤ freq < 0.01)      × 0.80                   all sources
     Frequency unknown (no AFND/NMDP)    × 0.85                   all sources
-    Low resolution (2-field)            × 0.70                   all sources
-    Medium resolution (4-field)         × 0.90                   all sources
+    Low resolution (one-field)          × 0.70                   all sources
+    Medium resolution (two-field)       × 0.90                   all sources
     Ambiguous (is_ambiguous)            × 0.75                   TYPING_TOOL,
                                                                  SIMULATED,
                                                                  UNKNOWN only
@@ -531,32 +556,32 @@ def _compute_confidence_score(
         reasons.append("freq_unknown")
 
     # 3. Resolution
-    if normalized.resolution_level == 2:
+    if normalized.resolution_level == 1:
         score *= 0.7
-        reasons.append("low_resolution(2-field)")
-    elif normalized.resolution_level == 4:
+        reasons.append("low_resolution(one-field)")
+    elif normalized.resolution_level == 2:
         score *= 0.9
-        reasons.append("medium_resolution(4-field)")
+        reasons.append("medium_resolution(two-field)")
 
     # 4. Ambiguous allele — penalty depends on input source
     if normalized.is_ambiguous:
         if input_source == InputSource.VALIDATED:
             # Validated calls are exactly correct at their reported resolution.
             # The resolution penalty already captures the loss of specificity;
-            # the ambiguity penalty (which reflects tool uncertainty) does not
-            # apply.
+            # The ambiguity penalty (which reflects tool uncertainty) does not
+            # Apply.
             reasons.append("ambiguity_suppressed(validated_source)")
         else:
             score *= 0.75
             reasons.append("ambiguous")
 
     # 5. Expression status (IPD-IMGT/HLA suffix). A null allele is not
-    # expressed; its disease/drug annotations are suppressed upstream and it
+    # Expressed; its disease/drug annotations are suppressed upstream and it
     # is never shown at HIGH tier, so the rationale records the status
-    # without an additional numeric penalty (the call itself may be correct).
+    # Without an additional numeric penalty (the call itself may be correct).
     # Reduced/aberrant-expression alleles (L/S/C/A/Q) are annotated but
-    # down-weighted, as the clinical relevance of their altered expression is
-    # uncertain.
+    # Down-weighted, as the clinical relevance of their altered expression is
+    # Uncertain.
     if normalized.is_null:
         reasons.append("null_allele(not_expressed)")
     elif normalized.is_low_or_aberrant_expression:
@@ -567,9 +592,9 @@ def _compute_confidence_score(
     return round(score, 4), rationale
 
 
-def _confidence_tier(score: Optional[float]) -> str:
+def _input_quality_tier(score: Optional[float]) -> str:
     """
-    Convert a numeric confidence score to an interpretable tier.
+    Convert a numeric input-quality score to an interpretable tier.
 
     Parameters
     ----------
@@ -578,23 +603,23 @@ def _confidence_tier(score: Optional[float]) -> str:
     Returns
     -------
     str
-        ``"HIGH"`` (score ≥ 0.85), ``"MODERATE"`` (0.70 ≤ score < 0.85),
-        ``"LOW"`` (score < 0.70), or ``"NA"`` (score is ``None``).
+        ``"detailed"`` (score ≥ 0.85), ``"partial"`` (0.70 ≤ score < 0.85),
+        ``"limited"`` (score < 0.70), or ``"NA"`` (score is ``None``).
 
     Notes
     -----
     Tier thresholds are stated criteria for this research tool:
-    HIGH (≥ 0.85) — well-characterised allele, ≥ 4-field, known frequency;
+    HIGH (≥ 0.85) — well-characterised allele, two or more fields, known frequency;
     MODERATE (0.70–0.85) — minor uncertainty (ambiguous or freq unknown);
-    LOW (< 0.70) — substantial uncertainty (2-field, novel, or very rare).
+    LOW (< 0.70) — substantial uncertainty (one-field, novel, or very rare).
     """
     if score is None:
         return "NA"
     if score >= 0.85:
-        return "HIGH"
+        return "detailed"
     if score >= 0.70:
-        return "MODERATE"
-    return "LOW"
+        return "partial"
+    return "limited"
 
 
 def _query_gwas_with_fallback(
@@ -612,7 +637,7 @@ def _query_gwas_with_fallback(
         if callable(fallback):
             return cast(Tuple[List[Any], str], fallback(allele_name))
         hits = client.query_allele(allele_name)
-        return hits, ("4-field" if hits else RESOLUTION_LABEL_NONE)
+        return hits, ("two-field" if hits else RESOLUTION_LABEL_NONE)
     except Exception as exc:  # noqa: BLE001 — DB exception swallowing
         logger.warning("GWAS query for %s failed: %s", allele_name, exc)
         return [], RESOLUTION_LABEL_NONE
@@ -709,7 +734,7 @@ def _build_drug_response_summary(
 def _severity_label(odds_ratio: Optional[float]) -> str:
     # Direction of effect is decided first: any OR < 1.0 is an inverse
     # (protective) association, not a risk association. The
-    # previous threshold (OR <= 0.5) mislabeled weakly protective alleles
+    # Previous threshold (OR <= 0.5) mislabeled weakly protective alleles
     # (0.5 < OR < 1.0) as a plain "reported association".
     if odds_ratio is None:
         return RISK_PREFIX_ASSOCIATION
@@ -741,6 +766,37 @@ def _evidence_rank(level: str) -> int:
 # ---------------------------------------------------------------------------
 
 
+def _significance_basis(
+    gwas_hits: Sequence[GWASHit],
+    pharm_annotations: Sequence[PharmAnnotation],
+    disease_entries: Sequence[DiseaseEntry],
+    curated_layer: str = LAYER_CURATED_BUILTIN,
+    p_threshold: float = DEFAULT_P_VALUE_THRESHOLD,
+) -> str:
+    """
+    Report which evidence layers contributed to this allele's annotation.
+
+    The layers are not equivalent: a CPIC guideline recommendation, a
+    database association retrieved from PharmGKB or the GWAS Catalog, and an
+    entry transcribed into the curated reference table rest on different
+    frameworks. Emitting the provenance keeps that distinction visible in the
+    report rather than collapsing it into one significance string.
+    """
+    tokens = []
+    for p in pharm_annotations:
+        level = (p.evidence_level or "").upper()
+        if level == "1A" and (p.cpic_url or "").strip():
+            tokens.append(LAYER_GUIDELINE_CPIC)
+        else:
+            tokens.append(LAYER_DB_PHARMGKB)
+    if any(h.p_value is not None and h.p_value <= p_threshold for h in gwas_hits):
+        tokens.append(LAYER_DB_GWAS)
+    if disease_entries:
+        tokens.append(curated_layer)
+    ordered = order_layers(tokens)
+    return "+".join(ordered) if ordered else LAYER_NONE
+
+
 def _classify_significance(
     allele: NormalizedAllele,
     gwas_hits: Sequence[GWASHit],
@@ -754,7 +810,7 @@ def _classify_significance(
 
     Notes
     -----
-    P0-4: ``Benign`` is now split. The plain :data:`SIGNIFICANCE_BENIGN`
+    ``Benign`` is now split. The plain :data:`SIGNIFICANCE_BENIGN`
     label is reserved for alleles where *at least one database query
     succeeded* (GWAS resolution not ``none``, or any pharm / curated
     disease record) and no signal of risk was found. When the allele is known
@@ -765,9 +821,20 @@ def _classify_significance(
     if allele.is_novel:
         return SIGNIFICANCE_NOVEL
 
+    # A CPIC level may only be asserted when a PharmGKB clinical annotation
+    # Actually carries it. The curated reference table is a transcription and
+    # Gets its own, weaker label, so a curated entry is never presented as
+    # a CPIC guideline assertion.
+    has_cpic_guideline = any(
+        (p.evidence_level or "").upper() == "1A" and (p.cpic_url or "").strip()
+        for p in pharm_annotations
+    )
+    if has_cpic_guideline:
+        return SIGNIFICANCE_PATHOGENIC
+
     cv_labels = [e.significance.strip().lower() for e in disease_entries]
     if any(label == "pathogenic" for label in cv_labels):
-        return SIGNIFICANCE_PATHOGENIC
+        return SIGNIFICANCE_CURATED_ACTIONABLE
     if any(label == "likely pathogenic" for label in cv_labels):
         return SIGNIFICANCE_LIKELY_PATHOGENIC
 
@@ -785,7 +852,7 @@ def _classify_significance(
 
     # At this point: no hits from any source.
     # Determine whether at least one DB was actually queried + returned
-    # something (even if curated entries with non-qualifying significance)
+    # Something (even if curated entries with non-qualifying significance)
     # vs. every DB came back empty.
     any_db_queried = (
         gwas_resolution not in (RESOLUTION_LABEL_NONE, "none")
@@ -816,5 +883,5 @@ __all__ = [
     "SIGNIFICANCE_VUS",
     "annotate_genotype",
     "build_clients",
-    "_compute_confidence_score",
+    "_compute_input_quality_score",
 ]

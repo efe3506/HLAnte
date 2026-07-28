@@ -61,12 +61,12 @@ def _normalized(
     sample_id: str = "S1",
     tool: str = "t1k",
     locus: str = "HLA-B",
-    resolution: str = "4-field",
+    resolution: str = "two-field",
     allele_index: int = 0,
     imgt_accession: Optional[str] = "HLA00001",
     protein_group: Optional[str] = "B*57:01G",
     hla_class: str = "I",
-    resolution_level: int = 4,
+    resolution_level: int = 2,
     is_ambiguous: bool = False,
     is_novel: bool = False,
 ) -> NormalizedAllele:
@@ -121,7 +121,7 @@ def sample_dataset() -> List[AnnotatedHLA]:
             allele_index=0,
             locus="HLA-B",
             tool="t1k",
-            resolution="4-field",
+            resolution="two-field",
         ),
         gwas=[
             GWASHit(
@@ -181,7 +181,7 @@ def sample_dataset() -> List[AnnotatedHLA]:
             allele_index=0,
             locus="HLA-DRB1",
             tool="hlahd",
-            resolution="4-field",
+            resolution="two-field",
             hla_class="II",
             imgt_accession="HLA00100",
             protein_group="DRB1*15:01:01G",
@@ -279,9 +279,9 @@ class TestGenerateTSV:
         assert s1_row[idx["pharm_drugs"]] == "abacavir"
         assert s1_row[idx["pharm_evidence"]] == "1A"
         assert s1_row[idx["pharm_pmids"]] == "18256392"
-        # P0-8: clinical_significance is now composed of the
-        # evidence-strength labels from hlante.annotator — imported as
-        # constants to avoid hard-coding display text here.
+        # Clinical_significance is now composed of the
+        # Evidence-strength labels from hlante.annotator — imported as
+        # Constants to avoid hard-coding display text here.
         assert s1_row[idx["clinical_significance"]] == (
             f"{SIGNIFICANCE_PATHOGENIC}|{SIGNIFICANCE_BENIGN}"
         )
@@ -344,7 +344,7 @@ class TestGenerateTSV:
         generate_tsv(sample_dataset, out)
         with pytest.raises(OutputFileExistsError, match="already exists"):
             generate_tsv(sample_dataset, out)
-        # overwrite=True succeeds
+        # Overwrite=True succeeds
         generate_tsv(sample_dataset, out, overwrite=True)
 
     def test_csv_wrapper_uses_comma(
@@ -384,8 +384,8 @@ class TestGenerateMarkdown:
         generate_markdown_report(sample_dataset, out)
         text = out.read_text(encoding="utf-8")
         # The title omits the word "Clinical" (which would imply
-        # clinical standards the tool does not meet). The three section
-        # headings use association-/evidence-strength framing.
+        # Clinical standards the tool does not meet). The three section
+        # Headings use association-/evidence-strength framing.
         assert "# HLAnte Research Annotation Report" in text
         assert "## Sample: S1" in text
         assert "## Sample: S2" in text
@@ -403,8 +403,8 @@ class TestGenerateMarkdown:
         out = tmp_path / "report.md"
         generate_markdown_report(sample_dataset, out)
         text = out.read_text(encoding="utf-8")
-        assert "| HLA-B | B*57:01 | B*07:02 | 4-field | t1k |" in text
-        assert "| HLA-DRB1 | DRB1*15:01 | NA | 4-field | hlahd |" in text
+        assert "| HLA-B | B*57:01 | B*07:02 | two-field | t1k |" in text
+        assert "| HLA-DRB1 | DRB1*15:01 | NA | two-field | hlahd |" in text
 
     def test_risk_summary_includes_gwas(
         self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
@@ -430,8 +430,8 @@ class TestGenerateMarkdown:
         out = tmp_path / "report.md"
         generate_markdown_report(sample_dataset, out)
         text = out.read_text(encoding="utf-8")
-        # P0-8: "⚠️ Critical" was reworded to "⚠️ Strong evidence" to
-        # avoid implying a clinical severity judgement.
+        # "⚠️ Critical" was reworded to "⚠️ Strong evidence" to
+        # Avoid implying a clinical severity judgement.
         assert "⚠️ Strong evidence" in text
         assert "abacavir HSR risk (1A evidence)" in text
         assert "cpicpgx.org" in text
@@ -442,7 +442,7 @@ class TestGenerateMarkdown:
     ) -> None:
         """
         The auto-generated interpretation note must follow the expected
-        shape. P0-8: the closing sentence was reworded from "Clinician
+        shape. The closing sentence reads "Clinician
         review is recommended" to a research-use reminder.
         """
         out = tmp_path / "report.md"
@@ -539,7 +539,7 @@ class TestGenerateJSON:
 
 
 # ---------------------------------------------------------------------------
-# generate_all
+# Generate_all
 # ---------------------------------------------------------------------------
 
 
@@ -583,7 +583,7 @@ class TestGenerateAll:
         # Second call with overwrite=False must raise.
         with pytest.raises(OutputFileExistsError):
             generate_all(sample_dataset, out_dir, prefix="run")
-        # overwrite=True must succeed.
+        # Overwrite=True must succeed.
         generate_all(sample_dataset, out_dir, prefix="run", overwrite=True)
 
 
@@ -628,38 +628,38 @@ class TestLargeCohort:
 
 
 # ---------------------------------------------------------------------------
-# P0-6 — confidence_tier helper
+# Input_quality_tier helper
 # ---------------------------------------------------------------------------
 
 
 class TestConfidenceTier:
     """
-    ``_confidence_tier`` thresholds: HIGH ≥ 0.85, MODERATE ≥ 0.70,
+    ``_input_quality_tier`` thresholds: HIGH ≥ 0.85, MODERATE ≥ 0.70,
     else LOW; ``None`` → ``NA``.
     """
 
     def test_high(self) -> None:
-        from hlante.annotator import _confidence_tier
-        assert _confidence_tier(0.90) == "HIGH"
-        assert _confidence_tier(0.85) == "HIGH"
+        from hlante.annotator import _input_quality_tier
+        assert _input_quality_tier(0.90) == "detailed"
+        assert _input_quality_tier(0.85) == "detailed"
 
     def test_moderate(self) -> None:
-        from hlante.annotator import _confidence_tier
-        assert _confidence_tier(0.75) == "MODERATE"
-        assert _confidence_tier(0.70) == "MODERATE"
+        from hlante.annotator import _input_quality_tier
+        assert _input_quality_tier(0.75) == "partial"
+        assert _input_quality_tier(0.70) == "partial"
 
     def test_low(self) -> None:
-        from hlante.annotator import _confidence_tier
-        assert _confidence_tier(0.64) == "LOW"
-        assert _confidence_tier(0.0) == "LOW"
+        from hlante.annotator import _input_quality_tier
+        assert _input_quality_tier(0.64) == "limited"
+        assert _input_quality_tier(0.0) == "limited"
 
     def test_none(self) -> None:
-        from hlante.annotator import _confidence_tier
-        assert _confidence_tier(None) == "NA"
+        from hlante.annotator import _input_quality_tier
+        assert _input_quality_tier(None) == "NA"
 
 
 # ---------------------------------------------------------------------------
-# P0-9 — confidence_rationale uses ";;" between alleles
+# Input_quality_rationale uses ";;" between alleles
 # ---------------------------------------------------------------------------
 
 
@@ -679,9 +679,9 @@ class TestConfidenceRationaleSeparator:
             imgt_accession="HLA00009", protein_group=None,
         )
         a1 = _annotated(norm1)
-        a1.confidence_rationale = "freq_unknown|ambiguous"
+        a1.input_quality_rationale = "freq_unknown|ambiguous"
         a2 = _annotated(norm2)
-        a2.confidence_rationale = "freq_unknown|ambiguous"
+        a2.input_quality_rationale = "freq_unknown|ambiguous"
 
         out = tmp_path / "rationale.tsv"
         generate_tsv([a1, a2], out)
@@ -692,7 +692,7 @@ class TestConfidenceRationaleSeparator:
         )
         cells = data_line.split("\t")
         from hlante.reporter import TSV_COLUMNS
-        idx = TSV_COLUMNS.index("confidence_rationale")
+        idx = TSV_COLUMNS.index("input_quality_rationale")
         cell = cells[idx]
         parts = cell.split(";;")
         assert len(parts) == 2, (
@@ -700,3 +700,70 @@ class TestConfidenceRationaleSeparator:
         )
         assert "freq_unknown" in parts[0]
         assert "freq_unknown" in parts[1]
+
+
+class TestGLString:
+    """
+    GL String output (Milius et al. 2013; GL String 1.1, Mack et al. 2023).
+
+    HLAnte holds at most two allele designations per locus and models neither
+    chromosomal phase nor alternative genotypes, so it must emit only the
+    genotype delimiter (+) and the locus delimiter (^). Emitting /, ~, | or ?
+    would assert information the tool does not have.
+    """
+
+    def _read(self, path: Path):
+        lines = path.read_text(encoding="utf-8").splitlines()
+        rows = list(csv.reader([ln for ln in lines if not ln.startswith("#")], delimiter="\t"))
+        return rows[0], rows[1:]
+
+    def test_locus_genotype_is_fully_qualified_and_plus_joined(
+        self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
+    ) -> None:
+        out = tmp_path / "report.tsv"
+        generate_tsv(sample_dataset, out)
+        header, data = self._read(out)
+        idx = header.index("gl_string")
+        values = [r[idx] for r in data if r[idx] != "NA"]
+        assert values, "no GL String produced"
+        for value in values:
+            for allele in value.split("+"):
+                assert allele.startswith("HLA-") and "*" in allele, value
+
+    def test_never_emits_unsupported_operators(
+        self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
+    ) -> None:
+        out = tmp_path / "report.tsv"
+        generate_tsv(sample_dataset, out)
+        header, data = self._read(out)
+        idx = header.index("gl_string")
+        for row in data:
+            for operator in ("/", "~", "|", "?"):
+                assert operator not in row[idx], (operator, row[idx])
+
+    def test_single_reported_allele_is_not_duplicated(
+        self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
+    ) -> None:
+        """
+        The S2/HLA-DRB1 record in the fixture reports one allele; the missing
+        gene copy must not be invented.
+        """
+        out = tmp_path / "report.tsv"
+        generate_tsv(sample_dataset, out)
+        header, data = self._read(out)
+        idx = header.index("gl_string")
+        singles = [r[idx] for r in data if r[header.index("allele2")] == "NA"]
+        assert singles, "fixture must contain a single-allele locus"
+        for value in singles:
+            assert "+" not in value, value
+
+    def test_sample_level_string_joins_loci(
+        self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
+    ) -> None:
+        out = tmp_path / "report.json"
+        generate_json(sample_dataset, out)
+        payload = json.loads(out.read_text(encoding="utf-8"))
+        for sample in payload["samples"]:
+            assert sample["gl_string"]
+            for locus in sample["loci"]:
+                assert locus["gl_string"]

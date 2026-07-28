@@ -25,6 +25,7 @@ import pytest
 from hlante.annotator import (
     SIGNIFICANCE_BENIGN,
     SIGNIFICANCE_NOVEL,
+    SIGNIFICANCE_CURATED_ACTIONABLE,
     SIGNIFICANCE_PATHOGENIC,
     SIGNIFICANCE_RISK_FACTOR,
     SIGNIFICANCE_VUS,
@@ -300,12 +301,12 @@ class _StubGWAS:
 
     def query_allele_with_fallback(self, allele: str, min_resolution: int = 2):
         """
-        Test stub: if a hit exists for the full query return "4-field";
+        Test stub: if a hit exists for the full query return "two-field";
         otherwise return "none". The actual fallback logic is covered
         in the GWASClient unit tests.
         """
         hits = self.query_allele(allele)
-        return hits, ("4-field" if hits else "none")
+        return hits, ("two-field" if hits else "none")
 
 
 class _StubPharmGKB:
@@ -329,7 +330,7 @@ class _StubCurated:
 
 
 # ---------------------------------------------------------------------------
-# annotate_genotype — end to end
+# Annotate_genotype — end to end
 # ---------------------------------------------------------------------------
 
 
@@ -395,8 +396,8 @@ class TestAnnotateGenotype:
 
     def test_pathogenic_classification(self) -> None:
         """
-        Alleles with a curated Pathogenic entry must be classified
-        ``Pathogenic``.
+        A PharmGKB Level 1A annotation carrying a CPIC guideline link may
+        assert the CPIC label.
         """
         allele = _make_allele("B*57:01")
         config = AnnotatorConfig(offline=True)
@@ -406,7 +407,7 @@ class TestAnnotateGenotype:
         assert result.clinical_significance == SIGNIFICANCE_PATHOGENIC
         assert "Abacavir" in result.disease_risk_summary
         assert "OR=4.20" in result.disease_risk_summary
-        # P0-8: RISK_PREFIX_HIGH is now "Strong association".
+        # RISK_PREFIX_HIGH is now "Strong association".
         assert "Strong association" in result.disease_risk_summary
         assert "abacavir" in result.drug_response_summary
         assert "1A" in result.drug_response_summary
@@ -431,7 +432,7 @@ class TestAnnotateGenotype:
     def test_benign_classification(self) -> None:
         """
         No hits + IMGT-known + no DB query ran (empty stubs return
-        ``("none", [])`` for GWAS fallback) → P0-4 classifies this as
+        ``("none", [])`` for GWAS fallback) is classified as
         ``Benign (limited evidence)`` to distinguish it from a verified
         clean result. ``_make_clients`` with populated stubs covers
         the plain ``Benign`` path separately.
@@ -477,7 +478,13 @@ class TestAnnotateGenotype:
 
     def test_disabled_source_not_queried(self) -> None:
         """
-        Disabled clients must not be queried.
+        Disabled clients must not be queried, and the curated table alone
+        must not assert a CPIC level.
+
+        With PharmGKB switched off the only actionable evidence is the
+        curated reference table. That is a transcription maintained with
+        this package, not a live guideline lookup, so it gets its own label
+        rather than the CPIC-1A wording.
         """
         allele = _make_allele("B*57:01")
         clients = self._make_clients()
@@ -491,8 +498,8 @@ class TestAnnotateGenotype:
 
         result = annotate_genotype([allele], config, clients=clients)[0]
         assert result.pharm_annotations == []
-        # Pharm disabled but curated still present → still pathogenic.
-        assert result.clinical_significance == SIGNIFICANCE_PATHOGENIC
+        # Pharm disabled: the curated table alone cannot assert a CPIC level.
+        assert result.clinical_significance == SIGNIFICANCE_CURATED_ACTIONABLE
 
     def test_client_exception_is_logged_and_swallowed(
         self, caplog: pytest.LogCaptureFixture
@@ -553,7 +560,7 @@ class TestAnnotateGenotype:
 
 
 # ---------------------------------------------------------------------------
-# P0-4 — Benign vs Benign (limited evidence)
+# Benign vs Benign (limited evidence)
 # ---------------------------------------------------------------------------
 
 
@@ -598,6 +605,6 @@ class TestBenignLimitedEvidence:
             imgt_accession="HLA00001",
         )
         label = _classify_significance(
-            allele, [], [], [], gwas_resolution="4-field"
+            allele, [], [], [], gwas_resolution="two-field"
         )
         assert label == SIGNIFICANCE_BENIGN

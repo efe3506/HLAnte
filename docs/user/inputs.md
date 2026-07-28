@@ -91,18 +91,20 @@ OptiType reports **Class I loci only** (HLA-A, HLA-B, HLA-C).
 
 ## Allele resolution
 
-HLAnte accepts alleles at any resolution (2-field through 8-field).
+HLAnte accepts alleles at any resolution, from one field through four fields
+(current HLA nomenclature admits at most four colon-separated fields).
 The confidence score is penalised for lower-resolution calls:
 
 | Resolution | Example | Penalty |
 |------------|---------|---------|
-| 8-field | `A*02:01:01:01` | none |
-| 6-field | `A*02:01:01` | none |
-| 4-field | `A*02:01` | none |
-| 2-field | `A*02` | ×0.85 (typing_tool) or none (validated) |
+| `four-field` | `A*02:01:01:01` | none |
+| `three-field` | `A*02:01:01` | none |
+| `two-field` | `A*02:01` | ×0.90 |
+| `one-field` | `A*02` | ×0.70 |
 
 Use `--input-source validated` when the input alleles are Sanger-validated
-(e.g. 1000 Genomes types) to suppress the 2-field ambiguity penalty.
+(e.g. 1000 Genomes types) to suppress the ambiguity penalty that otherwise
+applies to two-field calls.
 
 ---
 

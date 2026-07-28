@@ -89,31 +89,31 @@
     "EUR": {
       "n": 529,
       "freq_pct": "96.7%",
-      "mean_conf": "0.895",
+      "mean_input_quality": "0.895",
       "low_pct": "0.1%"
     },
     "EAS": {
       "n": 536,
       "freq_pct": "91.2%",
-      "mean_conf": "0.888",
+      "mean_input_quality": "0.888",
       "low_pct": "0.0%"
     },
     "AMR": {
       "n": 372,
       "freq_pct": "87.4%",
-      "mean_conf": "0.883",
+      "mean_input_quality": "0.883",
       "low_pct": "0.0%"
     },
     "SAS": {
       "n": 543,
       "freq_pct": "87.4%",
-      "mean_conf": "0.883",
+      "mean_input_quality": "0.883",
       "low_pct": "0.0%"
     },
     "AFR": {
       "n": 712,
       "freq_pct": "85.0%",
-      "mean_conf": "0.880",
+      "mean_input_quality": "0.880",
       "low_pct": "0.0%"
     }
   }

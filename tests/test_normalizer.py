@@ -46,32 +46,31 @@ IMGT_MINI_DIR: Path = FIXTURES_DIR / "imgt_mini"
 
 
 # ---------------------------------------------------------------------------
-# P0-3 — resolution based on colon-group count
+# Resolution based on colon-group count
 # ---------------------------------------------------------------------------
 
 
 class TestResolutionColonGroupCount:
     """
-    :func:`_resolution_of` must return field-level resolution based
-    on colon-group count, not digit count. Before this fix,
-    ``DPB1*104:01:01`` was wrongly labelled 8-field because its
-    three colon-groups contain 7 digits (3+2+2).
+    :func:`_resolution_of` returns the number of colon-separated
+    fields (1..4), not a digit count. ``DPB1*104:01:01`` is the
+    discriminating case: three fields but seven digits (3+2+2).
     """
 
     def test_dpb1_three_digit_first_field_resolution(self) -> None:
-        assert _resolution_of("DPB1*104:01:01") == 6
+        assert _resolution_of("DPB1*104:01:01") == 3
 
     @pytest.mark.parametrize(
         "allele,expected",
         [
-            ("A*02", 2),
-            ("A*02:01", 4),
-            ("A*02:01:01", 6),
-            ("A*02:01:01:01", 8),
-            ("B*57:01G", 4),        # G-suffix stripped → still 2 fields
-            ("A*02:01P", 4),        # P-suffix stripped
-            ("A*02:01N", 4),        # nomenclature suffix stripped
-            ("DRB1*08:04:01", 6),
+            ("A*02", 1),
+            ("A*02:01", 2),
+            ("A*02:01:01", 3),
+            ("A*02:01:01:01", 4),
+            ("B*57:01G", 2),        # G-suffix stripped → still 2 fields
+            ("A*02:01P", 2),        # P-suffix stripped
+            ("A*02:01N", 2),        # Nomenclature suffix stripped
+            ("DRB1*08:04:01", 3),
         ],
     )
     def test_resolution_colon_group_count(
@@ -104,7 +103,7 @@ def imgt_db_dir(tmp_path: Path) -> Path:
 
 
 # ---------------------------------------------------------------------------
-# load_imgt_db
+# Load_imgt_db
 # ---------------------------------------------------------------------------
 
 
@@ -211,7 +210,7 @@ class TestLoadIMGTDB:
 
 
 # ---------------------------------------------------------------------------
-# normalize_allele
+# Normalize_allele
 # ---------------------------------------------------------------------------
 
 
@@ -229,7 +228,7 @@ class TestNormalizeAllele:
         assert norm.imgt_accession == "HLA00004"
         assert norm.gene == "HLA-A"
         assert norm.hla_class == "I"
-        assert norm.resolution_level == 8
+        assert norm.resolution_level == 4
         assert norm.is_ambiguous is False
         assert norm.is_novel is False
         assert norm.protein_group == "A*02:01:01G"
@@ -256,11 +255,11 @@ class TestNormalizeAllele:
         self, imgt_db: Dict[str, object]
     ) -> None:
         """
-        An ``A*02`` 2-field allele must be flagged as ambiguous.
+        An ``A*02`` one-field allele must be flagged as ambiguous.
         """
         norm = normalize_allele("A*02", imgt_db)
         assert norm is not None
-        assert norm.resolution_level == 2
+        assert norm.resolution_level == 1
         assert norm.is_ambiguous is True
         assert norm.imgt_accession is None
         assert norm.is_novel is False
@@ -274,7 +273,7 @@ class TestNormalizeAllele:
         """
         norm = normalize_allele("A*02:01", imgt_db)
         assert norm is not None
-        assert norm.resolution_level == 4
+        assert norm.resolution_level == 2
         assert norm.is_ambiguous is True
         assert norm.is_novel is False
 
@@ -286,7 +285,7 @@ class TestNormalizeAllele:
         assert norm is not None
         assert norm.protein_group == "A*02:01:01G"
         assert norm.is_ambiguous is True
-        assert norm.imgt_accession == "HLA00004"  # first group member
+        assert norm.imgt_accession == "HLA00004"  # First group member
 
     def test_p_group_notation(self, imgt_db: Dict[str, object]) -> None:
         """
@@ -335,7 +334,7 @@ class TestNormalizeAllele:
 
 
 # ---------------------------------------------------------------------------
-# resolve_ambiguity
+# Resolve_ambiguity
 # ---------------------------------------------------------------------------
 
 
@@ -399,7 +398,7 @@ class TestResolveAmbiguity:
 
 
 # ---------------------------------------------------------------------------
-# batch_normalize
+# Batch_normalize
 # ---------------------------------------------------------------------------
 
 
@@ -429,8 +428,7 @@ class TestBatchNormalize:
             locus="HLA-A",
             allele1="A*02:01:01:01",
             allele2=None,
-            resolution="8-field",
-            quality_score=None,
+            resolution="four-field",
             tool="t1k",
             raw_line="",
         )
@@ -455,8 +453,7 @@ class TestBatchNormalize:
             locus="HLA-A",
             allele1="A*01:01:01:01",
             allele2=None,
-            resolution="8-field",
-            quality_score=None,
+            resolution="four-field",
             tool="t1k",
             raw_line="",
         )
@@ -472,9 +469,9 @@ class TestBatchNormalize:
         """
         genotypes = [
             HLAGenotype("s1", "HLA-A", "A*01:01:01:01", "A*02:01:01:01",
-                        "8-field", None, "t1k", ""),
+                        "four-field", None, "t1k", ""),
             HLAGenotype("s1", "HLA-B", "B*07:02:01:01", "B*15:01:01:01",
-                        "8-field", None, "t1k", ""),
+                        "four-field", None, "t1k", ""),
         ]
         normalized = batch_normalize(genotypes, imgt_db=imgt_db, max_workers=4)
         assert [n.allele_name for n in normalized] == [
@@ -492,7 +489,7 @@ class TestBatchNormalize:
         """
         genotypes = [
             HLAGenotype("s1", "HLA-A", "BOGUS", None,
-                        "8-field", None, "t1k", ""),
+                        "four-field", None, "t1k", ""),
         ]
         with pytest.raises(InvalidAlleleError):
             batch_normalize(genotypes, imgt_db=imgt_db)

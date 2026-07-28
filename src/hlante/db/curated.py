@@ -32,7 +32,11 @@ from typing import List, Optional
 
 import pandas as pd
 
-from hlante.types import DiseaseEntry
+from hlante.types import (
+    LAYER_CURATED_BUILTIN,
+    LAYER_CURATED_USER,
+    DiseaseEntry,
+)
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -53,6 +57,7 @@ BUILTIN_CURATED_TSV: Path = Path(__file__).parent / "curated_hla_disease.tsv"
 
 # Marker used in review_status so reporter can identify source
 CURATED_REVIEW_STATUS: str = "curated (HLAnte built-in)"
+USER_REVIEW_STATUS: str = "curated (user-supplied table)"
 
 
 class CuratedDiseaseClient:
@@ -77,6 +82,15 @@ class CuratedDiseaseClient:
         self._tsv_path: Path = tsv_path or BUILTIN_CURATED_TSV
         self._df: Optional[pd.DataFrame] = None
         self._loaded: bool = False
+        #: True when the bundled table is in use. A user-supplied table must
+        #: not be reported as the built-in one, since the two carry different
+        #: curation provenance.
+        self.is_builtin: bool = tsv_path is None
+
+    @property
+    def layer_token(self) -> str:
+        """Provenance token for entries returned by this client."""
+        return LAYER_CURATED_BUILTIN if self.is_builtin else LAYER_CURATED_USER
 
     # ------------------------------------------------------------------
     # Public API
@@ -109,7 +123,7 @@ class CuratedDiseaseClient:
 
     def query_allele(self, allele: str) -> List[DiseaseEntry]:
         """
-        Return curated entries for *allele*, with 8→6→4→2-field fallback.
+        Return curated entries for *allele*, falling back from four to one field.
 
         Parameters
         ----------
@@ -153,7 +167,7 @@ class CuratedDiseaseClient:
             citation = str(row.get("Citation", "")).strip()
 
             # Embed OR and population into condition text so reporter
-            # can surface it without schema changes
+            # Can surface it without schema changes
             detail_parts: List[str] = []
             if or_val:
                 detail_parts.append(f"OR={or_val}")
@@ -170,7 +184,11 @@ class CuratedDiseaseClient:
                     variation_id=_stable_curated_id(allele, condition),
                     significance=sig,
                     condition=f"{condition}{detail}",
-                    review_status=CURATED_REVIEW_STATUS,
+                    review_status=(
+                        CURATED_REVIEW_STATUS
+                        if self.is_builtin
+                        else USER_REVIEW_STATUS
+                    ),
                     allele=allele,
                     pmid=pmids,
                 )
@@ -200,4 +218,5 @@ __all__ = [
     "CuratedDiseaseClient",
     "BUILTIN_CURATED_TSV",
     "CURATED_REVIEW_STATUS",
+    "USER_REVIEW_STATUS",
 ]

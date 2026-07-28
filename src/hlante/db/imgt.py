@@ -42,6 +42,8 @@ logger: logging.Logger = logging.getLogger(__name__)
 #: alongside per-file SHA-256 checksums.
 IMGT_DEFAULT_REF: str = "Latest"
 IMGT_GITHUB_RAW_TEMPLATE: str = "https://raw.githubusercontent.com/ANHIG/IMGTHLA/{ref}"
+
+
 IMGT_GITHUB_RAW_BASE: str = IMGT_GITHUB_RAW_TEMPLATE.format(ref=IMGT_DEFAULT_REF)
 IMGT_ALLELE_LIST_URL: str = f"{IMGT_GITHUB_RAW_BASE}/Allelelist.txt"
 IMGT_G_GROUP_URL: str = f"{IMGT_GITHUB_RAW_BASE}/wmda/hla_nom_g.txt"
@@ -53,6 +55,23 @@ ALLELE_LIST_FILENAME: str = "Allelelist.txt"
 G_GROUP_FILENAME: str = "hla_nom_g.txt"
 P_GROUP_FILENAME: str = "hla_nom_p.txt"
 VERSION_FILENAME: str = "version.json"
+
+
+def normalize_imgt_ref(ref: str) -> str:
+    """
+    Map a release number onto the branch name used by the ANHIG mirror.
+
+    The mirror names its release branches without separators (``3640`` for
+    IPD-IMGT/HLA 3.64.0), so the human-readable form that appears in the
+    literature and in this project's documentation — ``3.64.0`` — has to be
+    translated before it can be fetched. Anything that is not a dotted release
+    number (``Latest``, a commit SHA, an explicit branch or tag) is passed
+    through untouched.
+    """
+    candidate = ref.strip()
+    if re.fullmatch(r"\d+\.\d+\.\d+", candidate):
+        return candidate.replace(".", "")
+    return candidate
 
 
 class IMGTDatabaseError(DatabaseQueryError):
@@ -204,6 +223,7 @@ def download_imgt_db(
     root = Path(target_dir) if target_dir is not None else DEFAULT_LOCAL_DIR
     root.mkdir(parents=True, exist_ok=True)
 
+    ref = normalize_imgt_ref(ref)
     base = IMGT_GITHUB_RAW_TEMPLATE.format(ref=ref)
     allele_url = f"{base}/Allelelist.txt"
     g_url = f"{base}/wmda/hla_nom_g.txt"
@@ -224,9 +244,9 @@ def download_imgt_db(
             else:
                 logger.info("%s is already present, skipping: %s", dest.name, dest)
 
-    # B4: record per-file SHA-256 so the exact snapshot can be verified /
-    # reproduced, and the moving "Latest" ref cannot silently change the data
-    # underneath a cached install without the checksum revealing it.
+    # Record per-file SHA-256 so the exact snapshot can be verified /
+    # Reproduced, and the moving "Latest" ref cannot silently change the data
+    # Underneath a cached install without the checksum revealing it.
     checksums: Dict[str, str] = {
         name: sha256_file(root / name)
         for name in (ALLELE_LIST_FILENAME, G_GROUP_FILENAME, P_GROUP_FILENAME)
@@ -328,7 +348,7 @@ def parse_group_file(path: Path) -> Dict[str, List[str]]:
             if len(parts) < 3:
                 continue
             gene_prefix = parts[0].rstrip("*")
-            members_field = parts[1].strip()  # slash-separated allele members
+            members_field = parts[1].strip()  # Slash-separated allele members
             group_fields = parts[2].strip()  # G/P-group name suffix (e.g. "01:01:01G")
             if not group_fields:
                 continue
@@ -487,6 +507,7 @@ class IMGTDB:
 
 
 __all__ = [
+    "normalize_imgt_ref",
     "IMGTDB",
     "IMGTAllele",
     "IMGTDatabaseError",

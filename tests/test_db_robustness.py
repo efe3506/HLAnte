@@ -4,8 +4,8 @@ tests.test_db_robustness
 
 Software-phase DB-layer fixes:
 
-- C15: curated variation_id is deterministic across runs (stable hash).
-- C2: AFND/NMDP population matching uses precedence-based canonical
+- curated variation_id is deterministic across runs (stable hash).
+- AFND/NMDP population matching uses precedence-based canonical
   classification, so "African American" maps to AFR only (never AMR).
 """
 
@@ -62,7 +62,7 @@ class TestAfndGroupMatching:
 
 
 # ---------------------------------------------------------------------------
-# C17 — encoding robustness (BOM / UTF-16)
+# Encoding robustness (BOM / UTF-16)
 # ---------------------------------------------------------------------------
 
 
@@ -91,7 +91,7 @@ class TestEncodingRobustness:
 
 
 # ---------------------------------------------------------------------------
-# C14 — CSV/TSV formula-injection neutralisation
+# CSV/TSV formula-injection neutralisation
 # ---------------------------------------------------------------------------
 
 
@@ -109,7 +109,7 @@ class TestFormulaInjection:
 
 
 # ---------------------------------------------------------------------------
-# C13 — one bad file does not abort the cohort
+# One bad file does not abort the cohort
 # ---------------------------------------------------------------------------
 
 
@@ -133,7 +133,7 @@ class TestCohortResilience:
 
 
 # ---------------------------------------------------------------------------
-# B4 — db-update integrity (checksum + .bak rollback + atomic verify)
+# db-update integrity (checksum + .bak rollback + atomic verify)
 # ---------------------------------------------------------------------------
 
 
@@ -176,3 +176,23 @@ class TestDbIntegrity:
             atomic_install(staged, dest)
         # The previous file must be restored from the .bak.
         assert dest.read_text() == "OLD"
+
+
+class TestIMGTRefNormalization:
+    """
+    The ANHIG mirror names release branches without separators, so the
+    release number quoted in the manuscript and the documentation has to be
+    translated before it is fetched.
+    """
+
+    def test_dotted_release_maps_to_branch_name(self) -> None:
+        from hlante.db.imgt import normalize_imgt_ref
+
+        assert normalize_imgt_ref("3.64.0") == "3640"
+        assert normalize_imgt_ref("3.65.0") == "3650"
+
+    def test_other_refs_pass_through_unchanged(self) -> None:
+        from hlante.db.imgt import normalize_imgt_ref
+
+        for ref in ("Latest", "3640", "v3.64.0-alpha", "a1b2c3d"):
+            assert normalize_imgt_ref(ref) == ref

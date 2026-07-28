@@ -160,18 +160,25 @@ hlante db-update --db gwas
 **Time:** 1–5 minutes (depending on connection speed)
 **Update frequency:** continuous (monthly updates recommended)
 
-### 5.4 AFND and NMDP (built-in, no setup required)
+### 5.4 AFND (built-in fallback) and NMDP (user-supplied)
 
-The package ships with `hlante/db/afnd_builtin.tsv` and `hlante/db/nmdp_builtin.tsv`.
-HLAnte works without any additional data files.
+The package ships a small built-in AFND fallback table
+(`hlante/db/afnd_builtin.tsv`, 7 loci × 5 population groups) so that HLAnte
+runs out of the box. For full coverage, use `hlante db-update --db afnd` or
+supply your own extract.
 
-**Optional custom AFND file:**
+**NMDP frequency data are not redistributed with HLAnte.** The resource is
+licensed by NMDP/Be The Match and its terms do not permit redistribution, so no
+NMDP table is bundled and the NMDP source stays inactive unless you supply your
+own extract.
+
 ```bash
-# Place your own AFND TSV here:
+# Optional: your own AFND TSV
 mkdir -p ~/.hlante/afnd/
 cp /path/to/afnd_frequencies.tsv ~/.hlante/afnd/
 
-# For the full NMDP dataset (download from frequency.nmdp.org):
+# Optional: NMDP data you obtained yourself from https://frequency.nmdp.org/
+# under that resource's terms of use
 mkdir -p ~/.hlante/nmdp/
 cp /path/to/nmdp_frequencies.tsv ~/.hlante/nmdp/
 ```
@@ -214,11 +221,17 @@ pytest tests/test_qa_full_panel.py -s -m qa
 
 ### 6.3 Example Annotation
 
+> **Prerequisite:** step 5.1 (`hlante db-update --db imgt`) must have completed.
+> Allele normalisation requires a local IPD-IMGT/HLA release; without it
+> `hlante annotate` exits with an error and writes no report. Note that
+> `--offline` means "make no network calls", not "run without databases".
+
 ```bash
-# Quick check with a test fixture
+# Quick check with a test fixture (parses only; no database needed)
 hlante validate -i tests/fixtures/sample.genotype.json -t arcashla
 
-# Real annotation (offline, using the IMGT + built-in AFND data)
+# Real annotation, using the local IPD-IMGT/HLA release and the
+# built-in AFND fallback table; no network access
 hlante annotate \
     -i tests/fixtures/sample.genotype.json \
     -t arcashla \
@@ -229,6 +242,10 @@ hlante annotate \
 
 cat /tmp/hlante_test/hlante_report.tsv
 ```
+
+Expected files in `/tmp/hlante_test/`: `hlante_report.tsv`, `hlante_report.md`,
+and `hlante_report.json` (the `--format all` default; the run above writes all
+three because `--format` was not restricted).
 
 ---
 

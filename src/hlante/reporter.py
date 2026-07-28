@@ -26,6 +26,8 @@ from typing import Any, Dict, FrozenSet, Iterable, List, Optional, Sequence, Tup
 
 from hlante import __version__
 from hlante.annotator import AnnotatedHLA
+from hlante.normalizer import NormalizedAllele
+from hlante.parser import RESOLUTION_LABELS
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -53,11 +55,12 @@ DISCLAIMER: str = (
     "this output constitutes a clinical diagnosis, medical advice, or "
     "pharmacogenomic recommendation. The significance labels used here "
     "are evidence-strength descriptors, NOT ACMG/AMP classifications. "
-    "HLAnte does not implement ACMG/AMP criteria. The confidence score / "
-    "tier is an UNCALIBRATED genotyping-quality heuristic (based on allele "
-    "novelty, frequency, resolution, and ambiguity) — it reflects how well "
-    "the allele CALL is characterised, NOT the clinical certainty or "
-    "correctness of any associated risk, and a LOW tier never down-weights "
+    "HLAnte does not implement ACMG/AMP criteria. The input-quality score / "
+    "tier is an UNCALIBRATED heuristic describing how completely the allele "
+    "CALL is supported by reference data (novelty, frequency, number of "
+    "reported fields, ambiguity) — it is NOT a measure of genotype accuracy, "
+    "NOT a posterior probability, and NOT the clinical certainty or "
+    "correctness of any associated risk. A limited tier never down-weights "
     "an actionable association. Any clinical decision based on an HLA allele "
     "must rely on a certified laboratory result interpreted by a qualified "
     "clinician."
@@ -70,22 +73,24 @@ NO_DRUG_SUMMARY: str = "No drug response reported"
 #: model. Surfaced in the Markdown note and JSON metadata so
 #: the simplification is transparent rather than silent.
 DIPLOTYPE_CAVEAT: str = (
-    "Alleles are annotated independently. HLAnte does NOT model HLA-DQ "
-    "heterodimer (DQ2.5 / DQ8) cis-vs-trans configuration or compound-"
-    "heterozygote rules (e.g. DRB1*03:01/DRB1*04:01 in type 1 diabetes, the "
-    "DQ2.5 trans configuration in celiac disease); these require diplotype "
-    "phase that NGS typing tools do not routinely report. A locus reporting a "
-    "single allele (allele2 = NA) is hemizygous / not-fully-reported, and is "
-    "NOT assumed homozygous — homozygosity is asserted only when the same "
-    "allele is reported twice. DRB3/4/5 are present-or-absent genes whose copy "
-    "number is not inferred."
+    "Alleles are annotated independently. HLAnte does NOT apply "
+    "compound-heterozygote rules (for example the "
+    "HLA-DRB1*03:01+HLA-DRB1*04:01 genotype in type 1 diabetes), which "
+    "require both alleles at a locus to be interpreted jointly but do not "
+    "require chromosomal phase; nor does it model the HLA-DQ heterodimer "
+    "(DQ2.5, DQ8) cis-versus-trans configuration across HLA-DQA1 and "
+    "HLA-DQB1, which does require haplotypic phase that NGS typing tools do "
+    "not routinely report. A locus reporting a single allele (allele2 = NA) "
+    "is hemizygous or not fully reported, and is NOT assumed homozygous — "
+    "homozygosity is asserted only when the same allele is reported twice. "
+    "DRB3/4/5 are present-or-absent genes whose copy number is not inferred."
 )
 
 # Association-strength prefixes used in disease-risk summaries.
-# P0-8: values were reworded from risk-magnitude language
+# Values were reworded from risk-magnitude language
 # ("High risk", "Moderate risk") to association-strength language
 # ("Strong association", "Moderate association") to avoid implying a
-# clinical magnitude of risk that the tool does not measure.
+# Clinical magnitude of risk that the tool does not measure.
 RISK_PREFIX_HIGH: str = "Strong association"
 RISK_PREFIX_MODERATE: str = "Moderate association"
 RISK_PREFIX_PROTECTIVE: str = "Inverse association"
@@ -94,25 +99,28 @@ RISK_PREFIX_ASSOCIATION: str = "Reported association"
 # TSV column layout.
 #
 # The locus-level aggregate columns (``gwas_traits`` / ``pharm_drugs``)
-# pipe-join allele1 + allele2 hits. They are retained for backward
-# compatibility and machine-friendly bulk parsing. They cannot answer
-# the question "which allele contributed which hit?".
+# Pipe-join allele1 + allele2 hits. They are retained for backward
+# Compatibility and machine-friendly bulk parsing. They cannot answer
+# The question "which allele contributed which hit?".
 #
 # The explicit per-allele columns
 # (``gwas_traits_allele1`` / ``gwas_traits_allele2``, and analogous
 # ``pharm_drugs_*``) so the attribution is unambiguous without forcing
-# the user to emit per-allele rows.
+# The user to emit per-allele rows.
 TSV_COLUMNS: Tuple[str, ...] = (
     "sample_id",
     "locus",
     "allele1",
     "allele2",
     "resolution",
+    "gl_string",
     "tool",
     "imgt_accession",
     "hla_class",
     "hla_serotype",
     "protein_group",
+    "imgt_match_category",
+    "imgt_match_candidates",
     "gwas_traits",
     "gwas_traits_allele1",
     "gwas_traits_allele2",
@@ -121,7 +129,9 @@ TSV_COLUMNS: Tuple[str, ...] = (
     "gwas_pmids",
     "gwas_annotation_resolution",
     "gwas_annotation_scope",
-    "gwas_fallback_expansion",
+    "gwas_matched_allele",
+    "gwas_match_broadened",
+    "gwas_index_siblings",
     "pharm_drugs",
     "pharm_drugs_allele1",
     "pharm_drugs_allele2",
@@ -131,11 +141,13 @@ TSV_COLUMNS: Tuple[str, ...] = (
     "disease_risk_summary",
     "drug_response_summary",
     "clinical_significance",
+    "significance_basis",
     "allele_frequency",
     "allele_freq_population",
-    "confidence_score",
-    "confidence_tier",
-    "confidence_rationale",
+    "input_quality_score",
+    "input_quality_tier",
+    "input_quality_rationale",
+    "caller_allele_quality",
 )
 
 
@@ -383,21 +395,30 @@ def generate_json(
             "cli_invocation": ctx.cli_invocation,
             "disclaimer": ctx.disclaimer,
             "research_use_only": True,
-            "confidence_score_definition": (
-                "Uncalibrated genotyping-quality heuristic in [0,1] (allele "
-                "novelty, frequency, resolution, ambiguity). Indicates how well "
-                "the allele call is characterised, NOT the clinical certainty or "
-                "probability of correctness of any associated risk."
+            "input_quality_score_definition": (
+                "Heuristic summary in [0,1] of how completely the submitted "
+                "allele call is supported by reference data and of the "
+                "characteristics of the call itself (presence in IPD-IMGT/HLA, "
+                "population frequency availability and rarity, number of "
+                "reported fields, and whether the typing tool flagged the call "
+                "as ambiguous). It is NOT a measure of genotype accuracy, which "
+                "is determined upstream by the typing tool and the sequence "
+                "data, and it is NOT a posterior probability: the penalty "
+                "factors are declared values, not likelihoods. A limited tier "
+                "reflects sparse supporting data or a low-detail call; it never "
+                "down-weights an actionable association."
             ),
             "diplotype_caveat": DIPLOTYPE_CAVEAT,
         },
         "samples": [
             {
                 "sample_id": sid,
+                # Multilocus unphased genotype across the reported loci.
+                "gl_string": _gl_string_for_sample(samples[sid]),
                 "loci": [_row_to_json(row) for row in samples[sid]],
-                # C1: make absence of typing explicit. Actionable loci with
+                # Make absence of typing explicit. Actionable loci with
                 # no genotype row are indeterminate ("not typed"), not
-                # negative — a missing row must not read as "no risk".
+                # Negative — a missing row must not read as "no risk".
                 "actionable_loci_not_typed": _loci_not_typed(samples[sid]),
             }
             for sid in samples
@@ -507,7 +528,7 @@ def _group_genotypes(annotated: Sequence[AnnotatedHLA]) -> List[GenotypeRow]:
                 sample_id=key[0],
                 locus=key[1],
                 tool=first_na.source_tool or NA,
-                resolution=f"{min_res}-field",
+                resolution=RESOLUTION_LABELS.get(min_res, f"{min_res}-field"),
                 allele1=items[0],
                 allele2=items[1] if len(items) > 1 else None,
             )
@@ -596,10 +617,11 @@ def _row_cells(row: GenotypeRow) -> List[str]:
         na1.allele_name,
         na2.allele_name if na2 else NA,
         row.resolution,
+        _gl_string_for_locus(row) or NA,
         row.tool,
         _pipe([na1.imgt_accession, na2.imgt_accession if na2 else None]),
         na1.hla_class or NA,
-        # P1-3: per-allele serotype lookup.
+        # Per-allele serotype lookup.
         _pipe(
             [
                 _serotype(na1.allele_name),
@@ -607,8 +629,17 @@ def _row_cells(row: GenotypeRow) -> List[str]:
             ]
         ),
         _pipe([na1.protein_group, na2.protein_group if na2 else None]),
+        _pipe_slots(
+            [na1.imgt_match_category, na2.imgt_match_category if na2 else None]
+        ),
+        _pipe_slots(
+            [
+                str(na1.imgt_match_candidates),
+                str(na2.imgt_match_candidates) if na2 else None,
+            ]
+        ),
         _pipe([h.trait for h in gwas_all]),
-        # P0-2: per-allele attribution.
+        # Per-allele attribution.
         _pipe([h.trait for h in a1.gwas_hits]),
         _pipe([h.trait for h in a2.gwas_hits]) if a2 else NA,
         _pipe([_fmt_float(h.p_value) for h in gwas_all]),
@@ -620,11 +651,23 @@ def _row_cells(row: GenotypeRow) -> List[str]:
                 a2.gwas_resolution_used if a2 else None,
             ]
         ),
-        # P0-10: annotation scope per allele (worst case across hits).
+        # Annotation scope per allele (worst case across hits).
         _pipe(
             [
                 _worst_annotation_scope(a1.gwas_hits),
                 _worst_annotation_scope(a2.gwas_hits) if a2 else None,
+            ]
+        ),
+        _pipe_slots(
+            [
+                _matched_alleles(a1.gwas_hits),
+                _matched_alleles(a2.gwas_hits) if a2 else None,
+            ]
+        ),
+        _pipe_slots(
+            [
+                _broadened_flag(a1.gwas_hits),
+                _broadened_flag(a2.gwas_hits) if a2 else None,
             ]
         ),
         _pipe(
@@ -634,15 +677,15 @@ def _row_cells(row: GenotypeRow) -> List[str]:
             ]
         ),
         _pipe([p.drug for p in pharm_all]),
-        # P0-2: per-allele attribution.
+        # Per-allele attribution.
         _pipe([p.drug for p in a1.pharm_annotations]),
         _pipe([p.drug for p in a2.pharm_annotations]) if a2 else NA,
         _pipe([_evidence_label(p.evidence_level) for p in pharm_all]),
         # CPIC standardised action verb per pharm annotation, keyed on the
-        # carried allele and the drug — the recommendation is
-        # allele-dependent, not drug-only.
+        # Carried allele and the drug — the recommendation is
+        # Allele-dependent, not drug-only.
         _pipe([_cpic_action(p.allele, p.drug) for p in pharm_all]),
-        # P1-1: aggregate long PMID lists (44 → "top3 (+41 more)").
+        # Aggregate long PMID lists (44 → "top3 (+41 more)").
         _pipe([_aggregate_pmids(p.pmid) for p in pharm_all]),
         _pipe(
             [
@@ -664,6 +707,12 @@ def _row_cells(row: GenotypeRow) -> List[str]:
         ),
         _pipe_slots(
             [
+                a1.significance_basis,
+                a2.significance_basis if a2 else None,
+            ]
+        ),
+        _pipe_slots(
+            [
                 _fmt_float(a1.allele_frequency, decimals=6),
                 _fmt_float(a2.allele_frequency, decimals=6) if a2 else None,
             ]
@@ -676,32 +725,40 @@ def _row_cells(row: GenotypeRow) -> List[str]:
         ),
         _pipe_slots(
             [
-                _fmt_float(a1.confidence_score, decimals=4),
-                _fmt_float(a2.confidence_score, decimals=4) if a2 else None,
+                _fmt_float(a1.input_quality_score, decimals=4),
+                _fmt_float(a2.input_quality_score, decimals=4) if a2 else None,
             ]
         ),
         _pipe(
             [
-                getattr(a1, "confidence_tier", "NA"),
-                getattr(a2, "confidence_tier", "NA") if a2 else None,
+                getattr(a1, "input_quality_tier", "NA"),
+                getattr(a2, "input_quality_tier", "NA") if a2 else None,
             ]
         ),
-        # P0-9: use ";;" between allele1 and allele2 to avoid pipe
+        # Use ";;" between allele1 and allele2 to avoid pipe
         # collision with intra-rationale reason codes.
         _rationale_pipe(
-            a1.confidence_rationale,
-            a2.confidence_rationale if a2 else None,
+            a1.input_quality_rationale,
+            a2.input_quality_rationale if a2 else None,
+        ),
+        # Quality reported by the typing tool itself, where it provides one.
+        # Distinct from input_quality_score, which HLAnte computes.
+        _pipe_slots(
+            [
+                _caller_quality(na1),
+                _caller_quality(na2) if na2 else None,
+            ]
         ),
     ]
 
 
 # Static map from lowercased drug name → CPIC-standardised action verb.
 #
-# P1-2: PharmGKB dumps large PMID lists
-# but exposes no short "what do I do?" verb. CPIC does, via its
-# guideline tables. This map is intentionally small and hand-curated
+# PharmGKB dumps large PMID lists
+# But exposes no short "what do I do?" verb. CPIC does, via its
+# Guideline tables. This map is intentionally small and hand-curated
 # — the CPIC corpus has only a few Level-A HLA pairs and each has a
-# single standard recommendation.
+# Single standard recommendation.
 #
 # The phrasing uses CPIC's five-verb vocabulary:
 #
@@ -712,17 +769,17 @@ def _row_cells(row: GenotypeRow) -> List[str]:
 # * ``No specific action required``
 #
 # Missing drugs fall through to ``NA``. Drug names are matched in a
-# case-insensitive, whitespace-trimmed form.
+# Case-insensitive, whitespace-trimmed form.
 # Static allele → WHO/IMGT serotype lookup.
 #
-# P1-3: most HLA-autoimmune literature
+# Most HLA-autoimmune literature
 # is written at serotype level (DR2 / DR3 / DR4 / DQ2 / DQ8) rather
-# than at 4-field resolution. The map is 2-field-granular; more
-# specific keys (``"DQB1*03:02"``) take precedence over first-field
-# fallbacks (``"DRB1*03"``).
+# Than at two-field resolution. The map is two-field-granular; more
+# Specific keys (``"DQB1*03:02"``) take precedence over first-field
+# Fallbacks (``"DRB1*03"``).
 #
 # The list below is intentionally hand-curated and limited to
-# commonly referenced serotypes; alleles not in the map yield ``NA``.
+# Commonly referenced serotypes; alleles not in the map yield ``NA``.
 HLA_SEROTYPE_MAP: Dict[str, str] = {
     # Class-II DRB1 serotypes (DR nomenclature)
     "DRB1*01": "DR1",
@@ -820,7 +877,7 @@ def _serotype(allele_name: Optional[str]) -> Optional[str]:
     """
     Look up the serotype label for an HLA allele.
 
-    Tries a 2-field key first (``DQB1*03:02`` → ``DQ8``) and falls
+    Tries a two-field key first (``DQB1*03:02`` → ``DQ8``) and falls
     back to a first-field key (``DRB1*03:02`` → ``DR3``). Returns
     ``None`` for alleles not covered by :data:`HLA_SEROTYPE_MAP`.
     """
@@ -858,7 +915,7 @@ CPIC_ACTION_MAP: Dict[str, str] = {
     "ziagen": "Avoid",
 }
 
-#: CPIC-aligned action keyed on ``(2-field allele, drug)``. The carried allele
+#: CPIC-aligned action keyed on ``(two-field allele, drug)``. The carried allele
 #: materially changes the recommendation (e.g. ``HLA-A*31:01`` carbamazepine is
 #: a weaker association than ``HLA-B*15:02`` and is NOT a flat
 #: contraindication), so the verb must not be derived from the drug alone.
@@ -905,7 +962,7 @@ def _two_field_key(allele: Optional[str]) -> Optional[str]:
     fields = rest.split(":")
     if len(fields) < 2:
         return None
-    second = fields[1].rstrip("NLSQCAGP")  # drop any expression/group suffix
+    second = fields[1].rstrip("NLSQCAGP")  # Drop any expression/group suffix
     if not second:
         return None
     return f"{gene}*{fields[0]}:{second}"
@@ -917,7 +974,7 @@ def _cpic_action(allele: Optional[str], drug: Optional[str]) -> Optional[str]:
 
     The carried HLA allele is required because the recommendation for a
     drug is allele-dependent (e.g. ``HLA-B*15:02`` vs ``HLA-A*31:01`` for
-    carbamazepine). Resolution order: exact ``(2-field allele, drug)``
+    carbamazepine). Resolution order: exact ``(two-field allele, drug)``
     match in :data:`ALLELE_DRUG_ACTION_MAP`, then the drug-level fallback
     in :data:`CPIC_ACTION_MAP`, then ``None``.
     """
@@ -933,9 +990,9 @@ def _cpic_action(allele: Optional[str], drug: Optional[str]) -> Optional[str]:
 
 
 # Ranking used to pick the "worst" scope for the per-allele summary
-# cell: an allele carrying even one locus-level fallback hit should
-# surface as ``locus``, so a clinician scanning the TSV sees the
-# broadest scope at a glance.
+# Cell: an allele carrying even one locus-level fallback hit should
+# Surface as ``locus``, so a clinician scanning the TSV sees the
+# Broadest scope at a glance.
 _SCOPE_RANK: Dict[str, int] = {"allele": 0, "subtype": 1, "locus": 2}
 
 
@@ -951,7 +1008,7 @@ def _aggregate_pmids(pmids: Sequence[str], top: int = 3) -> str:
 
     Notes
     -----
-    P1-1: the B*58:01/allopurinol record carries 44 PMIDs. Dumping all
+    the B*58:01/allopurinol record carries 44 PMIDs. Dumping all
     44 into a single TSV cell is evidence-heavy but not actionable.
     The aggregate form keeps the top three for quick cross-reference
     and surfaces the remainder count so the user knows a lookup is
@@ -977,12 +1034,36 @@ def _worst_annotation_scope(hits: Iterable[Any]) -> Optional[str]:
     return max(scopes, key=lambda s: _SCOPE_RANK.get(s, 0))
 
 
+def _matched_alleles(hits: Sequence[Any]) -> Optional[str]:
+    """
+    Catalogue key(s) that actually matched, de-duplicated in order.
+
+    A reader needs this to tell whether an association was reported for the
+    allele they submitted or for a less specific name derived from it.
+    """
+    seen: List[str] = []
+    for hit in hits:
+        key = getattr(hit, "matched_allele", "") or ""
+        if key and key not in seen:
+            seen.append(key)
+    return ";".join(seen) if seen else None
+
+
+def _broadened_flag(hits: Sequence[Any]) -> Optional[str]:
+    """
+    ``yes`` when any association for this allele required truncation.
+    """
+    if not hits:
+        return None
+    return "yes" if any(getattr(h, "match_was_broadened", False) for h in hits) else "no"
+
+
 def _max_expansion(hits: Iterable[Any]) -> Optional[str]:
     """
-    Return the maximum ``fallback_expansion_size`` across a set of
+    Return the maximum ``index_siblings`` across a set of
     GWAS hits as a string, or ``None`` when the iterable is empty.
     """
-    sizes = [int(getattr(h, "fallback_expansion_size", 1) or 1) for h in hits]
+    sizes = [int(getattr(h, "index_siblings", 1) or 1) for h in hits]
     if not sizes:
         return None
     return str(max(sizes))
@@ -1114,7 +1195,7 @@ def _write_markdown_sample(handle: Any, sample_id: str, rows: Sequence[GenotypeR
         )
     handle.write("\n")
 
-    # C1: make absence of typing explicit so a missing locus is never read
+    # Make absence of typing explicit so a missing locus is never read
     # as "no risk". Actionable loci with no genotype row are indeterminate.
     not_typed = _loci_not_typed(rows)
     if not_typed:
@@ -1126,8 +1207,8 @@ def _write_markdown_sample(handle: Any, sample_id: str, rows: Sequence[GenotypeR
         )
 
     # --- Disease-association summary ---
-    # P0-8: heading was "Disease Risk Summary"; renamed to avoid
-    # implying the tool quantifies individual clinical risk.
+    # Heading was "Disease Risk Summary"; renamed to avoid
+    # Implying the tool quantifies individual clinical risk.
     handle.write("### Reported Disease Associations\n\n")
     any_risk = False
     for row in rows:
@@ -1138,14 +1219,14 @@ def _write_markdown_sample(handle: Any, sample_id: str, rows: Sequence[GenotypeR
                 handle.write(f"- **HLA-{allele_name}**: {hit.trait} ({or_txt})\n")
                 study = hit.study_accession or "GWAS Catalog"
                 handle.write(f"  - Source: GWAS Catalog ({study}), PMID: {hit.pmid or NA}\n")
-                # P0-1: annotate deprecated EFO provenance
+                # Annotate deprecated EFO provenance
                 if getattr(hit, "trait_was_deprecated", False):
                     handle.write(
                         "  - ⚠️ Note: trait name was remapped from a "
                         "deprecated EFO term. Verify current "
                         "classification at https://www.ebi.ac.uk/efo/\n"
                     )
-                # P0-7: extreme / quantitative-trait effect warning
+                # Extreme / quantitative-trait effect warning
                 esw = getattr(hit, "effect_size_warning", "") or ""
                 if esw:
                     if "quantitative_trait_effect" in esw:
@@ -1165,10 +1246,10 @@ def _write_markdown_sample(handle: Any, sample_id: str, rows: Sequence[GenotypeR
                             "odds ratio. Verify the source study "
                             f"(PMID: {hit.pmid or NA}).\n"
                         )
-                # P0-10: annotation scope when fallback was used
+                # Annotation scope when fallback was used
                 scope = getattr(hit, "annotation_scope", "allele")
                 if scope != "allele":
-                    exp = getattr(hit, "fallback_expansion_size", 1)
+                    exp = getattr(hit, "index_siblings", 1)
                     handle.write(
                         f"  - ⚠️ Annotation scope: this GWAS hit was "
                         f"matched at {scope}-level resolution "
@@ -1190,9 +1271,9 @@ def _write_markdown_sample(handle: Any, sample_id: str, rows: Sequence[GenotypeR
     handle.write("\n")
 
     # --- Pharmacogenomic associations ---
-    # P0-8: heading was "Drug Response Warnings". Reworded to
+    # Heading was "Drug Response Warnings". Reworded to
     # "Reported Pharmacogenomic Associations" to avoid framing
-    # research-level PharmGKB / CPIC records as clinical warnings.
+    # Research-level PharmGKB / CPIC records as clinical warnings.
     handle.write("### Reported Pharmacogenomic Associations\n\n")
     any_drug = False
     for row in rows:
@@ -1200,8 +1281,8 @@ def _write_markdown_sample(handle: Any, sample_id: str, rows: Sequence[GenotypeR
             allele_name = annot.normalized_allele.allele_name
             for ann in annot.pharm_annotations:
                 is_strong = (ann.evidence_level or "").upper() in {"1A", "1B"}
-                # P0-8: previously "⚠️ Critical" / "ℹ️ Info";
-                # reworded to evidence-strength markers.
+                # Previously "⚠️ Critical" / "ℹ️ Info";
+                # Reworded to evidence-strength markers.
                 icon = "⚠️ Strong evidence" if is_strong else "ℹ️ Moderate evidence"
                 phenotype = ann.phenotype or "interaction"
                 handle.write(
@@ -1218,13 +1299,13 @@ def _write_markdown_sample(handle: Any, sample_id: str, rows: Sequence[GenotypeR
     handle.write("\n")
 
     # --- Interpretation note (research use) ---
-    # P0-8: heading was "Clinical Interpretation Note". Reworded to
-    # decouple the auto-generated sentence from a clinical frame.
+    # Heading was "Clinical Interpretation Note". Reworded to
+    # Decouple the auto-generated sentence from a clinical frame.
     handle.write("### Interpretation Note (research use only)\n\n")
     handle.write(_build_clinical_note(rows))
     handle.write("\n\n")
 
-    # D14/D15: surface the diplotype/zygosity simplification explicitly.
+    # Surface the diplotype/zygosity simplification explicitly.
     handle.write(f"> **Diplotype/zygosity note:** {DIPLOTYPE_CAVEAT}\n\n")
 
 
@@ -1241,7 +1322,7 @@ def _build_clinical_note(rows: Sequence[GenotypeRow]) -> str:
 
     Notes
     -----
-    P0-8: the membership set was historically the ACMG-adjacent triad
+    the membership set was historically the ACMG-adjacent triad
     ``{"Pathogenic", "Likely Pathogenic", "Risk factor"}``. It is now
     imported from :mod:`hlante.annotator` so the set tracks the
     evidence-strength labels without drift.
@@ -1306,6 +1387,81 @@ def _select_driver(annot: AnnotatedHLA) -> str:
 # ---------------------------------------------------------------------------
 
 
+#: GL String operators HLAnte is able to emit. The tool holds at most two
+#: allele designations per locus per sample and models neither chromosomal
+#: phase nor alternative genotypes, so only the genotype delimiter (``+``)
+#: and the locus delimiter (``^``) are ever produced. Emitting ``/``
+#: (possible alleles), ``~`` (phased genes), ``|`` (possible genotypes) or
+#: ``?`` (possible loci) would assert information HLAnte does not hold.
+#: Grammar: Milius et al. 2013; GL String 1.1, Mack et al. 2023.
+GL_OPERATORS_EMITTED: Tuple[str, ...] = ("+", "^")
+GL_OPERATORS_NOT_EMITTED: Tuple[str, ...] = ("/", "~", "|", "?")
+
+
+def _gl_token(allele_name: str, locus: str) -> Optional[str]:
+    """
+    Fully qualified GL String allele name, e.g. ``HLA-A*01:01``.
+
+    GL Strings name alleles with the gene included, so a bare ``A*01:01``
+    from a typing tool is qualified with the locus it was reported under.
+    """
+    name = (allele_name or "").strip()
+    if not name or name == NA:
+        return None
+    if name.startswith("HLA-"):
+        return name
+    gene = (locus or "").strip()
+    if gene and not gene.startswith("HLA-"):
+        gene = f"HLA-{gene}"
+    if gene and name.startswith(gene.split("-", 1)[1] + "*"):
+        return f"HLA-{name}"
+    return f"HLA-{name}" if "*" in name else None
+
+
+def _gl_string_for_locus(row: "GenotypeRow") -> Optional[str]:
+    """
+    GL String for one locus: the gene copies joined by ``+``.
+
+    A locus that reports a single allele yields that allele alone — the
+    missing copy is not invented, consistent with :func:`_zygosity`.
+    """
+    first = _gl_token(row.allele1.normalized_allele.allele_name, row.locus)
+    second = (
+        _gl_token(row.allele2.normalized_allele.allele_name, row.locus)
+        if row.allele2
+        else None
+    )
+    tokens = [t for t in (first, second) if t]
+    if not tokens:
+        return None
+    return "+".join(tokens)
+
+
+def _gl_string_for_sample(rows: Sequence["GenotypeRow"]) -> Optional[str]:
+    """
+    Multilocus unphased genotype: per-locus GL Strings joined by ``^``.
+
+    Loci are emitted in the order they appear in the report so the string is
+    reproducible; the grammar imposes no ordering rule.
+    """
+    parts = [g for g in (_gl_string_for_locus(r) for r in rows) if g]
+    return "^".join(parts) if parts else None
+
+
+def _caller_quality(na: Optional[NormalizedAllele]) -> Optional[str]:
+    """
+    Per-allele quality as reported by the typing tool, formatted for the TSV.
+
+    Only T1K's native layout supplies this. arcasHLA and HLA-HD report no
+    per-allele quality, and OptiType reports a solution-level objective rather
+    than an allele quality, so those tools yield ``None``.
+    """
+    if na is None:
+        return None
+    value = getattr(na, "caller_quality", None)
+    return None if value is None else f"{value:g}"
+
+
 def _zygosity(row: GenotypeRow) -> str:
     """
     Explicit, non-inferred zygosity state for a locus.
@@ -1343,13 +1499,15 @@ def _row_to_json(row: GenotypeRow) -> Dict[str, Any]:
     return {
         "locus": row.locus,
         "resolution": row.resolution,
+        # Standard GL String representation (Milius 2013; Mack 2023).
+        "gl_string": _gl_string_for_locus(row),
         "tool": row.tool,
-        # D15: machine-readable zygosity; single_allele_reported != homozygous.
+        # Machine-readable zygosity; single_allele_reported != homozygous.
         "zygosity": _zygosity(row),
-        # C7: per-record research-use flag. A programmatic consumer that reads
-        # only the loci array (and never sees the metadata footer) still gets
+        # Per-record research-use flag. A programmatic consumer that reads
+        # Only the loci array (and never sees the metadata footer) still gets
         # an unambiguous, machine-readable "not for clinical use" marker on
-        # every annotated record.
+        # Every annotated record.
         "research_use_only": True,
         "allele1": _annotated_to_json(row.allele1),
         "allele2": _annotated_to_json(row.allele2) if row.allele2 else None,

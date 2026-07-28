@@ -257,17 +257,17 @@ def convert(input_path: Path, output_dir: Path, tools: frozenset) -> None:
     corrupt_path = output_dir / "corrupt_alleles.log"
 
     with ambig_path.open("w", encoding="utf-8") as fh:
-        fh.write("# sample_id\tgene\toriginal\tkept\n")
+        fh.write("# Sample_id\tgene\toriginal\tkept\n")
         if ambig_log:
             fh.write("\n".join(ambig_log) + "\n")
 
     with missing_path.open("w", encoding="utf-8") as fh:
-        fh.write("# sample_id\tgene\toriginal_value\n")
+        fh.write("# Sample_id\tgene\toriginal_value\n")
         if missing_log:
             fh.write("\n".join(missing_log) + "\n")
 
     with corrupt_path.open("w", encoding="utf-8") as fh:
-        fh.write("# sample_id\tgene\traw_value\n")
+        fh.write("# Sample_id\tgene\traw_value\n")
         if corrupt_log:
             fh.write("\n".join(corrupt_log) + "\n")
 

@@ -48,7 +48,7 @@ These lines must be skipped before passing the file to a standard table parser.
 
 ### 1.2 Header Row
 
-Lists the column names. Contains 33 columns.
+Lists the column names. Contains 40 columns.
 
 ### 1.3 Data Rows
 
@@ -67,7 +67,7 @@ HLAnte TSV uses three different internal delimiters; each has exactly one meanin
 |---|---|---|
 | `\|` (pipe) | Lists values within a single cell; **order matters** (each value matches the value at the same position in the related other columns) | Almost every multi-value column |
 | `,` (comma) | Joins multiple PMIDs of a single record | Only the `pharm_pmids` column |
-| `;;` (double semicolon) | Separates the allele1 block from the allele2 block in the `confidence_rationale` column | Only `confidence_rationale` |
+| `;;` (double semicolon) | Separates the allele1 block from the allele2 block in the `input_quality_rationale` column | Only `input_quality_rationale` |
 
 ### 2.2 The `NA` Value
 
@@ -130,12 +130,12 @@ As the number of fields increases, specificity increases. In practice, what is m
 
 | Value | How many fields | Example | Meaning |
 |---|---|---|---|
-| `2-field` | 2 | `A*02:01` | Serological group level; ambiguous at the amino acid level |
-| `4-field` | 3–4 | `A*02:01:01` | Protein (amino acid) level; field missing |
-| `6-field` | 5–6 | `B*57:01:01` | Full resolution at the exon level |
-| `8-field` | 7–8 | `B*57:01:01:01` | Full genomic resolution |
+| `one-field` | 2 | `A*02` | Allele group only; ambiguous at the protein level |
+| `two-field` | 4 | `A*02:01` | Protein (amino acid) level |
+| `three-field` | 6 | `A*02:01:01` | Adds synonymous coding differences |
+| `four-field` | 8 | `B*57:01:01:01` | Full resolution, including non-coding differences |
 
-Low resolution (`2-field`) means that the finding is ambiguous and lowers the `confidence_score`.
+Low resolution (`one-field`) means that the finding is ambiguous and lowers the `input_quality_score`.
 
 #### `tool` — HLA Typing Tool
 
@@ -222,8 +222,8 @@ The PubMed article identifier. You can look up the relevant study at
 
 | Value | Meaning |
 |---|---|
-| `4-field` | The GWAS match was made at the full protein level |
-| `2-field` | A match was found only at the serological group level |
+| `two-field` | The GWAS match was made at the protein level |
+| `one-field` | A match was found only at the allele-group level |
 | `none` | No GWAS record was found for this allele |
 
 #### `gwas_annotation_scope` — GWAS Scope Breadth
@@ -351,20 +351,20 @@ Always read the frequency value together with this column to know which populati
 
 ### 3.7 Confidence Score (Columns 31–33)
 
-#### `confidence_score` — Confidence Score
+#### `input_quality_score` — Confidence Score
 
 A numerical score between 0.0 and 1.0. Each allele starts at 1.0; uncertainty factors
 pull the score down. Pipe-separated (allele1|allele2).
 
-#### `confidence_tier` — Confidence Tier
+#### `input_quality_tier` — Confidence Tier
 
 | Tier | Score range | Interpretation |
 |---|---|---|
-| `HIGH` | ≥ 0.85 | Well-characterized allele; ≥ 4-field; known frequency |
-| `MODERATE` | 0.70 – 0.84 | Minor uncertainty (ambiguity or unknown frequency) |
-| `LOW` | < 0.70 | Significant uncertainty (2-field, novel, or very rare allele) |
+| `detailed` | ≥ 0.85 | Well-characterized allele; two or more fields; known frequency |
+| `partial` | 0.70 – 0.84 | Minor uncertainty (ambiguity or unknown frequency) |
+| `limited` | < 0.70 | Significant uncertainty (one-field, novel, or very rare allele) |
 
-#### `confidence_rationale` — Reasons for Confidence Reduction
+#### `input_quality_rationale` — Reasons for Confidence Reduction
 
 The allele1 and allele2 sections are separated by `;;`; within each section the reasons are listed with `|`.
 
@@ -375,8 +375,8 @@ The allele1 and allele2 sections are separated by `;;`; within each section the 
 | `rare_allele(freq=X)` | Frequency < 0.001 (very rare) |
 | `uncommon_allele(freq=X)` | Frequency between 0.001–0.01 |
 | `freq_unknown` | No frequency record in AFND |
-| `low_resolution(2-field)` | 2-field resolution |
-| `medium_resolution(4-field)` | 4-field resolution |
+| `low_resolution(one-field)` | One-field resolution |
+| `medium_resolution(two-field)` | Two-field resolution |
 | `ambiguous` | Subtype ambiguity that the typing tool could not distinguish |
 
 ---
@@ -405,7 +405,7 @@ What is the clinical_significance value?
 ├─ Strong pharmacogenomic risk association   →  look at pharm_cpic_action; a drug-specific action may be needed
 ├─ Suggestive risk factor       →  look at gwas_traits and drug_response_summary;
 │                                   a population risk signal; use caution in individual interpretation
-├─ Inconclusive evidence        →  confidence_tier is usually LOW; the finding is not reliable
+├─ Inconclusive evidence        →  input_quality_tier is usually LOW; the finding is not reliable
 ├─ No reported risk             →  known allele, no signal in the available databases
 ├─ Not assessed — insufficient coverage → known allele, insufficient data — not negative evidence
 └─ Not in IMGT                  →  novel allele; no cross-referencing can be performed
@@ -423,14 +423,14 @@ What is the clinical_significance value?
 | Rare allele (frequency < 0.001) | × 0.50 | Heavy penalty |
 | Uncommon allele (0.001–0.01) | × 0.80 | Moderate penalty |
 | Frequency unknown (not in AFND) | × 0.85 | Light penalty |
-| 2-field resolution | × 0.70 | Significant penalty |
-| 4-field resolution | × 0.90 | Light penalty |
+| One-field resolution | × 0.70 | Significant penalty |
+| Two-field resolution | × 0.90 | Light penalty |
 | Ambiguous allele (`typing_tool` source) | × 0.75 | Moderate penalty |
 
 Penalties are applied **multiplicatively**. Example:
 
 ```
-4-field resolution + frequency unknown + ambiguous:
+Two-field resolution + frequency unknown + ambiguous:
 1.0 × 0.90 × 0.85 × 0.75 = 0.5738 → LOW
 ```
 
@@ -439,8 +439,8 @@ Penalties are applied **multiplicatively**. Example:
 In analyses run with `--input-source validated` (e.g. 1000 Genomes validated data),
 the "ambiguity" penalty is not applied. For this reason, the same allele:
 
-- `typing_tool` (default): low score → `LOW`
-- `validated`: higher score → `MODERATE`
+- `typing_tool` (default): low score → `limited`
+- `validated`: higher score → `partial`
 
 **Check the `# input_source` line in the metadata block** — look at this information before
 interpreting the scores.
@@ -456,7 +456,7 @@ sample_id:          HLA141_hla_genotype
 locus:              HLA-B
 allele1:            B*40:01:02
 allele2:            B*15:09:01
-resolution:         6-field
+resolution:         three-field
 tool:               t1k
 clinical_significance: Inconclusive evidence | Suggestive risk factor
 pharm_drugs:        carbamazepine | oxcarbazepine
@@ -464,13 +464,13 @@ pharm_evidence:     2A | 3 (low evidence)
 pharm_cpic_action:  Contraindicated | Contraindicated
 drug_response_summary:
   carbamazepine DRESS;SJS;TEN: 2A evidence  |  No drug response reported
-confidence_tier:    MODERATE | HIGH
+input_quality_tier:    MODERATE | HIGH
 ```
 
 **Interpretation:**
-- **allele2 (B*15:09):** `HIGH` confidence, `Suggestive risk factor`. PharmGKB 2A evidence for
+- **allele2 (B*15:09):** `detailed` confidence, `Suggestive risk factor`. PharmGKB 2A evidence for
   carbamazepine-associated SJS/TEN risk → **Contraindicated**.
-- **allele1 (B*40:01):** `MODERATE` confidence, `Inconclusive evidence`. Contraindicated for
+- **allele1 (B*40:01):** `partial` confidence, `Inconclusive evidence`. Contraindicated for
   oxcarbazepine with low evidence — must be interpreted with caution because it came through 3 (low evidence).
 - **Practical conclusion:** In this patient, the HLA-B status should be evaluated before carbamazepine is prescribed;
   the relevant clinical guideline and an expert should be consulted.
@@ -484,15 +484,15 @@ sample_id:          Tes503_Aligned
 locus:              HLA-B
 allele1:            B*08:01:01
 allele2:            B*08:01:01
-resolution:         6-field
+resolution:         three-field
 clinical_significance: Suggestive risk factor | Suggestive risk factor
 gwas_traits_allele1:   systemic lupus erythematosus | neuromyelitis optica | myositis | HIV-1 infection ...
 gwas_annotation_scope: subtype | subtype
 pharm_drugs:        infliximab | Antithyroid Preparations
 pharm_evidence:     3 (low evidence) | 3 (low evidence)
 pharm_cpic_action:  NA
-confidence_tier:    MODERATE | MODERATE
-confidence_rationale: ambiguous ;; ambiguous
+input_quality_tier:    MODERATE | MODERATE
+input_quality_rationale: ambiguous ;; ambiguous
 ```
 
 **Interpretation:**
@@ -503,7 +503,7 @@ confidence_rationale: ambiguous ;; ambiguous
 - The `Suggestive risk factor` label can be evaluated in a monitoring or research context
   but does not directly require a clinical decision.
 - Both alleles have the `ambiguous` penalty → the typing tool could not fully distinguish the subtype;
-  confidence is `MODERATE`.
+  confidence is `partial`.
 
 ---
 
@@ -514,13 +514,13 @@ sample_id:          Tes503_Aligned
 locus:              HLA-C
 allele1:            C*07:744
 allele2:            C*07:02:01
-resolution:         4-field
+resolution:         two-field
 clinical_significance: Not assessed — insufficient coverage | Suggestive risk factor
 gwas_traits_allele1:   NA
 gwas_traits_allele2:   Merkel cell polyomavirus seropositivity | HIV-1 infection | ...
 allele_frequency:   NA | 0.081600
-confidence_tier:    MODERATE | MODERATE
-confidence_rationale: freq_unknown ;; ambiguous
+input_quality_tier:    MODERATE | MODERATE
+input_quality_rationale: freq_unknown ;; ambiguous
 ```
 
 **Interpretation:**
@@ -539,19 +539,19 @@ sample_id:          Tes503_Aligned
 locus:              HLA-A
 allele1:            A*03:02:01
 allele2:            A*03:02:01
-resolution:         6-field
+resolution:         three-field
 imgt_accession:     NA
 clinical_significance: Inconclusive evidence | Inconclusive evidence
 allele_frequency:   NA
-confidence_score:   0.6375 | 0.6375
-confidence_tier:    LOW | LOW
-confidence_rationale: freq_unknown|ambiguous ;; freq_unknown|ambiguous
+input_quality_score:   0.6375 | 0.6375
+input_quality_tier:    LOW | LOW
+input_quality_rationale: freq_unknown|ambiguous ;; freq_unknown|ambiguous
 ```
 
 **Interpretation:**
 - `imgt_accession = NA` → This allele is not recorded in IMGT 3.64.0, or the IMGT accession code
   could not be matched. Cross-referencing cannot be performed.
-- Frequency is also unknown; the ambiguity penalty was also added → score 0.6375 → `LOW`.
+- Frequency is also unknown; the ambiguity penalty was also added → score 0.6375 → `limited`.
 - The `Inconclusive evidence` label indicates that this row should not be used for clinical inference.
 
 ---
@@ -587,10 +587,10 @@ The HLA-DM and HLA-DO genes play a role in the antigen processing process; direc
 is limited and there is no record for these loci in our curated table. For these loci,
 an `Inconclusive evidence` result is an expected output.
 
-### "Can I ignore the rows where confidence_tier = LOW?"
+### "Can I ignore the rows where input_quality_tier = LOW?"
 
-Rows that are `LOW` should not be excluded; however, extra caution should be exercised when drawing
-conclusions based on the findings of these rows. A `LOW` score usually corresponds to:
+Rows that are `limited` should not be excluded; however, extra caution should be exercised when drawing
+conclusions based on the findings of these rows. A `limited` score usually corresponds to:
 (a) low typing resolution, (b) the allele is rare or its frequency is unknown, or
 (c) the allele is not defined in IMGT. For these rows, higher-resolution
 typing or validation is generally recommended.
@@ -604,4 +604,4 @@ script; in discordant findings, the results of both tools should be evaluated by
 ---
 
 *This guide corresponds to the HLAnte 0.1.0 TSV schema.*
-*The schema is defined by `hlante.reporter.TSV_COLUMNS` (33 columns).*
+*The schema is defined by `hlante.reporter.TSV_COLUMNS` (40 columns).*

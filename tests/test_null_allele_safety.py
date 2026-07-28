@@ -133,7 +133,7 @@ class _RecordingGWAS:
             study_accession="GCST999999",
             allele=allele,
         )
-        return [hit], "4-field"
+        return [hit], "two-field"
 
 
 class _RecordingPharmGKB:
@@ -186,7 +186,7 @@ def _make_allele(allele_name: str, expression_suffix: Optional[str]) -> Normaliz
         protein_group=None,
         hla_class="I",
         gene="HLA-B",
-        resolution_level=4,
+        resolution_level=2,
         is_ambiguous=False,
         is_novel=False,
         expression_suffix=expression_suffix,
@@ -222,9 +222,9 @@ class TestNullAlleleSuppression:
         assert "Null allele" in result.disease_risk_summary
         assert "Null allele" in result.drug_response_summary
 
-        # A non-expressed allele is never presented at HIGH confidence.
-        assert result.confidence_tier != "HIGH"
-        assert "null_allele" in result.confidence_rationale
+        # A non-expressed allele is never presented in the detailed tier.
+        assert result.input_quality_tier != "detailed"
+        assert "null_allele" in result.input_quality_rationale
 
         # Allele frequency is still meaningful and is retained.
         assert result.allele_frequency == pytest.approx(0.05)

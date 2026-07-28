@@ -29,7 +29,7 @@ benchmarks/
 │   ├── per_population_metrics.tsv
 │   ├── pharm_recall_detail.tsv
 │   ├── gwas_recall_detail.tsv
-│   ├── confidence_distribution.tsv
+│   ├── input_quality_distribution.tsv
 │   └── failed_samples.log
 └── README.md                    # this file
 ```
@@ -145,13 +145,13 @@ python scripts/benchmark/run_annotation_benchmark.py \
 | `--max-samples` | `0` (all) | Cap per tool (useful for smoke-tests) |
 | `--imgt-db-path` | auto | Override IMGT DB path |
 | `--offline` | off | Disable live GWAS/PharmGKB queries |
-| `--input-source` | `validated` | `validated` suppresses ambiguity penalty for 2-field calls |
+| `--input-source` | `validated` | `validated` suppresses ambiguity penalty for two-field calls |
 | `--log-level` | `WARNING` | `DEBUG`, `INFO`, `WARNING`, or `ERROR` |
 
 > **`--input-source validated`** is the correct setting for the 1000G benchmark
-> because the ground-truth genotypes are Sanger-validated at 2-field resolution.
+> because the ground-truth genotypes are Sanger-validated at two-field resolution.
 > It disables the ×0.75 confidence penalty that HLAnte normally applies to
-> 2-field calls from typing tools.
+> two-field calls from typing tools.
 
 ---
 
@@ -189,7 +189,7 @@ disease association.
 Parse and normalisation rates broken down by super-population (AFR, AMR, EAS,
 EUR, SAS). Useful for detecting population-specific allele formats.
 
-### `confidence_distribution.tsv`
+### `input_quality_distribution.tsv`
 
 Counts of `high` / `medium` / `low` / `unresolved` confidence tiers per tool.
 
@@ -225,7 +225,7 @@ OptiType compared on Class I loci only.
   therefore not applicable and excluded from OptiType rows.
 
 - **`--input-source tool`** (the alternative to `validated`) applies a ×0.75
-  confidence penalty to 2-field allele calls, as is appropriate for real
+  confidence penalty to two-field allele calls, as is appropriate for real
   clinical output where exact resolution is not guaranteed.
 
 ## Reproducibility status (detail)

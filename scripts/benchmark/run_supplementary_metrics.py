@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Supplementary benchmark metrics for the HLAnte revision (OMICS R&R).
+Supplementary benchmark metrics for HLAnte.
 
 Computes three metrics not captured by run_annotation_benchmark.py, reusing the
 exact same parse -> normalize -> annotate path:
@@ -62,7 +62,7 @@ def _strip_prefix(name: str) -> str:
 def _matches_sentinel(allele_name: str, sentinel: str) -> bool:
     """True if a normalized allele_name corresponds to the sentinel key.
 
-    Matches exact 2-field (B*57:01) and higher-resolution extensions
+    Matches exact two-field (B*57:01) and higher-resolution extensions
     (B*57:01:01) but not sibling alleles (B*57:02)."""
     a = _strip_prefix(allele_name)
     return a == sentinel or a.startswith(sentinel + ":")
@@ -146,8 +146,8 @@ def main() -> None:
                     continue
                 for ann in annotated:
                     if _matches_sentinel(ann.normalized_allele.allele_name, sentinel):
-                        sent_conf[sentinel][region].append(ann.confidence_score or 0.0)
-                        tier = getattr(ann, "confidence_tier", "NA") or "NA"
+                        sent_conf[sentinel][region].append(ann.input_quality_score or 0.0)
+                        tier = getattr(ann, "input_quality_tier", "NA") or "NA"
                         sent_tier[sentinel][region][tier] += 1
                         break
 
@@ -182,8 +182,8 @@ def main() -> None:
     s2_path = args.output_dir / "sentinel_confidence_by_pop.tsv"
     with s2_path.open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh, delimiter="\t")
-        w.writerow(["sentinel", "population", "n_carriers", "mean_conf",
-                    "min_conf", "tier_HIGH", "tier_MODERATE", "tier_LOW"])
+        w.writerow(["sentinel", "population", "n_carriers", "mean_input_quality",
+                    "min_input_quality", "tier_detailed", "tier_partial", "tier_limited"])
         for sentinel in SENTINELS:
             for pop in SUPERPOPS:
                 scores = sent_conf[sentinel].get(pop, [])
@@ -193,8 +193,8 @@ def main() -> None:
                 w.writerow([
                     sentinel, pop, len(scores),
                     f"{mean(scores):.3f}", f"{min(scores):.3f}",
-                    tiers.get("HIGH", 0), tiers.get("MODERATE", 0),
-                    tiers.get("LOW", 0),
+                    tiers.get("detailed", 0), tiers.get("partial", 0),
+                    tiers.get("limited", 0),
                 ])
     print(f"S2 → {s2_path}")
 
