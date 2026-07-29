@@ -41,6 +41,8 @@ from hlante.db.afnd import (
 )
 from hlante.db.gwas import (
     DEFAULT_LOCAL_DIR as GWAS_DEFAULT_DIR,
+    GWAS_HLA_SUBSET_FILENAME,
+    GWAS_TSV_FILENAME_DEFAULT,
     GWASClient,
     GWASDatabaseError,
     GWASDownloadError,
@@ -863,15 +865,15 @@ def db_update_cmd(
     help="PharmGKB directory (default: ~/.hlante/pharmgkb).",
 )
 @click.option(
-    "--cache-dir",
+    "--gwas-cache-dir",
     default=None,
     type=click.Path(path_type=Path),
-    help="Cache root (default: ~/.hlante/cache).",
+    help="GWAS bulk dump directory (default: ~/.hlante/gwas).",
 )
 def version_cmd(
     imgt_db_path: Optional[Path],
     pharmgkb_dir: Optional[Path],
-    cache_dir: Optional[Path],
+    gwas_cache_dir: Optional[Path],
 ) -> None:
     """
     Print HLAnte and local database versions.
@@ -900,12 +902,13 @@ def version_cmd(
         click.echo("  PharmGKB     : not installed")
 
     # GWAS bulk dump
-    gwas_dir = Path(cache_dir or DEFAULT_CACHE_ROOT) / "gwas"
-    if gwas_dir.exists():
-        entries = list(gwas_dir.glob("*.json"))
-        click.echo(f"  GWAS cache   : {len(entries)} file(s) ({gwas_dir})")
+    gwas_dir = Path(gwas_cache_dir or GWAS_DEFAULT_DIR)
+    if (gwas_dir / GWAS_HLA_SUBSET_FILENAME).is_file() or (
+        gwas_dir / GWAS_TSV_FILENAME_DEFAULT
+    ).is_file():
+        click.echo(f"  GWAS Catalog : installed  ({gwas_dir})")
     else:
-        click.echo("  GWAS cache   : not installed")
+        click.echo("  GWAS Catalog : not installed")
 
     # AFND
     afnd_dir_local = Path(AFND_DEFAULT_DIR)

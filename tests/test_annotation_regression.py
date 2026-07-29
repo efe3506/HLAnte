@@ -32,12 +32,11 @@ Expected findings
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
 
 import pytest
 
-from hlante.db.gwas import GWASClient, GWASDatabaseError
-from hlante.db.pharmgkb import PharmGKBClient, PharmGKBDatabaseError
+from hlante.db.gwas import GWASClient
+from hlante.db.pharmgkb import PharmGKBClient
 
 pytestmark = pytest.mark.integration
 
@@ -208,7 +207,6 @@ class TestFullAnnotationRegression:
 
         from hlante.annotator import (
             AnnotatorConfig,
-            AnnotatorClients,
             annotate_genotype,
             build_clients,
             SIGNIFICANCE_PATHOGENIC,

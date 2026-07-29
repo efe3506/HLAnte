@@ -25,7 +25,6 @@ from hlante.annotator import (
     AnnotatorConfig,
     annotate_genotype,
 )
-from hlante.types import DiseaseEntry
 from hlante.db.gwas import (
     GWASClient,
     GWASHit,
@@ -35,7 +34,6 @@ from hlante.db.gwas import (
     _truncate_to_fields,
 )
 from hlante.db.pharmgkb import (
-    PharmAnnotation,
     PharmGKBClient,
     _candidate_allele_forms,
 )

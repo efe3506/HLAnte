@@ -111,7 +111,7 @@ class TestVersionCommand:
                 "version",
                 "--imgt-db-path", str(IMGT_MINI),
                 "--pharmgkb-dir", str(PHARMGKB_FIXTURE),
-                "--cache-dir", str(tmp_path / "cache"),
+                "--gwas-cache-dir", str(tmp_path / "gwas"),
             ],
         )
         assert result.exit_code == 0, result.output + result.stderr
@@ -130,12 +130,36 @@ class TestVersionCommand:
                 "version",
                 "--imgt-db-path", str(tmp_path / "missing"),
                 "--pharmgkb-dir", str(tmp_path / "missing_pharm"),
-                "--cache-dir", str(tmp_path / "cache"),
+                "--gwas-cache-dir", str(tmp_path / "missing_gwas"),
             ],
         )
         assert result.exit_code == 0
         assert "IPD-IMGT/HLA : not installed" in result.output
         assert "PharmGKB     : not installed" in result.output
+        assert "GWAS Catalog : not installed" in result.output
+
+    def test_gwas_dump_reported_as_installed(
+        self, runner: CliRunner, tmp_path: Path
+    ) -> None:
+        """
+        A GWAS bulk dump present on disk must be reported as installed —
+        the status line reads the dump directory, not the query cache.
+        """
+        gwas_dir = tmp_path / "gwas"
+        gwas_dir.mkdir()
+        (gwas_dir / "gwas-hla-subset.tsv").write_text("", encoding="utf-8")
+
+        result = runner.invoke(
+            cli,
+            [
+                "version",
+                "--imgt-db-path", str(tmp_path / "missing"),
+                "--pharmgkb-dir", str(tmp_path / "missing_pharm"),
+                "--gwas-cache-dir", str(gwas_dir),
+            ],
+        )
+        assert result.exit_code == 0
+        assert "GWAS Catalog : installed" in result.output
 
 
 class TestValidateCommand:

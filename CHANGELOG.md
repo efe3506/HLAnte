@@ -3,7 +3,7 @@
 This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.0] - 2026-07-29
 
 ### Changed
 - **Caller-reported quality is now surfaced, and stopped being mislabelled.**
@@ -46,6 +46,10 @@ format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The integration test fixture requested separate stderr capture in a way that
   only worked on Click 8.3+, so a fresh install on Python 3.9 (Click 8.1)
   reported three failures.
+- `hlante version` reported the GWAS query cache instead of the GWAS Catalog
+  bulk dump, so a freshly installed dump still read `not installed`. The status
+  line now reads the dump directory, and `version` takes `--gwas-cache-dir` in
+  place of `--cache-dir`.
 
 ### Removed
 - The bundled NMDP allele-frequency table. NMDP data are licensed by

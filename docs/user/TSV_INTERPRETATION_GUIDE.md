@@ -31,7 +31,7 @@ Every HLAnte TSV file consists of three sections:
 ### 1.1 Metadata Block (lines beginning with `#`)
 
 ```
-# HLAnte 0.1.0
+# HLAnte 0.2.0
 # Generated at: 2026-05-04T10:35:18.827820+00:00
 # gwas_cache_date version: 2026-04-28
 # imgt version: IPD-IMGT/HLA 3.64.0
@@ -39,7 +39,7 @@ Every HLAnte TSV file consists of three sections:
 
 | Field | Meaning |
 |---|---|
-| `HLAnte 0.1.0` | The HLAnte version used |
+| `HLAnte 0.2.0` | The HLAnte version used |
 | `Generated at` | Date/time the file was produced (UTC) |
 | `gwas_cache_date` | Download date of the GWAS Catalog data — runs with different dates may yield different findings |
 | `imgt version` | IPD-IMGT/HLA database version — allele normalization was performed according to this version |
@@ -603,5 +603,5 @@ script; in discordant findings, the results of both tools should be evaluated by
 
 ---
 
-*This guide corresponds to the HLAnte 0.1.0 TSV schema.*
+*This guide corresponds to the HLAnte 0.2.0 TSV schema.*
 *The schema is defined by `hlante.reporter.TSV_COLUMNS` (40 columns).*

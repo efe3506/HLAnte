@@ -91,11 +91,11 @@ pip install .
 Building wheels for collected packages: hlante
   Building wheel for hlante (pyproject.toml): started
   Building wheel for hlante (pyproject.toml): finished with status 'done'
-  Created wheel for hlante: filename=hlante-0.1.0-py3-none-any.whl size=95416 ...
+  Created wheel for hlante: filename=hlante-0.2.0-py3-none-any.whl size=95416 ...
 Successfully built hlante
 Installing collected packages: pytz, tzdata, tqdm, six, numpy, click, python-dateutil, pandas, hlante
 
-Successfully installed click-8.1.8 hlante-0.1.0 numpy-2.0.2 pandas-2.3.3 python-dateutil-2.9.0.post0 pytz-2026.3.post1 six-1.17.0 tqdm-4.70.0 tzdata-2026.3
+Successfully installed click-8.1.8 hlante-0.2.0 numpy-2.0.2 pandas-2.3.3 python-dateutil-2.9.0.post0 pytz-2026.3.post1 six-1.17.0 tqdm-4.70.0 tzdata-2026.3
 ```
 
 ### 2.4 Check that it worked
@@ -104,14 +104,14 @@ Successfully installed click-8.1.8 hlante-0.1.0 numpy-2.0.2 pandas-2.3.3 python-
 hlante --log-level WARNING version
 
 # ---- output ----
-HLAnte v0.1.0
+HLAnte v0.2.0
   IPD-IMGT/HLA : not installed
   PharmGKB     : not installed
-  GWAS cache   : not installed
+  GWAS Catalog : not installed
   AFND         : not installed
 ```
 
-`HLAnte v0.1.0` means the software is installed. The four `not installed`
+`HLAnte v0.2.0` means the software is installed. The four `not installed`
 lines are expected on a fresh machine — the next section fixes the first one.
 
 `--log-level WARNING` simply suppresses routine progress messages; you can
@@ -143,7 +143,7 @@ The files land in `~/.hlante/imgt_hla` and stay there. Confirm:
 hlante --log-level WARNING version
 
 # ---- output (shortened) ----
-HLAnte v0.1.0
+HLAnte v0.2.0
   IPD-IMGT/HLA : IPD-IMGT/HLA 3.65.0  (/home/user/.hlante/imgt_hla)
 # ... the optional databases are listed on the following lines ...
 ```
@@ -299,7 +299,7 @@ Two things to know before you open the TSV in a spreadsheet:
   releases used:
 
   ```
-  # HLAnte 0.1.0
+  # HLAnte 0.2.0
   # Generated at: 2026-07-28T09:18:09.308613+00:00
   # gwas_cache_date version: 2026-07-28
   # imgt version: IPD-IMGT/HLA 3.65.0

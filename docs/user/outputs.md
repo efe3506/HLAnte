@@ -103,7 +103,7 @@ Top-level structure:
 ```json
 {
   "meta": {
-    "hlante_version": "0.1.0",
+    "hlante_version": "0.2.0",
     "generated": "2026-05-04T12:00:00Z",
     "db_versions": {"imgt": "3.64.0", "gwas_cache_date": "2026-04-20"},
     "input_source": "typing_tool",

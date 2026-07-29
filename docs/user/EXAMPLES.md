@@ -805,7 +805,7 @@ grep '^#' /tmp/ex_out/pinned/hlante_report.tsv
 ```
 
 ```
-# HLAnte 0.1.0
+# HLAnte 0.2.0
 # Generated at: 2026-07-28T09:16:37.140220+00:00
 # gwas_cache_date version: 2026-07-28
 # imgt version: IPD-IMGT/HLA 3.64.0
@@ -819,7 +819,7 @@ line that produced the file:
 
 ```json
 {
-  "hlante_version": "0.1.0",
+  "hlante_version": "0.2.0",
   "generated_at": "2026-07-28T09:16:37.140220+00:00",
   "db_versions": {
     "imgt": "IPD-IMGT/HLA 3.64.0",
@@ -848,7 +848,7 @@ if the analysis must be re-run exactly.
 ```
 # HLAnte Research Annotation Report
 
-- **HLAnte version**: 0.1.0
+- **HLAnte version**: 0.2.0
 - **Generated at**: 2026-07-28T09:16:37.140220+00:00
 - **gwas_cache_date version**: 2026-07-28
 - **imgt version**: IPD-IMGT/HLA 3.64.0

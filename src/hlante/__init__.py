@@ -21,7 +21,7 @@ __license__ : str
 
 from __future__ import annotations
 
-__version__: str = "0.1.0"
+__version__: str = "0.2.0"
 __author__: str = "Efe Dallı"
 __license__: str = "MIT"
 

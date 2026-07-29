@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hlante"
-version = "0.1.0"
+version = "0.2.0"
 description = "HLA genotype → disease/drug clinical annotation toolkit"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -81,6 +81,11 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 100
 target-version = "py39"
+
+[tool.ruff.lint]
+# Pinned to ruff's classic default rule set so the lint result does not drift
+# as newer ruff releases widen their defaults.
+select = ["E4", "E7", "E9", "F"]
 
 [tool.black]
 line-length = 100

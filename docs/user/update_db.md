@@ -61,10 +61,10 @@ hlante version
 Example output:
 
 ```
-HLAnte v0.1.0
+HLAnte v0.2.0
   IPD-IMGT/HLA : 3.64.0  (/home/user/.hlante/imgt_hla)
   PharmGKB     : installed  (/home/user/.hlante/pharmgkb)
-  GWAS cache   : 12 file(s) (/home/user/.hlante/cache/gwas)
+  GWAS Catalog : installed  (/home/user/.hlante/gwas)
   AFND         : installed  (/home/user/.hlante/afnd)
 ```
 

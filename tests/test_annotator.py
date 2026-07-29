@@ -29,7 +29,6 @@ from hlante.annotator import (
     SIGNIFICANCE_PATHOGENIC,
     SIGNIFICANCE_RISK_FACTOR,
     SIGNIFICANCE_VUS,
-    AnnotatedHLA,
     AnnotatorClients,
     AnnotatorConfig,
     annotate_genotype,
@@ -595,7 +594,6 @@ class TestBenignLimitedEvidence:
         Same allele + GWAS ran but returned no hits → plain ``Benign``.
         """
         from hlante.annotator import (
-            SIGNIFICANCE_BENIGN,
             _classify_significance,
         )
 

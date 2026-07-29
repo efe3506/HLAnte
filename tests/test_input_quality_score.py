@@ -18,7 +18,7 @@ Coverage
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 import pytest
 
@@ -37,8 +37,6 @@ from hlante.db.afnd import (
     AFNDClient,
     AFNDDatabaseError,
     AllelFrequency,
-    BUILTIN_AFND_TSV,
-    DEFAULT_MIN_SAMPLE_SIZE,
     POPULATION_GROUPS,
 )
 from hlante.normalizer import NormalizedAllele

@@ -608,7 +608,7 @@ def parse_t1k(filepath: Union[str, Path]) -> List[HLAGenotype]:
                 raise HLAnteParseError(
                     f"T1K row has missing columns (line {line_no}): {row!r} (source: {path})"
                 )
-            gene, a1, a2, s1, s2 = parts[:5]
+            gene, a1, a2 = parts[:3]
             q1 = q2 = None
         else:
             # Native: gene count a1 s1 q1 a2 s2 q2
@@ -618,13 +618,11 @@ def parse_t1k(filepath: Union[str, Path]) -> List[HLAGenotype]:
                 )
             gene = parts[0]
             a1 = parts[2] if len(parts) > 2 else ""
-            s1 = parts[3] if len(parts) > 3 else ""
             a2 = parts[5] if len(parts) > 5 else ""
-            s2 = parts[6] if len(parts) > 6 else ""
-            # Columns 4 and 7 are T1K's per-allele quality values; columns 3
-            # And 6 (read above) are abundance. Only the quality values are
-            # Reported, and only for the native layout — the legacy headered
-            # Layout labels its two numbers "score" without saying which.
+            # Columns 4 and 7 hold T1K's per-allele quality; columns 3 and 6
+            # hold abundance and are not reported. The legacy headered layout
+            # labels its two numbers "score" without saying which, so quality
+            # is read only from the native layout.
             q1 = _parse_float(parts[4]) if len(parts) > 4 else None
             q2 = _parse_float(parts[7]) if len(parts) > 7 else None
 
@@ -645,9 +643,6 @@ def parse_t1k(filepath: Union[str, Path]) -> List[HLAGenotype]:
 
         _ensure_valid_allele(allele1, path)
         _ensure_valid_allele(allele2, path)
-
-        score1 = _parse_float(s1)
-        score2 = _parse_float(s2)
 
         results.append(
             HLAGenotype(
@@ -833,10 +828,6 @@ def parse_optitype(filepath: Union[str, Path]) -> List[HLAGenotype]:
     def _cell(name: str) -> str:
         pos = idx[name]
         return data_row[pos].strip() if pos < len(data_row) else ""
-
-    objective: Optional[float] = None
-    if "objective" in idx:
-        objective = _parse_float(_cell("objective"))
 
     raw_line = lines[1]
     results: List[HLAGenotype] = []

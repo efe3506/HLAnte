@@ -1,6 +1,6 @@
 # HLAnte — Installation Guide
 
-> **Version:** 0.1.0 | **Python:** ≥3.9 | **Platform:** Linux, macOS
+> **Version:** 0.2.0 | **Python:** ≥3.9 | **Platform:** Linux, macOS
 
 ---
 
@@ -198,10 +198,11 @@ hlante db-update --db all
 ```bash
 hlante version
 # Expected output:
-# HLAnte v0.1.0
+# HLAnte v0.2.0
 #   IPD-IMGT/HLA : 3.64.0  (~/.hlante/imgt_hla)
 #   PharmGKB     : installed  (~/.hlante/pharmgkb)
-#   GWAS cache   : X file(s)
+#   GWAS Catalog : installed  (~/.hlante/gwas)
+#   AFND         : installed  (~/.hlante/afnd)
 ```
 
 ### 6.2 Unit Tests
@@ -210,7 +211,7 @@ hlante version
 # Standard tests (excluding integration, ~1 second)
 pytest tests/ -q -m "not integration and not qa"
 
-# Expected: 372 passed
+# Expected: 381 passed, 8 deselected
 
 # Integration tests (require local databases)
 pytest tests/ -q -m integration
