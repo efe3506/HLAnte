@@ -211,7 +211,7 @@ hlante version
 # Standard tests (excluding integration, ~1 second)
 pytest tests/ -q -m "not integration and not qa"
 
-# Expected: 381 passed, 8 deselected
+# Expected: 383 passed, 8 deselected
 
 # Integration tests (require local databases)
 pytest tests/ -q -m integration
