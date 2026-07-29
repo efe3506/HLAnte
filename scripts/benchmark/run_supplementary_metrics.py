@@ -165,18 +165,25 @@ def main() -> None:
     # ── R5: scope distribution ────────────────────────────────────────────────
     total_scope = sum(scope_counter.values())
     scope_path = args.output_dir / "gwas_scope_dist_1000g.tsv"
+    # Report the known scopes in cascade order, then anything else the
+    # annotator produced. Hard-coding the vocabulary once silently dropped a
+    # whole tier: the one-field scope was renamed from "locus" to
+    # "allele_group" and this loop kept writing a zero row for the old name
+    # while the real counts vanished from the table.
+    known = ("allele", "subtype", "allele_group")
+    scopes = list(known) + sorted(set(scope_counter) - set(known))
     with scope_path.open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh, delimiter="\t")
         w.writerow(["scope", "count", "pct"])
-        for scope in ("allele", "subtype", "locus"):
+        for scope in scopes:
             c = scope_counter.get(scope, 0)
             pct = f"{100 * c / total_scope:.1f}" if total_scope else "0.0"
             w.writerow([scope, c, pct])
     print(f"\nR5 → {scope_path}  (total GWAS hits: {total_scope})")
-    for scope in ("allele", "subtype", "locus"):
+    for scope in scopes:
         c = scope_counter.get(scope, 0)
         pct = 100 * c / total_scope if total_scope else 0
-        print(f"   {scope:<8} {c:>7}  {pct:5.1f}%")
+        print(f"   {scope:<12} {c:>7}  {pct:5.1f}%")
 
     # ── S2: per-sentinel confidence by population ─────────────────────────────
     s2_path = args.output_dir / "sentinel_confidence_by_pop.tsv"
