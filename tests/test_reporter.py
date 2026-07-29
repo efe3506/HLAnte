@@ -302,6 +302,54 @@ class TestGenerateTSV:
         assert s2_row[idx["gwas_odds_ratios"]] == "3.1000"
         assert "e" not in s2_row[idx["gwas_odds_ratios"]].lower()
 
+    def test_per_allele_columns_keep_their_slot(
+        self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
+    ) -> None:
+        """
+        A per-allele value must stay in its own slot when the other allele
+        has none.
+
+        ``imgt_accession``, ``hla_serotype`` and ``protein_group`` used to
+        drop missing entries rather than reserve them, so a row where only
+        allele2 carried a value printed that value alone — and a reader
+        following the positional convention attributed it to allele1. Real
+        two-field calls hit this constantly: an exactly-matched allele has an
+        accession but no G-group, and a prefix-matched one has the reverse.
+        """
+        dataset = [
+            _annotated(
+                _normalized(
+                    "DPA1*01:03:01",
+                    sample_id="SLOT",
+                    locus="HLA-DPA1",
+                    allele_index=0,
+                    hla_class="II",
+                    imgt_accession=None,
+                    protein_group="DPA1*01:03:01G",
+                )
+            ),
+            _annotated(
+                _normalized(
+                    "DPA1*01:03:04",
+                    sample_id="SLOT",
+                    locus="HLA-DPA1",
+                    allele_index=1,
+                    hla_class="II",
+                    imgt_accession="HLA03224",
+                    protein_group=None,
+                )
+            ),
+        ]
+        out = tmp_path / "report.tsv"
+        generate_tsv(dataset, out)
+        _, header, data = self._read_tsv(out)
+        idx = {col: i for i, col in enumerate(header)}
+        row = next(r for r in data if r[idx["sample_id"]] == "SLOT")
+
+        # The accession belongs to allele2, the protein group to allele1.
+        assert row[idx["imgt_accession"]] == "NA|HLA03224"
+        assert row[idx["protein_group"]] == "DPA1*01:03:01G|NA"
+
     def test_pvalue_survives_the_tsv(
         self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
     ) -> None:

@@ -46,6 +46,13 @@ format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The integration test fixture requested separate stderr capture in a way that
   only worked on Click 8.3+, so a fresh install on Python 3.9 (Click 8.1)
   reported three failures.
+- **Three per-allele columns lost track of which allele they described.**
+  `imgt_accession`, `hla_serotype` and `protein_group` dropped missing entries
+  instead of reserving the slot, so a row where only the second allele carried a
+  value printed that value on its own and a reader following the positional
+  convention attributed it to the first allele. Across the 2,692-sample 1000
+  Genomes cohort this misattributed 356 values. The three columns now reserve
+  the slot with `NA`, matching the columns beside them.
 - **Every GWAS p-value in the TSV read `0.0000`.** The column was written as
   fixed-point with four decimals, but only associations at or below the
   genome-wide threshold of 5×10⁻⁸ are retained, so no p-value could ever be

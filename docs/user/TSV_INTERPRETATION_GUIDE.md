@@ -89,9 +89,31 @@ That is, the p-value of the 1st trait is the 1st p-value; the p-value of the 2nd
 
 ### 2.4 per-allele Columns
 
-Columns whose names contain `_allele1` or `_allele2` belong to a specific allele.
-The "legacy" columns whose names do not contain these, such as `gwas_traits` and `pharm_drugs`,
-combine the findings of both alleles (may contain duplication).
+Two different conventions are in use, and the difference matters when you read a
+value back.
+
+**Slot columns — one slot per allele, in order.** `imgt_accession`,
+`hla_serotype`, `protein_group`, `imgt_match_category`, `imgt_match_candidates`,
+`allele_frequency`, `allele_freq_population`, `input_quality_score`,
+`input_quality_tier` and `caller_allele_quality` always write two `|`-separated
+slots for a heterozygous call: the first belongs to `allele1`, the second to
+`allele2`. When one allele has no value its slot holds `NA`, so the position is
+never ambiguous:
+
+```
+allele1:            DPA1*01:03:01     allele2: DPA1*01:03:04
+imgt_accession:     NA | HLA03224     ← the accession belongs to allele2
+protein_group:      DPA1*01:03:01G | NA
+```
+
+This is common rather than exotic: an exactly-matched allele has an accession but
+no G-group, and a prefix-matched one usually has the reverse.
+
+**Union columns — both alleles pooled.** `gwas_traits`, `pharm_drugs` and the
+other columns without an `_allele1` / `_allele2` suffix list the findings of both
+alleles together, and may repeat a finding that both alleles carry. They are not
+positionally aligned with the alleles; use the `_allele1` / `_allele2` variants
+when you need attribution.
 
 ---
 

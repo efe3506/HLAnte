@@ -622,16 +622,16 @@ def _row_cells(row: GenotypeRow) -> List[str]:
         row.resolution,
         _gl_string_for_locus(row) or NA,
         row.tool,
-        _pipe([na1.imgt_accession, na2.imgt_accession if na2 else None]),
+        _pipe_slots([na1.imgt_accession, na2.imgt_accession if na2 else None]),
         na1.hla_class or NA,
         # Per-allele serotype lookup.
-        _pipe(
+        _pipe_slots(
             [
                 _serotype(na1.allele_name),
                 _serotype(na2.allele_name) if na2 else None,
             ]
         ),
-        _pipe([na1.protein_group, na2.protein_group if na2 else None]),
+        _pipe_slots([na1.protein_group, na2.protein_group if na2 else None]),
         _pipe_slots(
             [na1.imgt_match_category, na2.imgt_match_category if na2 else None]
         ),
