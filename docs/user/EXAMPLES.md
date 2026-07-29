@@ -863,8 +863,8 @@ if the analysis must be re-run exactly.
   record `gwas_cache_date` from the report header. Both resources
   change continuously and are **not** versioned by release number.
 - Keep the JSON report: `cli_invocation` reconstructs the run, and the
-  JSON retains full p-value precision (the TSV rounds to four decimal
-  places, so p-values below 10⁻⁴ appear as `0.0000`).
+  JSON retains the p-value exactly as the GWAS Catalog reported it, where
+  the TSV rounds to two decimals in scientific notation.
 - Record the AFND table in use — the bundled fallback and the
   downloaded mirror give different frequencies.
 - The full checklist, including manifest and consent items, is in

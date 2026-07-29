@@ -50,6 +50,9 @@ PROGRESS_THRESHOLD: int = 100
 
 FLOAT_DECIMALS: int = 4
 
+#: GWAS p-values are reported in scientific notation with this many decimals.
+PVALUE_DECIMALS: int = 2
+
 DISCLAIMER: str = (
     "RESEARCH USE ONLY. This report is an annotation aid. Nothing in "
     "this output constitutes a clinical diagnosis, medical advice, or "
@@ -642,7 +645,7 @@ def _row_cells(row: GenotypeRow) -> List[str]:
         # Per-allele attribution.
         _pipe([h.trait for h in a1.gwas_hits]),
         _pipe([h.trait for h in a2.gwas_hits]) if a2 else NA,
-        _pipe([_fmt_float(h.p_value) for h in gwas_all]),
+        _pipe([_fmt_pvalue(h.p_value) for h in gwas_all]),
         _pipe([_fmt_float(h.odds_ratio) for h in gwas_all]),
         _pipe([h.pmid for h in gwas_all]),
         _pipe(
@@ -1119,15 +1122,25 @@ def _fmt_float(value: Optional[float], decimals: int = FLOAT_DECIMALS) -> Option
     """
     Format a float as fixed-point with ``decimals`` digits (no scientific
     notation), per the original output specification.
-
-    Notes
-    -----
-    Very small p-values (< 10⁻⁴) are lossily rounded to ``0.0000``. Use
-    the JSON output when exact precision matters.
     """
     if value is None:
         return None
     return f"{value:.{decimals}f}"
+
+
+def _fmt_pvalue(value: Optional[float]) -> Optional[str]:
+    """
+    Format a GWAS p-value in scientific notation.
+
+    Fixed-point formatting cannot express these at all: HLAnte only keeps
+    associations at or below the genome-wide threshold of 5×10⁻⁸, so every
+    p-value that reaches the report is smaller than the smallest magnitude
+    four decimal places can represent, and the column read ``0.0000`` on
+    every row of every report.
+    """
+    if value is None:
+        return None
+    return f"{value:.{PVALUE_DECIMALS}e}"
 
 
 # ---------------------------------------------------------------------------

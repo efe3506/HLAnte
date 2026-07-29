@@ -79,10 +79,10 @@ The values in the `gwas_traits`, `gwas_p_values`, `gwas_odds_ratios`, and `gwas_
 **positionally aligned**:
 
 ```
-gwas_traits:        sistemik lupus eritematoz | sklerozan kolanjit
-gwas_p_values:      0.0000                   | 0.0000
-gwas_odds_ratios:   1.9400                   | 2.8226
-gwas_pmids:         28714469                 | 23603763
+gwas_traits:        systemic lupus erythematosus | sclerosing cholangitis
+gwas_p_values:      9.00e-13                     | 4.00e-11
+gwas_odds_ratios:   1.9400                       | 2.8226
+gwas_pmids:         28714469                     | 23603763
 ```
 
 That is, the p-value of the 1st trait is the 1st p-value; the p-value of the 2nd trait is the 2nd p-value.
@@ -198,8 +198,10 @@ to which allele; it is used only for an aggregate overview.
 
 The statistical significance of the GWAS association. Positionally aligned with `gwas_traits`.
 
-- Written with 4 decimal places in the TSV; values smaller than 1×10⁻⁴ appear as `0.0000`.
-- Use the JSON output for the exact value.
+- Written in scientific notation (e.g. `9.00e-13`). Only associations at or below the
+  genome-wide threshold of 5×10⁻⁸ are retained, so a fixed-point column could not
+  represent them.
+- The value is a plain float: `float(cell)` parses it, and sorting on it works as expected.
 
 #### `gwas_odds_ratios` — Odds Ratio / Beta Coefficients
 
@@ -560,9 +562,10 @@ input_quality_rationale: freq_unknown|ambiguous ;; freq_unknown|ambiguous
 
 ### "All p-values appear as 0.0000 — is this correct?"
 
-Yes. In the TSV format, p-values are written with 4 decimal places; since most GWAS findings
-are p < 10⁻⁵ or smaller, they appear as `0.0000`. For the exact value, use the JSON output
-(`.json` file) of the same run.
+No — that was a formatting defect, fixed in v0.2.0. The TSV wrote p-values with four decimal
+places, and since HLAnte only keeps associations at or below 5×10⁻⁸, every p-value in every
+report collapsed to `0.0000`. They are now written in scientific notation (`9.00e-13`). If you
+are looking at a report produced by v0.1.0, take the p-values from the JSON output of that run.
 
 ### "There are too many values in the gwas_traits column, which one is important?"
 

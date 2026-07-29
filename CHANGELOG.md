@@ -46,6 +46,13 @@ format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The integration test fixture requested separate stderr capture in a way that
   only worked on Click 8.3+, so a fresh install on Python 3.9 (Click 8.1)
   reported three failures.
+- **Every GWAS p-value in the TSV read `0.0000`.** The column was written as
+  fixed-point with four decimals, but only associations at or below the
+  genome-wide threshold of 5×10⁻⁸ are retained, so no p-value could ever be
+  represented — a p of 4×10⁻²⁴⁶ and one of 2×10⁻⁸ were indistinguishable.
+  p-values are now written in scientific notation (`9.00e-13`) and remain
+  parseable as plain floats. Only the TSV was affected; the JSON always
+  carried the true value.
 - **`db-update --db pharmgkb` could not download anything.** PharmGKB retired
   the `api.pharmgkb.org` host — it no longer resolves — so every attempt failed
   with a name-resolution error. The bulk files are now fetched from

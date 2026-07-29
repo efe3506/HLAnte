@@ -290,7 +290,7 @@ class TestGenerateTSV:
         self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
     ) -> None:
         """
-        Floats must be written as fixed-point with 4 decimals, no
+        Effect sizes must be written as fixed-point with 4 decimals, no
         scientific notation.
         """
         out = tmp_path / "report.tsv"
@@ -301,8 +301,26 @@ class TestGenerateTSV:
         # OR=3.1 → "3.1000"
         assert s2_row[idx["gwas_odds_ratios"]] == "3.1000"
         assert "e" not in s2_row[idx["gwas_odds_ratios"]].lower()
-        # p=1e-20 → "0.0000" (lossy — no scientific per spec)
-        assert s2_row[idx["gwas_p_values"]] == "0.0000"
+
+    def test_pvalue_survives_the_tsv(
+        self, sample_dataset: List[AnnotatedHLA], tmp_path: Path
+    ) -> None:
+        """
+        p-values must reach the TSV intact.
+
+        Only associations at or below 5e-8 are retained, so fixed-point
+        formatting collapsed every p-value in every report to ``0.0000``.
+        Scientific notation is therefore not a preference here — it is the
+        only format that can carry the value at all.
+        """
+        out = tmp_path / "report.tsv"
+        generate_tsv(sample_dataset, out)
+        _, header, data = self._read_tsv(out)
+        idx = {col: i for i, col in enumerate(header)}
+        s2_row = next(r for r in data if r[idx["sample_id"]] == "S2")
+        cell = s2_row[idx["gwas_p_values"]]
+        assert cell == "1.00e-20", cell
+        assert float(cell) == pytest.approx(1e-20)
 
     def test_na_for_missing_values(
         self, sample_dataset: List[AnnotatedHLA], tmp_path: Path

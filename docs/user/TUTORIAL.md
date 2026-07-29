@@ -373,7 +373,7 @@ Two cautions that the reports themselves repeat:
 Every column, every label and a set of worked TSV rows are documented in the
 [TSV Interpretation Guide](TSV_INTERPRETATION_GUIDE.md) — § 3 for the column
 reference, § 4 for the `clinical_significance` glossary and § 7 for the
-frequently asked questions (including why the p-value column prints `0.0000`).
+frequently asked questions.
 
 ---
 

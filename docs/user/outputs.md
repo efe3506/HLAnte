@@ -42,7 +42,7 @@ Strip it before parsing: `grep -v '^#' report.tsv`.
 | 14 | `gwas_traits` | GWAS trait names, pipe-joined (both alleles aggregated) |
 | 15 | `gwas_traits_allele1` | GWAS traits for allele1 only |
 | 16 | `gwas_traits_allele2` | GWAS traits for allele2 only |
-| 17 | `gwas_p_values` | p-values aligned with `gwas_traits`, 4-decimal |
+| 17 | `gwas_p_values` | p-values aligned with `gwas_traits`, scientific notation |
 | 18 | `gwas_odds_ratios` | OR or β aligned with `gwas_traits`, 4-decimal |
 | 19 | `gwas_pmids` | PubMed IDs aligned with `gwas_traits` |
 | 20 | `gwas_annotation_resolution` | Resolution at which GWAS hit was found |
