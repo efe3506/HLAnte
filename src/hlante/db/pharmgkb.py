@@ -27,7 +27,10 @@ from typing import Callable, Dict, FrozenSet, List, Optional, Set, Tuple, cast
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-PHARMGKB_DOWNLOAD_BASE: str = "https://api.pharmgkb.org/v1/download/file/data"
+# PharmGKB retired the api.pharmgkb.org download host — it no longer resolves —
+# and serves the bulk files from S3 instead. The www host still redirects to
+# ClinPGx, so the per-annotation links below continue to work.
+PHARMGKB_DOWNLOAD_BASE: str = "https://s3.pgkb.org/data"
 PHARMGKB_CLINICAL_ANN_URL: str = f"{PHARMGKB_DOWNLOAD_BASE}/clinicalAnnotations.zip"
 
 DEFAULT_LOCAL_DIR: Path = Path.home() / ".hlante" / "pharmgkb"
@@ -303,34 +306,56 @@ class PharmGKBClient:
             return match
         return None
 
-    def _load_evidence_pmids(self, path: Path) -> Dict[str, List[str]]:
+    def _load_evidence(self, path: Path) -> Tuple[Dict[str, List[str]], Dict[str, str]]:
         """
-        Extract the PMID list per Clinical Annotation ID from
-        ``clinical_ann_evidence.tsv``.
+        Extract, per Clinical Annotation ID, the PMID list and the CPIC
+        guideline link from ``clinical_ann_evidence.tsv``.
+
+        The main ``clinical_annotations.tsv`` carries no CPIC column; the
+        guideline link is only reachable here, as a ``Guideline Annotation``
+        evidence row. PharmGKB files DPWG guidelines under the same evidence
+        type, so the summary — "Annotation of CPIC Guideline for ..." versus
+        "Annotation of DPWG Guideline for ..." — is what separates them. Only
+        CPIC rows may back a CPIC assertion.
         """
         ca_to_pmids: Dict[str, List[str]] = {}
+        ca_to_cpic: Dict[str, str] = {}
         with path.open("r", encoding="utf-8", newline="") as handle:
             reader = csv.DictReader(handle, delimiter="\t")
             if not reader.fieldnames:
-                return ca_to_pmids
+                return ca_to_pmids, ca_to_cpic
             fields = {(name or "").strip().lower(): name for name in reader.fieldnames}
             f_ca = fields.get("clinical annotation id")
             f_pmid = fields.get("pmid")
-            if not f_ca or not f_pmid:
-                return ca_to_pmids
+            f_type = fields.get("evidence type")
+            f_url = fields.get("evidence url")
+            f_summary = fields.get("summary")
+            if not f_ca:
+                return ca_to_pmids, ca_to_cpic
             for row in reader:
                 ca = (row.get(f_ca) or "").strip()
-                pmid = (row.get(f_pmid) or "").strip()
-                if ca and pmid and pmid.lower() != "none":
-                    bucket = ca_to_pmids.setdefault(ca, [])
-                    if pmid not in bucket:
-                        bucket.append(pmid)
+                if not ca:
+                    continue
+                if f_pmid:
+                    pmid = (row.get(f_pmid) or "").strip()
+                    if pmid and pmid.lower() != "none":
+                        bucket = ca_to_pmids.setdefault(ca, [])
+                        if pmid not in bucket:
+                            bucket.append(pmid)
+                if f_type and f_url and f_summary and ca not in ca_to_cpic:
+                    is_guideline = (row.get(f_type) or "").strip().lower() == "guideline annotation"
+                    summary = (row.get(f_summary) or "").lower()
+                    url = (row.get(f_url) or "").strip()
+                    if is_guideline and "cpic" in summary and url:
+                        ca_to_cpic[ca] = url
         logger.info(
-            "PharmGKB evidence loaded: %d annotation(s) with PMIDs (%s)",
+            "PharmGKB evidence loaded: %d annotation(s) with PMIDs, "
+            "%d with a CPIC guideline (%s)",
             len(ca_to_pmids),
+            len(ca_to_cpic),
             path,
         )
-        return ca_to_pmids
+        return ca_to_pmids, ca_to_cpic
 
     def _parse_tsv(self, path: Path) -> Dict[str, List[PharmAnnotation]]:
         """
@@ -344,9 +369,10 @@ class PharmGKBClient:
         Clinical Annotation ID.
         """
         evidence_path = self._locate_evidence()
-        evidence_pmids: Dict[str, List[str]] = (
-            self._load_evidence_pmids(evidence_path) if evidence_path else {}
-        )
+        evidence_pmids: Dict[str, List[str]] = {}
+        evidence_cpic: Dict[str, str] = {}
+        if evidence_path:
+            evidence_pmids, evidence_cpic = self._load_evidence(evidence_path)
 
         by_allele: Dict[str, List[PharmAnnotation]] = {}
         dropped_no_pmid = 0
@@ -403,7 +429,11 @@ class PharmGKBClient:
 
                 drug = (row.get(f_drug) or "").strip()
                 phenotype = (row.get(f_phenotype) or "").strip() if f_phenotype else ""
+                # The fixture layout may carry a CPIC column; the real dump
+                # exposes the link only through the evidence join.
                 cpic_url = (row.get(f_cpic) or "").strip() if f_cpic else ""
+                if not cpic_url and annotation_id:
+                    cpic_url = evidence_cpic.get(annotation_id, "")
                 custom_url = (row.get(f_url) or "").strip() if f_url else ""
 
                 pharmgkb_url = custom_url or (

@@ -46,6 +46,17 @@ format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The integration test fixture requested separate stderr capture in a way that
   only worked on Click 8.3+, so a fresh install on Python 3.9 (Click 8.1)
   reported three failures.
+- **`db-update --db pharmgkb` could not download anything.** PharmGKB retired
+  the `api.pharmgkb.org` host — it no longer resolves — so every attempt failed
+  with a name-resolution error. The bulk files are now fetched from
+  `s3.pgkb.org`, where PharmGKB serves them.
+- **The CPIC Level 1A label was unreachable.** `clinical_annotations.tsv`
+  carries no CPIC column, so the guideline link was always empty and the
+  `Actionable pharmacogenomic risk (CPIC 1A — avoid)` label could never be
+  emitted for any allele — HLA-B*57:01/abacavir included. The link is now
+  joined from the `Guideline Annotation` rows of `clinical_ann_evidence.tsv`,
+  and DPWG guidelines filed under the same evidence type are excluded, so only
+  a genuine CPIC guideline backs a CPIC assertion.
 - `hlante version` reported the GWAS query cache instead of the GWAS Catalog
   bulk dump, so a freshly installed dump still read `not installed`. The status
   line now reads the dump directory, and `version` takes `--gwas-cache-dir` in
