@@ -641,21 +641,21 @@ def _row_cells(row: GenotypeRow) -> List[str]:
                 str(na2.imgt_match_candidates) if na2 else None,
             ]
         ),
-        _pipe([h.trait for h in gwas_all]),
+        _pipe_slots([h.trait for h in gwas_all]),
         # Per-allele attribution.
         _pipe([h.trait for h in a1.gwas_hits]),
         _pipe([h.trait for h in a2.gwas_hits]) if a2 else NA,
-        _pipe([_fmt_pvalue(h.p_value) for h in gwas_all]),
-        _pipe([_fmt_float(h.odds_ratio) for h in gwas_all]),
-        _pipe([h.pmid for h in gwas_all]),
-        _pipe(
+        _pipe_slots([_fmt_pvalue(h.p_value) for h in gwas_all]),
+        _pipe_slots([_fmt_float(h.odds_ratio) for h in gwas_all]),
+        _pipe_slots([h.pmid for h in gwas_all]),
+        _pipe_slots(
             [
                 a1.gwas_resolution_used,
                 a2.gwas_resolution_used if a2 else None,
             ]
         ),
         # Annotation scope per allele (worst case across hits).
-        _pipe(
+        _pipe_slots(
             [
                 _worst_annotation_scope(a1.gwas_hits),
                 _worst_annotation_scope(a2.gwas_hits) if a2 else None,
@@ -673,36 +673,36 @@ def _row_cells(row: GenotypeRow) -> List[str]:
                 _broadened_flag(a2.gwas_hits) if a2 else None,
             ]
         ),
-        _pipe(
+        _pipe_slots(
             [
                 _max_expansion(a1.gwas_hits),
                 _max_expansion(a2.gwas_hits) if a2 else None,
             ]
         ),
-        _pipe([p.drug for p in pharm_all]),
+        _pipe_slots([p.drug for p in pharm_all]),
         # Per-allele attribution.
         _pipe([p.drug for p in a1.pharm_annotations]),
         _pipe([p.drug for p in a2.pharm_annotations]) if a2 else NA,
-        _pipe([_evidence_label(p.evidence_level) for p in pharm_all]),
+        _pipe_slots([_evidence_label(p.evidence_level) for p in pharm_all]),
         # CPIC standardised action verb per pharm annotation, keyed on the
         # Carried allele and the drug — the recommendation is
         # Allele-dependent, not drug-only.
-        _pipe([_cpic_action(p.allele, p.drug) for p in pharm_all]),
+        _pipe_slots([_cpic_action(p.allele, p.drug) for p in pharm_all]),
         # Aggregate long PMID lists (44 → "top3 (+41 more)").
-        _pipe([_aggregate_pmids(p.pmid) for p in pharm_all]),
-        _pipe(
+        _pipe_slots([_aggregate_pmids(p.pmid) for p in pharm_all]),
+        _pipe_slots(
             [
                 a1.disease_risk_summary,
                 a2.disease_risk_summary if a2 else None,
             ]
         ),
-        _pipe(
+        _pipe_slots(
             [
                 a1.drug_response_summary,
                 a2.drug_response_summary if a2 else None,
             ]
         ),
-        _pipe(
+        _pipe_slots(
             [
                 a1.clinical_significance,
                 a2.clinical_significance if a2 else None,
@@ -732,7 +732,7 @@ def _row_cells(row: GenotypeRow) -> List[str]:
                 _fmt_float(a2.input_quality_score, decimals=4) if a2 else None,
             ]
         ),
-        _pipe(
+        _pipe_slots(
             [
                 getattr(a1, "input_quality_tier", "NA"),
                 getattr(a2, "input_quality_tier", "NA") if a2 else None,

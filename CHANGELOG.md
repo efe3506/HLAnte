@@ -46,13 +46,26 @@ format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The integration test fixture requested separate stderr capture in a way that
   only worked on Click 8.3+, so a fresh install on Python 3.9 (Click 8.1)
   reported three failures.
-- **Three per-allele columns lost track of which allele they described.**
-  `imgt_accession`, `hla_serotype` and `protein_group` dropped missing entries
-  instead of reserving the slot, so a row where only the second allele carried a
-  value printed that value on its own and a reader following the positional
-  convention attributed it to the first allele. Across the 2,692-sample 1000
-  Genomes cohort this misattributed 356 values. The three columns now reserve
-  the slot with `NA`, matching the columns beside them.
+- **Pipe-joined columns dropped missing entries instead of reserving the slot,
+  so positionally aligned columns fell out of step.** Fifteen columns joined
+  their values with a helper that skips empties while the columns they are
+  meant to align with did not, which silently shifted every value after the
+  gap. The columns now all reserve the slot with `NA`. Measured on the
+  2,692-sample 1000 Genomes cohort:
+  - `gwas_odds_ratios` — a GWAS Catalog record with no effect size shortened
+    the list, so every later odds ratio attached to the wrong trait. 1,426
+    rows affected; the JSON and Markdown outputs were already correct.
+  - `gwas_annotation_scope` and `gwas_index_siblings` — 1,527 rows attributed
+    the second allele's value to the first.
+  - `imgt_accession`, `hla_serotype`, `protein_group` — 356 values attributed
+    to the wrong allele. An exactly-matched allele has an accession but no
+    G-group and a prefix-matched one has the reverse, so within a single row
+    two of these columns could describe different alleles.
+  - `gwas_traits`, `gwas_p_values`, `gwas_pmids`, `gwas_annotation_resolution`,
+    `pharm_drugs`, `pharm_evidence`, `pharm_cpic_action`, `pharm_pmids`,
+    `disease_risk_summary`, `drug_response_summary`, `clinical_significance`
+    and `input_quality_tier` — no misalignment observed in this cohort, but
+    they carried the same latent defect and are corrected with the rest.
 - **Every GWAS p-value in the TSV read `0.0000`.** The column was written as
   fixed-point with four decimals, but only associations at or below the
   genome-wide threshold of 5×10⁻⁸ are retained, so no p-value could ever be

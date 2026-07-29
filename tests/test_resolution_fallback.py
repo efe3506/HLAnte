@@ -323,7 +323,8 @@ class TestResolutionColumnInReport:
         )
         cells = data_line.split("\t")
         idx = TSV_COLUMNS.index("gwas_annotation_resolution")
-        assert cells[idx] == "two-field"
+        # One allele reported, so the second slot is held open with NA.
+        assert cells[idx] == "two-field|NA"
 
     def test_tsv_resolution_none_when_no_hits(self, tmp_path: Path) -> None:
         """
@@ -344,7 +345,8 @@ class TestResolutionColumnInReport:
         )
         cells = data_line.split("\t")
         idx = TSV_COLUMNS.index("gwas_annotation_resolution")
-        assert cells[idx] == "none"
+        # One allele reported, so the second slot is held open with NA.
+        assert cells[idx] == "none|NA"
 
 
 # ---------------------------------------------------------------------------
