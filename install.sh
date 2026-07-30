@@ -74,7 +74,16 @@ if [[ "${CONDA_MODE}" == "true" ]]; then
   echo ""
   echo "[3/3] Verifying the installation..."
   conda run -n hlante hlante version
-  conda run -n hlante python -m pytest "${REPO_DIR}/tests" -q --tb=short -m "not integration and not qa"
+  if [[ "${DEV_MODE}" == "true" ]]; then
+    conda run -n hlante python -m pytest "${REPO_DIR}/tests" -q --tb=short \
+      -m "not integration and not qa"
+  else
+    echo "  (test suite skipped — rerun with --dev to install pytest and run it)"
+  fi
+
+  # The databases are downloaded further down, outside this branch, so record
+  # how to reach the installed console script from the current shell.
+  HLANTE_CMD=(conda run -n hlante hlante)
 
   echo ""
   echo "============================================================"
@@ -116,7 +125,13 @@ else
   echo ""
   echo "[3/3] Verifying the installation..."
   hlante version
-  python -m pytest "${REPO_DIR}/tests" -q --tb=short -m "not integration and not qa"
+  if [[ "${DEV_MODE}" == "true" ]]; then
+    python -m pytest "${REPO_DIR}/tests" -q --tb=short -m "not integration and not qa"
+  else
+    echo "  (test suite skipped — rerun with --dev to install pytest and run it)"
+  fi
+
+  HLANTE_CMD=("${REPO_DIR}/.venv/bin/hlante")
 
   echo ""
   echo "============================================================"
@@ -135,15 +150,18 @@ if [[ "${WITH_DBS}" == "true" ]]; then
   echo "Downloading databases (this may take a few minutes)..."
   echo ""
 
+  # Neither branch leaves the installed environment active in this shell, so
+  # call the console script through the path recorded above rather than
+  # relying on it being on PATH.
   echo "[DB 1/3] Downloading IPD-IMGT/HLA..."
-  hlante db-update --db imgt
+  "${HLANTE_CMD[@]}" db-update --db imgt
 
   echo "[DB 2/3] Downloading PharmGKB..."
-  hlante db-update --db pharmgkb
+  "${HLANTE_CMD[@]}" db-update --db pharmgkb
 
   echo "[DB 3/3] Downloading GWAS Catalog (~59 MB)..."
-  hlante db-update --db gwas
+  "${HLANTE_CMD[@]}" db-update --db gwas
 
   echo ""
-  hlante version
+  "${HLANTE_CMD[@]}" version
 fi

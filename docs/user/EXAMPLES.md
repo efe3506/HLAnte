@@ -272,15 +272,15 @@ Same input, the two settings side by side (columns 31–32):
 ```
 -- --input-source typing_tool (default) --
 sample_id  locus     allele1     allele2     input_quality_score  input_quality_tier
-LAB01      HLA-A     A*01:01     A*02:01     0.6750|0.6750     LOW|LOW
-LAB01      HLA-B     B*57:01     B*08:01     0.6750|0.6750     LOW|LOW
-LAB01      HLA-DRB1  DRB1*03:01  DRB1*15:01  0.6750|0.6750     LOW|LOW
+LAB01      HLA-A     A*01:01     A*02:01     0.6750|0.6750     limited|limited
+LAB01      HLA-B     B*57:01     B*08:01     0.6750|0.6750     limited|limited
+LAB01      HLA-DRB1  DRB1*03:01  DRB1*15:01  0.6750|0.6750     limited|limited
 
 -- --input-source validated --
 sample_id  locus     allele1     allele2     input_quality_score  input_quality_tier
-LAB01      HLA-A     A*01:01     A*02:01     0.9000|0.9000     HIGH|HIGH
-LAB01      HLA-B     B*57:01     B*08:01     0.9000|0.9000     HIGH|HIGH
-LAB01      HLA-DRB1  DRB1*03:01  DRB1*15:01  0.9000|0.9000     HIGH|HIGH
+LAB01      HLA-A     A*01:01     A*02:01     0.9000|0.9000     detailed|detailed
+LAB01      HLA-B     B*57:01     B*08:01     0.9000|0.9000     detailed|detailed
+LAB01      HLA-DRB1  DRB1*03:01  DRB1*15:01  0.9000|0.9000     detailed|detailed
 ```
 
 The input-quality score summarises how completely the **allele call
@@ -460,9 +460,11 @@ Two rules govern every filter:
 with the drug and the CPIC action verb:
 
 ```bash
-awk -F'\t' '$1 !~ /^#/ && $28 ~ /Actionable pharmacogenomic risk/ \
-  {print $1"\t"$2"\t"$3"\t"$4"\t"$20"\t"$23"\t"$24}' \
-  /tmp/ex_out/cohort_report/hlante_report.tsv
+grep -v '^#' /tmp/ex_out/cohort_report/hlante_report.tsv \
+| awk -F'\t' -v OFS='\t' 'NR==1 {for (i=1; i<=NF; i++) c[$i]=i; next}
+  $c["clinical_significance"] ~ /Actionable pharmacogenomic risk/ {
+    print $c["sample_id"], $c["locus"], $c["allele1"], $c["allele2"],
+          $c["pharm_drugs"], $c["pharm_evidence"], $c["pharm_cpic_action"]}'
 ```
 
 ```
@@ -470,8 +472,10 @@ SUBJ001	HLA-B	B*57:01:01	B*08:01:01	abacavir	1A	Contraindicated (do not use)
 SUBJ002	HLA-B	B*58:01:01	B*15:02:01	allopurinol|carbamazepine	1A|1A	Contraindicated — use alternative|Avoid — contraindicated if carbamazepine-naïve
 ```
 
-Columns are 28 `clinical_significance`, 20 `pharm_drugs`,
-23 `pharm_evidence`, 24 `pharm_cpic_action`.
+The first `awk` block reads the header row into `c`, so the recipe selects
+columns by name. Prefer that to fixed positions: the schema has grown from 33
+to 40 columns across releases, and a hard-coded index silently returns the
+wrong column rather than failing.
 
 **pandas, per allele** — the row-level view above cannot tell you
 *which* of the two alleles triggered the flag. Reshaping to one row per
@@ -508,9 +512,9 @@ print(actionable[["sample_id", "locus", "allele", "pharm_drugs", "frequency", "t
 
 ```
 sample_id locus     allele   pharm_drugs frequency     tier
-  SUBJ001 HLA-B B*57:01:01      abacavir  0.031041 MODERATE
-  SUBJ002 HLA-B B*58:01:01   allopurinol  0.012617 MODERATE
-  SUBJ002 HLA-B B*15:02:01 carbamazepine  0.000348      LOW
+  SUBJ001 HLA-B B*57:01:01      abacavir  0.031041 partial
+  SUBJ002 HLA-B B*58:01:01   allopurinol  0.012617 partial
+  SUBJ002 HLA-B B*15:02:01 carbamazepine  0.000348 limited
 ```
 
 `per_allele()` is reused in §3.2 and §4.
@@ -533,10 +537,12 @@ to the allele that carries it:
 
 ```bash
 grep -v '^#' /tmp/ex_out/cohort_report/hlante_report.tsv \
-| awk -F'\t' 'NR>1 {n=split($26,s,"|");
-    for(i=1;i<=n;i++) if (s[i] ~ /Curated/) {
-      a=(i==1?$3:$4); m=s[i]; sub(/.*Curated /,"",m); sub(/ \[.*/,"",m);
-      print $1"\t"$2"\t"a"\t"m}}'
+| awk -F'\t' -v OFS='\t' 'NR==1 {for (i=1; i<=NF; i++) c[$i]=i; next}
+    {n=split($c["disease_risk_summary"], s, "|");
+     for (i=1; i<=n; i++) if (s[i] ~ /Curated/) {
+       a=(i==1 ? $c["allele1"] : $c["allele2"]);
+       m=s[i]; sub(/.*Curated /,"",m); sub(/ \[.*/,"",m);
+       print $c["sample_id"], $c["locus"], a, m}}'
 ```
 
 ```
@@ -566,7 +572,9 @@ To screen for one disease, filter the same column:
 
 ```bash
 grep -v '^#' /tmp/ex_out/cohort_report/hlante_report.tsv \
-| awk -F'\t' 'tolower($26) ~ /ankylosing spondylitis/ {print $1"\t"$2"\t"$3"\t"$4}'
+| awk -F'\t' -v OFS='\t' 'NR==1 {for (i=1; i<=NF; i++) c[$i]=i; next}
+    tolower($c["disease_risk_summary"]) ~ /ankylosing spondylitis/ {
+      print $c["sample_id"], $c["locus"], $c["allele1"], $c["allele2"]}'
 ```
 
 **pandas — cohort carrier counts.** Inside one allele's summary,

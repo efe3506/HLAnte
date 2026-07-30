@@ -19,7 +19,7 @@ curated table), and population allele frequencies (AFND).
 - [Outputs](outputs.md) — the TSV/JSON/Markdown schema and every column
 - [TSV Interpretation Guide](TSV_INTERPRETATION_GUIDE.md) — a column-by-column
   walkthrough for biologists and clinicians reading the report
-- [Confidence tiers](tier_definitions.md) — how the confidence score is derived
+- [Input-quality tiers](tier_definitions.md) — how the input-quality score is derived
 - [Updating databases](update_db.md) — refreshing IMGT, PharmGKB, GWAS, AFND
 - [Limitations](limitations.md) and [Validation](validation.md)
 - [API reference](api_reference.md)

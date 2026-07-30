@@ -325,16 +325,25 @@ The TSV has 40 columns. You do not need all of them on a first look. This
 command shows six of them side by side:
 
 ```bash
-grep -v '^#' results/hlante_report.tsv | cut -f 2,3,4,28,29,32 | column -t -s $'\t'
+grep -v '^#' results/hlante_report.tsv \
+| awk -F'\t' -v OFS='\t' 'NR==1 {for (i=1; i<=NF; i++) c[$i]=i}
+    {print $c["locus"], $c["allele1"], $c["allele2"],
+           $c["clinical_significance"], $c["allele_frequency"], $c["input_quality_tier"]}' \
+| column -t -s $'\t'
 
 # ---- output ----
 locus     allele1     allele2     clinical_significance                                                    allele_frequency   input_quality_tier
-HLA-A     A*01:01     A*02:01     Suggestive risk factor|Suggestive risk factor                            0.064181|0.151974  LOW|LOW
-HLA-B     B*57:01     B*08:01     Actionable pharmacogenomic risk (CPIC 1A — avoid)|Suggestive risk factor  0.020265|0.040392  LOW|LOW
-HLA-C     C*06:02     C*07:01     Suggestive risk factor|Suggestive risk factor                            0.080365|0.090534  LOW|LOW
-HLA-DRB1  DRB1*03:01  DRB1*15:01  Suggestive risk factor|Suggestive risk factor                            0.067246|0.080539  LOW|LOW
-HLA-DQB1  DQB1*02:01  DQB1*06:02  Suggestive risk factor|Suggestive risk factor                            0.117904|0.078371  LOW|LOW
+HLA-A     A*01:01     A*02:01     Suggestive risk factor|Suggestive risk factor                            0.064181|0.151974  limited|limited
+HLA-B     B*57:01     B*08:01     Actionable pharmacogenomic risk (CPIC 1A — avoid)|Suggestive risk factor  0.020265|0.040392  limited|limited
+HLA-C     C*06:02     C*07:01     Suggestive risk factor|Suggestive risk factor                            0.080365|0.090534  limited|limited
+HLA-DRB1  DRB1*03:01  DRB1*15:01  Suggestive risk factor|Suggestive risk factor                            0.067246|0.080539  limited|limited
+HLA-DQB1  DQB1*02:01  DQB1*06:02  Suggestive risk factor|Suggestive risk factor                            0.117904|0.078371  limited|limited
 ```
+
+The `awk` block reads the header row into `c`, so the columns are selected by
+name. That is deliberate: the schema has grown from 33 to 40 columns across
+releases, and a fixed column number silently returns the wrong column instead
+of failing.
 
 (In a spreadsheet, hiding the columns you do not need achieves the same thing.)
 
@@ -363,7 +372,7 @@ Two cautions that the reports themselves repeat:
 - `clinical_significance` labels are descriptions of evidence strength. They
   are not diagnostic categories, and HLAnte does not implement ACMG/AMP
   criteria.
-- The confidence score is an uncalibrated heuristic reflecting how well the
+- The input-quality score is an uncalibrated heuristic reflecting how well the
   allele call is characterised, **not** the certainty or correctness of any
   associated risk. A `limited` tier never means an actionable association may be
   ignored — in the table above every row is `limited` because the calls carry two
@@ -382,13 +391,15 @@ frequently asked questions.
 Take the row for *HLA-B* from the table above:
 
 ```
-HLA-B     B*57:01     B*08:01     Actionable pharmacogenomic risk (CPIC 1A — avoid)|Suggestive risk factor  0.020265|0.040392  LOW|LOW
+HLA-B     B*57:01     B*08:01     Actionable pharmacogenomic risk (CPIC 1A — avoid)|Suggestive risk factor  0.020265|0.040392  limited|limited
 ```
 
 Now read the disease summary for the same row, one allele per line:
 
 ```bash
-grep -v '^#' results/hlante_report.tsv | awk -F'\t' '$2=="HLA-B" {print $26}' | tr '|' '\n'
+grep -v '^#' results/hlante_report.tsv \
+| awk -F'\t' 'NR==1 {for (i=1; i<=NF; i++) c[$i]=i; next}
+    $c["locus"]=="HLA-B" {print $c["disease_risk_summary"]}' | tr '|' '\n'
 
 # ---- output ----
 Strong association: drug-induced liver injury (OR=36.62); Curated pathogenic: Abacavir hypersensitivity [OR=960.0; Global; Strong evidence; Mallal 2002 Lancet; Hetherington 2002 Lancet; Mallal 2008 NEJM (PREDICT-1)]
@@ -425,7 +436,7 @@ Reading it line by line:
    `0.031041` for the same allele — always read `allele_frequency` together
    with `allele_freq_population`.
 
-5. **Both alleles carry `input_quality_tier = LOW`.** These calls are named with
+5. **Both alleles carry `input_quality_tier = limited`.** These calls are named with
    two fields, so more than one IPD-IMGT/HLA allele shares each name. That is a
    statement about the precision of the *call*, and it does not weaken the
    abacavir association.

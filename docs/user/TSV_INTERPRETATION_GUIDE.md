@@ -10,15 +10,15 @@
 1. [File Structure](#1-file-structure)
 2. [Basic Reading Rules](#2-basic-reading-rules)
 3. [Column Reference](#3-column-reference)
-   - [Sample and Locus Information](#31-sample-and-locus-information-columns-1-6)
-   - [IMGT / Molecular Classification](#32-imgt--molecular-classification-columns-7-10)
-   - [GWAS Catalog Findings](#33-gwas-catalog-findings-columns-11-19)
-   - [Pharmacogenomic Findings](#34-pharmacogenomic-findings-pharm_-columns-20-25)
-   - [Summary and Clinical Significance Labels](#35-summary-and-clinical-significance-labels-columns-26-28)
-   - [Allele Frequency](#36-allele-frequency-columns-29-30)
-   - [Confidence Score](#37-confidence-score-columns-31-33)
+   - [Sample and Locus Information](#31-sample-and-locus-information-columns-17)
+   - [IMGT / Molecular Classification](#32-imgt--molecular-classification-columns-813)
+   - [GWAS Catalog Findings](#33-gwas-catalog-findings-columns-1424)
+   - [Pharmacogenomic Findings](#34-pharmacogenomic-findings-pharm_-columns-2530)
+   - [Summary and Clinical Significance Labels](#35-summary-and-clinical-significance-labels-columns-3134)
+   - [Allele Frequency](#36-allele-frequency-columns-3536)
+   - [Input-quality score](#37-input-quality-score-columns-3740)
 4. [clinical_significance Label Glossary](#4-clinical_significance-label-glossary)
-5. [Confidence Score Interpretation](#5-confidence-score-interpretation)
+5. [Input-quality score interpretation](#5-input-quality-score-interpretation)
 6. [Real Data Examples](#6-real-data-examples)
 7. [Frequently Asked Questions](#7-frequently-asked-questions)
 
@@ -119,7 +119,7 @@ when you need attribution.
 
 ## 3. Column Reference
 
-### 3.1 Sample and Locus Information (Columns 1–6)
+### 3.1 Sample and Locus Information (Columns 1–7)
 
 #### `sample_id` — Sample Identifier
 The identifier of the patient/sample on which the analysis was performed. HLAnte takes this value directly from the input file.
@@ -170,7 +170,7 @@ Low resolution (`one-field`) means that the finding is ambiguous and lowers the 
 
 ---
 
-### 3.2 IMGT / Molecular Classification (Columns 7–10)
+### 3.2 IMGT / Molecular Classification (Columns 8–13)
 
 #### `imgt_accession` — IMGT Accession Code
 
@@ -193,7 +193,7 @@ E.g. `B*57:01:01G`. Can be used in transplantation compatibility assessment.
 
 ---
 
-### 3.3 GWAS Catalog Findings (Columns 11–19)
+### 3.3 GWAS Catalog Findings (Columns 14–24)
 
 > **Important:** GWAS findings are **population-level statistical associations**, not individual diagnosis
 > or risk prediction. The appearance of an allele in GWAS does not prove that the person has or will
@@ -269,7 +269,7 @@ The number of alleles sharing the IMGT prefix used for the match.
 
 ---
 
-### 3.4 Pharmacogenomic Findings (`pharm_*` Columns 20–25)
+### 3.4 Pharmacogenomic Findings (`pharm_*` Columns 25–30)
 
 > **Clinical Importance:** The findings in this section are the most important outputs that can directly
 > affect drug prescribing decisions. The `pharm_cpic_action` column in particular should be reviewed first.
@@ -324,7 +324,7 @@ may be truncated: `"18256392,19001001 (+41 more)"` — use the PharmGKB site for
 
 ---
 
-### 3.5 Summary and Clinical Significance Labels (Columns 26–28)
+### 3.5 Summary and Clinical Significance Labels (Columns 31–34)
 
 #### `disease_risk_summary` — Disease Association Summary
 
@@ -347,7 +347,7 @@ A single summary label for each allele. **Also described separately below (Secti
 
 ---
 
-### 3.6 Allele Frequency (Columns 29–30)
+### 3.6 Allele Frequency (Columns 35–36)
 
 #### `allele_frequency` — Population Allele Frequency
 
@@ -373,7 +373,7 @@ Always read the frequency value together with this column to know which populati
 
 ---
 
-### 3.7 Confidence Score (Columns 31–33)
+### 3.7 Input-quality score (Columns 37–40)
 
 #### `input_quality_score` — Confidence Score
 
@@ -429,7 +429,7 @@ What is the clinical_significance value?
 ├─ Strong pharmacogenomic risk association   →  look at pharm_cpic_action; a drug-specific action may be needed
 ├─ Suggestive risk factor       →  look at gwas_traits and drug_response_summary;
 │                                   a population risk signal; use caution in individual interpretation
-├─ Inconclusive evidence        →  input_quality_tier is usually LOW; the finding is not reliable
+├─ Inconclusive evidence        →  input_quality_tier is usually limited; the finding is not reliable
 ├─ No reported risk             →  known allele, no signal in the available databases
 ├─ Not assessed — insufficient coverage → known allele, insufficient data — not negative evidence
 └─ Not in IMGT                  →  novel allele; no cross-referencing can be performed
@@ -437,7 +437,7 @@ What is the clinical_significance value?
 
 ---
 
-## 5. Confidence Score Interpretation
+## 5. Input-quality score interpretation
 
 ### Applied Penalty Multipliers
 
@@ -455,7 +455,7 @@ Penalties are applied **multiplicatively**. Example:
 
 ```
 Two-field resolution + frequency unknown + ambiguous:
-1.0 × 0.90 × 0.85 × 0.75 = 0.5738 → LOW
+1.0 × 0.90 × 0.85 × 0.75 = 0.5738 → limited
 ```
 
 ### Effect of `input_source`
@@ -488,7 +488,7 @@ pharm_evidence:     2A | 3 (low evidence)
 pharm_cpic_action:  Contraindicated | Contraindicated
 drug_response_summary:
   carbamazepine DRESS;SJS;TEN: 2A evidence  |  No drug response reported
-input_quality_tier:    MODERATE | HIGH
+input_quality_tier:    partial | detailed
 ```
 
 **Interpretation:**
@@ -515,7 +515,7 @@ gwas_annotation_scope: subtype | subtype
 pharm_drugs:        infliximab | Antithyroid Preparations
 pharm_evidence:     3 (low evidence) | 3 (low evidence)
 pharm_cpic_action:  NA
-input_quality_tier:    MODERATE | MODERATE
+input_quality_tier:    partial | partial
 input_quality_rationale: ambiguous ;; ambiguous
 ```
 
@@ -543,7 +543,7 @@ clinical_significance: Not assessed — insufficient coverage | Suggestive risk 
 gwas_traits_allele1:   NA
 gwas_traits_allele2:   Merkel cell polyomavirus seropositivity | HIV-1 infection | ...
 allele_frequency:   NA | 0.081600
-input_quality_tier:    MODERATE | MODERATE
+input_quality_tier:    partial | partial
 input_quality_rationale: freq_unknown ;; ambiguous
 ```
 
@@ -568,7 +568,7 @@ imgt_accession:     NA
 clinical_significance: Inconclusive evidence | Inconclusive evidence
 allele_frequency:   NA
 input_quality_score:   0.6375 | 0.6375
-input_quality_tier:    LOW | LOW
+input_quality_tier:    limited | limited
 input_quality_rationale: freq_unknown|ambiguous ;; freq_unknown|ambiguous
 ```
 
@@ -612,7 +612,7 @@ The HLA-DM and HLA-DO genes play a role in the antigen processing process; direc
 is limited and there is no record for these loci in our curated table. For these loci,
 an `Inconclusive evidence` result is an expected output.
 
-### "Can I ignore the rows where input_quality_tier = LOW?"
+### "Can I ignore the rows where input_quality_tier = limited?"
 
 Rows that are `limited` should not be excluded; however, extra caution should be exercised when drawing
 conclusions based on the findings of these rows. A `limited` score usually corresponds to:

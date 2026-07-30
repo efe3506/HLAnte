@@ -101,6 +101,10 @@ pip install -e .
 
 ## 4. Manual Install — pip + venv
 
+> HLAnte is installed **from this repository, not from PyPI**. `pip install hlante`
+> will not work; the name is not published. Clone first, then install from the
+> working copy as shown below.
+
 ```bash
 git clone https://github.com/efe3506/HLAnte.git
 cd HLAnte
@@ -211,7 +215,7 @@ hlante version
 # Standard tests (excluding integration, ~1 second)
 pytest tests/ -q -m "not integration and not qa"
 
-# Expected: 383 passed, 8 deselected
+# Expected: 384 passed, 8 deselected (0 failures)
 
 # Integration tests (require local databases)
 pytest tests/ -q -m integration
