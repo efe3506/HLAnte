@@ -655,9 +655,9 @@ Three interpretation caveats apply to every table above:
 ## 4. Population-stratified annotation
 
 `--population` (`-p`) selects the AFND population group used for the
-`allele_frequency` column and for the frequency term of the confidence
-heuristic. Codes are `EUR`, `AFR`, `EAS` (alias `ASN`), `SAS`, `MID`,
-`AMR`, `OCE` and `global`.
+`allele_frequency` column and for the frequency term of the
+input-quality heuristic. Codes are `EUR`, `AFR`, `EAS` (alias `ASN`),
+`SAS`, `MID`, `AMR`, `OCE` and `global`.
 
 Run the same cohort once per group, keeping the reports apart with
 `--prefix`:
@@ -721,7 +721,7 @@ and not in others; B\*57:01 runs the other way.
 Practical points:
 
 - `--population` changes only the frequency lookup and the frequency
-  term of the confidence heuristic. GWAS, PharmGKB and curated-table
+  term of the input-quality heuristic. GWAS, PharmGKB and curated-table
   annotations are **not** filtered by ancestry — an association
   established in one population is still reported for a sample from
   another. The curated table records the study population in its

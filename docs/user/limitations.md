@@ -32,7 +32,7 @@ without independent validation by qualified medical professionals.
 
 ## Population frequency limitations
 
-Coverage is uneven across populations. Confidence scores may be systematically
+Coverage is uneven across populations. Input-quality scores may be systematically
 underestimated for alleles common in underrepresented populations (e.g., AFR, OCE, MID).
 
 ## Reproducibility

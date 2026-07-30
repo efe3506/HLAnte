@@ -211,7 +211,7 @@ class AnnotatedHLA:
     frequency_is_estimated : bool
         ``True`` when fallback resolution was required to find a frequency.
     input_quality_score : float
-        Confidence score in ``[0.0, 1.0]``. Lowered for novel, rare,
+        Input-quality score in ``[0.0, 1.0]``. Lowered for novel, rare,
         low-resolution, or ambiguous calls.
     input_quality_rationale : str
         Pipe-delimited reason codes explaining the score
@@ -416,8 +416,8 @@ def annotate_genotype(
         gwas_hits = [h for h in gwas_hits if h.pmid]
         pharm_anns = [p for p in pharm_anns if p.pmid]
 
-        confidence, rationale = _compute_input_quality_score(allele, freq, config.input_source)
-        tier = _input_quality_tier(confidence)
+        quality, rationale = _compute_input_quality_score(allele, freq, config.input_source)
+        tier = _input_quality_tier(quality)
 
         if allele.is_null:
             clinical_significance = SIGNIFICANCE_NULL_ALLELE
@@ -468,7 +468,7 @@ def annotate_genotype(
                 frequency_population=(f"{freq.population} ({freq.source})" if freq else None),
                 frequency_sample_size=freq.sample_size if freq else None,
                 frequency_is_estimated=freq.is_estimated if freq else False,
-                input_quality_score=confidence,
+                input_quality_score=quality,
                 input_quality_rationale=rationale,
                 input_quality_tier=tier,
             )
@@ -506,7 +506,12 @@ def _compute_input_quality_score(
     Ambiguous (is_ambiguous)            × 0.75                   TYPING_TOOL,
                                                                  SIMULATED,
                                                                  UNKNOWN only
+    Reduced/aberrant expression suffix  × 0.85                   all sources
     ================================== ========================= ============
+
+    The expression-suffix factor covers the L, S, C, A and Q designations
+    (see step 5 below). Null alleles (N) carry no numeric penalty; their
+    status is recorded in the rationale instead.
 
     Ambiguity penalty and source-awareness
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -577,7 +582,7 @@ def _compute_input_quality_score(
 
     # 5. Expression status (IPD-IMGT/HLA suffix). A null allele is not
     # Expressed; its disease/drug annotations are suppressed upstream and it
-    # is never shown at HIGH tier, so the rationale records the status
+    # is never shown in the detailed tier, so the rationale records the status
     # Without an additional numeric penalty (the call itself may be correct).
     # Reduced/aberrant-expression alleles (L/S/C/A/Q) are annotated but
     # Down-weighted, as the clinical relevance of their altered expression is
@@ -608,10 +613,15 @@ def _input_quality_tier(score: Optional[float]) -> str:
 
     Notes
     -----
-    Tier thresholds are stated criteria for this research tool:
-    HIGH (≥ 0.85) — well-characterised allele, two or more fields, known frequency;
-    MODERATE (0.70–0.85) — minor uncertainty (ambiguous or freq unknown);
-    LOW (< 0.70) — substantial uncertainty (one-field, novel, or very rare).
+    Tier thresholds are stated criteria for this research tool. They
+    describe how completely the submitted call is supported by the
+    reference data, not how much confidence to place in the annotation:
+    detailed (≥ 0.85) — well-characterised allele, two or more fields,
+    known frequency;
+    partial (0.70–0.85) — reference data incomplete (ambiguous, or
+    frequency unknown);
+    limited (< 0.70) — reference data substantially incomplete
+    (one-field, novel, or very rare).
     """
     if score is None:
         return "NA"

@@ -375,20 +375,22 @@ Always read the frequency value together with this column to know which populati
 
 ### 3.7 Input-quality score (Columns 37–40)
 
-#### `input_quality_score` — Confidence Score
+#### `input_quality_score` — Input-Quality Score
 
-A numerical score between 0.0 and 1.0. Each allele starts at 1.0; uncertainty factors
-pull the score down. Pipe-separated (allele1|allele2).
+A numerical score between 0.0 and 1.0. Each allele starts at 1.0; incompleteness in the
+reference data or in the submitted call pulls the score down. It summarises how completely
+the call is supported — not how accurate the genotype is, and not a posterior probability.
+Pipe-separated (allele1|allele2).
 
-#### `input_quality_tier` — Confidence Tier
+#### `input_quality_tier` — Input-Quality Tier
 
 | Tier | Score range | Interpretation |
 |---|---|---|
 | `detailed` | ≥ 0.85 | Well-characterized allele; two or more fields; known frequency |
-| `partial` | 0.70 – 0.84 | Minor uncertainty (ambiguity or unknown frequency) |
-| `limited` | < 0.70 | Significant uncertainty (one-field, novel, or very rare allele) |
+| `partial` | 0.70 – 0.84 | Reference data incomplete (ambiguity or unknown frequency) |
+| `limited` | < 0.70 | Reference data substantially incomplete (one-field, novel, or very rare allele) |
 
-#### `input_quality_rationale` — Reasons for Confidence Reduction
+#### `input_quality_rationale` — Reasons for Score Reduction
 
 The allele1 and allele2 sections are separated by `;;`; within each section the reasons are listed with `|`.
 
@@ -492,9 +494,9 @@ input_quality_tier:    partial | detailed
 ```
 
 **Interpretation:**
-- **allele2 (B*15:09):** `detailed` confidence, `Suggestive risk factor`. PharmGKB 2A evidence for
+- **allele2 (B*15:09):** `detailed` input quality, `Suggestive risk factor`. PharmGKB 2A evidence for
   carbamazepine-associated SJS/TEN risk → **Contraindicated**.
-- **allele1 (B*40:01):** `partial` confidence, `Inconclusive evidence`. Contraindicated for
+- **allele1 (B*40:01):** `partial` input quality, `Inconclusive evidence`. Contraindicated for
   oxcarbazepine with low evidence — must be interpreted with caution because it came through 3 (low evidence).
 - **Practical conclusion:** In this patient, the HLA-B status should be evaluated before carbamazepine is prescribed;
   the relevant clinical guideline and an expert should be consulted.
@@ -527,7 +529,7 @@ input_quality_rationale: ambiguous ;; ambiguous
 - The `Suggestive risk factor` label can be evaluated in a monitoring or research context
   but does not directly require a clinical decision.
 - Both alleles have the `ambiguous` penalty → the typing tool could not fully distinguish the subtype;
-  confidence is `partial`.
+  input quality is `partial`.
 
 ---
 

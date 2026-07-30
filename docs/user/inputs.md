@@ -93,7 +93,7 @@ OptiType reports **Class I loci only** (HLA-A, HLA-B, HLA-C).
 
 HLAnte accepts alleles at any resolution, from one field through four fields
 (current HLA nomenclature admits at most four colon-separated fields).
-The confidence score is penalised for lower-resolution calls:
+The input-quality score is penalised for lower-resolution calls:
 
 | Resolution | Example | Penalty |
 |------------|---------|---------|
