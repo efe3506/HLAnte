@@ -1,0 +1,30 @@
+{
+  "reference_table_non_empty_cells": 26310,
+  "rejected_by_conversion": 119,
+  "rejected_by_cause": {
+    "malformed_numeric": 2,
+    "null_allele_designation": 5,
+    "trailing_asterisk": 110,
+    "two_alleles_in_one_cell": 2
+  },
+  "calls_entering_pipeline": 26191,
+  "categories": {
+    "exact": 182,
+    "prefix_unique": 5,
+    "prefix_multiple": 26003,
+    "g_group": 0,
+    "p_group": 0,
+    "unmatched": 1
+  },
+  "categories_pct": {
+    "exact": 0.69,
+    "prefix_unique": 0.02,
+    "prefix_multiple": 99.28,
+    "g_group": 0.0,
+    "p_group": 0.0,
+    "unmatched": 0.0
+  },
+  "resolving_to_a_single_allele": 187,
+  "resolving_to_a_single_allele_pct": 0.71,
+  "median_candidates_prefix_multiple": 83
+}
