@@ -1,0 +1,11 @@
+snapshot	table_rows	super_population	n_samples	annotated_alleles	alleles_with_frequency	afnd_coverage
+installed	110631	EUR	529	5071	5070	100.0%
+installed	110631	EAS	536	5055	5052	99.9%
+installed	110631	AMR	372	3657	3650	99.8%
+installed	110631	SAS	543	5422	5409	99.8%
+installed	110631	AFR	712	7096	7093	100.0%
+builtin	371	EUR	529	5071	4681	92.3%
+builtin	371	EAS	536	5055	4466	88.3%
+builtin	371	AMR	372	3657	3052	83.5%
+builtin	371	SAS	543	5422	4533	83.6%
+builtin	371	AFR	712	7096	5808	81.8%

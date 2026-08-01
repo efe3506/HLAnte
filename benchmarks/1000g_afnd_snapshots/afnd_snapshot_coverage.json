@@ -1,0 +1,74 @@
+{
+  "installed": {
+    "source": "/Users/bilbo/.hlante/afnd/afnd_frequencies.tsv",
+    "rows": 110631,
+    "per_population": {
+      "EUR": {
+        "n_samples": 529,
+        "n_alleles": 5071,
+        "n_with_frequency": 5070,
+        "coverage": "100.0%"
+      },
+      "EAS": {
+        "n_samples": 536,
+        "n_alleles": 5055,
+        "n_with_frequency": 5052,
+        "coverage": "99.9%"
+      },
+      "AMR": {
+        "n_samples": 372,
+        "n_alleles": 3657,
+        "n_with_frequency": 3650,
+        "coverage": "99.8%"
+      },
+      "SAS": {
+        "n_samples": 543,
+        "n_alleles": 5422,
+        "n_with_frequency": 5409,
+        "coverage": "99.8%"
+      },
+      "AFR": {
+        "n_samples": 712,
+        "n_alleles": 7096,
+        "n_with_frequency": 7093,
+        "coverage": "100.0%"
+      }
+    }
+  },
+  "builtin": {
+    "source": "/Users/bilbo/Desktop/TEZ/Yay\u0131n/HLAnte_yayin/Human_Immunology/20260728_HI_rev/20260801_revision/HLAnte/src/hlante/db/afnd_builtin.tsv",
+    "rows": 371,
+    "per_population": {
+      "EUR": {
+        "n_samples": 529,
+        "n_alleles": 5071,
+        "n_with_frequency": 4681,
+        "coverage": "92.3%"
+      },
+      "EAS": {
+        "n_samples": 536,
+        "n_alleles": 5055,
+        "n_with_frequency": 4466,
+        "coverage": "88.3%"
+      },
+      "AMR": {
+        "n_samples": 372,
+        "n_alleles": 3657,
+        "n_with_frequency": 3052,
+        "coverage": "83.5%"
+      },
+      "SAS": {
+        "n_samples": 543,
+        "n_alleles": 5422,
+        "n_with_frequency": 4533,
+        "coverage": "83.6%"
+      },
+      "AFR": {
+        "n_samples": 712,
+        "n_alleles": 7096,
+        "n_with_frequency": 5808,
+        "coverage": "81.8%"
+      }
+    }
+  }
+}
