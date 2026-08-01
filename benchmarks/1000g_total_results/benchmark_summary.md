@@ -53,7 +53,7 @@ Results shown for arcashla (representative; other tools similar).
 
 ## Population-Stratified Performance (arcashla)
 
-| Super-pop | N | AFND coverage | Mean confidence | LOW tier % |
+| Super-pop | N | AFND coverage | Mean input quality | limited tier % |
 |-----------|---|---------------|-----------------|------------|
 | EUR       | 529 |        100.0% |           0.894 |       0.1% |
 | AFR       | 712 |        100.0% |           0.880 |       0.5% |
@@ -61,9 +61,9 @@ Results shown for arcashla (representative; other tools similar).
 | SAS       | 543 |         99.8% |           0.886 |       0.6% |
 | AMR       | 372 |         99.8% |           0.883 |       1.0% |
 
-## Confidence Tier Distribution (arcashla)
+## Input-Quality Tier Distribution (arcashla)
 
-Note: This benchmark uses --input-source validated because the 1000 Genomes types are Sanger-validated reference data. Under this mode, the ambiguity penalty (×0.75) is suppressed for two-field inputs since the call is exactly correct at its reported resolution; only the two-field resolution penalty (×0.90) applies. This produces predominantly HIGH-tier scores. For typing-tool inputs (--input-source typing_tool, default), two-field outputs would receive both penalties and score in the LOW range.
+Note: this run used --input-source validated, because the 1000 Genomes types are Sanger-validated reference data. The ambiguity penalty (×0.75) is suppressed under that mode, leaving the two-field resolution penalty (×0.90), so most calls land in the detailed tier.
 
 | Tier | Count | Percentage |
 |------|-------|------------|

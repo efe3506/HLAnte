@@ -416,3 +416,43 @@ class TestAFNDSnapshotProvenance:
         client.update(ref="bbbbbbbb")
 
         assert first != client.version()
+
+
+class TestAlleleNameValidatorCoversTheRelease:
+    """
+    WHO nomenclature does not cap a field at three digits, and IPD-IMGT/HLA has
+    long since passed it: 3.64.0 carries names like ``A*02:1000`` and
+    ``DPB1*1000:01``. A validator that rejects them drops the call silently, so
+    the loss is invisible in a benchmark whose truth set is two-field.
+    """
+
+    FOUR_DIGIT_NAMES = [
+        "A*02:1000",
+        "C*07:1000",
+        "DPB1*1000:01",
+        "DPB1*1001:01",
+        "B*15:1000",
+    ]
+
+    @pytest.mark.parametrize("name", FOUR_DIGIT_NAMES)
+    def test_parser_accepts_four_digit_fields(self, name: str) -> None:
+        from hlante.parser import ALLELE_REGEX
+
+        assert ALLELE_REGEX.match(name), f"{name} is a valid IPD-IMGT/HLA designation"
+
+    @pytest.mark.parametrize("name", FOUR_DIGIT_NAMES)
+    def test_normalizer_accepts_four_digit_fields(self, name: str) -> None:
+        from hlante.normalizer import _ALLELE_BASIC_RE
+
+        assert _ALLELE_BASIC_RE.match(name), f"{name} is a valid IPD-IMGT/HLA designation"
+
+    def test_expression_suffix_still_allowed_on_a_long_field(self) -> None:
+        from hlante.parser import ALLELE_REGEX
+
+        assert ALLELE_REGEX.match("C*07:1001N")
+
+    @pytest.mark.parametrize("bad", ["A*2:01", "A*02:1", "notanallele", "A*02:01:", "*01:01"])
+    def test_still_rejects_malformed_names(self, bad: str) -> None:
+        from hlante.parser import ALLELE_REGEX
+
+        assert not ALLELE_REGEX.match(bad)

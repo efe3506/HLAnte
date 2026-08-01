@@ -65,7 +65,7 @@ _HLA_PREFIX: str = "HLA-"
 
 _ALLELE_SUFFIX_RE: re.Pattern[str] = re.compile(r"([GP])$")
 _NOMENCLATURE_SUFFIX_RE: re.Pattern[str] = re.compile(r"[NLSQCA]$")
-_ALLELE_BASIC_RE: re.Pattern[str] = re.compile(r"^[A-Z]+\d*\*\d{2,3}(:\d{2,3})*[A-Z]?$")
+_ALLELE_BASIC_RE: re.Pattern[str] = re.compile(r"^[A-Z]+\d*\*\d{2,}(:\d{2,})*[A-Z]?$")
 
 
 # ---------------------------------------------------------------------------

@@ -68,7 +68,7 @@ RESOLUTION_P_GROUP: str = "P-group"
 # Spec regex: ``^[A-Z]+\*\d{2,3}(:\d{2,3})*[A-Z]?$``.
 # Real HLA gene names end with digits (DRB1, DQB1, DPB1, DRB3, ...),
 # so ``\d*`` is allowed between the letters and ``*``.
-ALLELE_REGEX: re.Pattern[str] = re.compile(r"^[A-Z]+\d*\*\d{2,3}(:\d{2,3})*[A-Z]?$")
+ALLELE_REGEX: re.Pattern[str] = re.compile(r"^[A-Z]+\d*\*\d{2,}(:\d{2,})*[A-Z]?$")
 
 _HLA_PREFIX: str = "HLA-"
 

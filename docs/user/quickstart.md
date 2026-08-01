@@ -2,17 +2,16 @@
 
 ## Installation
 
-```bash
-pip install hlante
-```
-
-Or from source:
+HLAnte is installed from this repository, not from PyPI — `pip install hlante`
+will not work, because the name is not published. Clone first, then install:
 
 ```bash
 git clone https://github.com/efe3506/HLAnte
 cd HLAnte
-pip install -e ".[dev]"
+pip install .
 ```
+
+Add `-e ".[dev]"` in place of `.` only if you intend to run the test suite.
 
 ## Step 1 — Download the databases
 

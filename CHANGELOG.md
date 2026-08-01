@@ -5,6 +5,31 @@ format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **The shared allele-name validator rejected 1,518 names in the pinned release.**
+  Both `ALLELE_REGEX` and `_ALLELE_BASIC_RE` capped a field at three digits, but
+  WHO nomenclature does not: IPD-IMGT/HLA 3.64.0 carries `A*02:1000`,
+  `C*07:1000` and 955 `DPB1*1000:01`-style names with a four-digit first field.
+  3.3% of the release failed validation and was recorded as `NA` with a
+  debug-level log line — a silent loss, invisible to a benchmark whose truth set
+  is two-field. The field is now open-ended and the whole release validates.
+- **The benchmark summary printed the `--input-source validated` explanation
+  whichever mode had run**, so `1000g_typingtool_results/benchmark_summary.md`
+  claimed validated mode above a table showing 99.5% of calls in the limited
+  tier — the typing_tool result. The note now follows the run, and the
+  per-population column header no longer names the retired `LOW` tier.
+- `docs/user/quickstart.md` opened its Installation section with
+  `pip install hlante`, the command that cannot work, with no warning — the same
+  failure a reviewer reported, on the page the documentation index advertises
+  first. It now matches README and INSTALL.md.
+
+### Documentation
+- `protein_group` holds a **G** group (identical ARD-encoding exon sequences),
+  never a P group (identical ARD protein sequence), so the column name inverts
+  the nomenclature. The name is kept for compatibility and the schema and
+  interpretation guide now say plainly which group is reported; the guide's
+  "exon 2–3" gloss was also class I only.
+
 ### Changed
 - **The CPIC Level 1A label no longer carries a directive.**
   `Actionable pharmacogenomic risk (CPIC 1A — avoid)` asserted avoidance for

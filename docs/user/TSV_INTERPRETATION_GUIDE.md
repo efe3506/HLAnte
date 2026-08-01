@@ -188,8 +188,8 @@ Pipe-separated (`allele1|allele2`). If serological information is not available,
 
 #### `protein_group` — G/P Group
 
-The G-group to which the allele belongs (alleles with the same exon 2–3 sequence) or the P-group.
-E.g. `B*57:01:01G`. Can be used in transplantation compatibility assessment.
+The G group to which the allele belongs — alleles whose antigen-recognition-domain exons are identical (exons 2 and 3 for class I, exon 2 for class II).
+E.g. `B*57:01:01G`. Despite the column name, a P group (identical ARD *protein* sequence) is never reported here; the name is retained from v0.1.0.
 
 ---
 

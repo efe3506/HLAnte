@@ -37,7 +37,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +112,7 @@ def _annotate_tool(
     Returns {locus → AnnotatedHLA} keyed by normalised locus name (HLA-X),
     or None on failure.
     """
-    from hlante.parser import parse_hla_output, HLAnteParseError
+    from hlante.parser import parse_hla_output
     from hlante.normalizer import batch_normalize
     from hlante.annotator import annotate_genotype
 

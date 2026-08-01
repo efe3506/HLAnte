@@ -301,6 +301,7 @@ def write_markdown_summary(
     imgt_version: str,
     n_samples_total: int,
     output_path: Path,
+    input_source: str = "validated",
 ) -> None:
     lines: List[str] = []
     lines.append("# HLAnte 1000 Genomes Annotation Benchmark\n")
@@ -389,7 +390,7 @@ def write_markdown_summary(
     # Population-stratified performance (arcashla)
     lines.append("\n## Population-Stratified Performance (arcashla)\n")
     lines.append(
-        "| Super-pop | N | AFND coverage | Mean confidence | LOW tier % |"
+        "| Super-pop | N | AFND coverage | Mean input quality | limited tier % |"
     )
     lines.append("|-----------|---|---------------|-----------------|------------|")
     for pop in ["EUR", "AFR", "EAS", "SAS", "AMR"]:
@@ -401,18 +402,26 @@ def write_markdown_summary(
             f"| {pm.get('low_pct', 'N/A'):>10} |"
         )
 
-    # Confidence tier distribution
-    lines.append("\n## Confidence Tier Distribution (arcashla)\n")
-    lines.append(
-        "Note: This benchmark uses --input-source validated because the 1000 "
-        "Genomes types are Sanger-validated reference data. Under this mode, "
-        "the ambiguity penalty (×0.75) is suppressed for two-field inputs since "
-        "the call is exactly correct at its reported resolution; only the "
-        "two-field resolution penalty (×0.90) applies. "
-        "This produces predominantly HIGH-tier scores. For typing-tool inputs "
-        "(--input-source typing_tool, default), two-field outputs would receive "
-        "both penalties and score in the LOW range.\n"
-    )
+    # Input-quality tier distribution. The note has to follow the mode this run
+    # actually used: printing the "validated" explanation above a typing_tool
+    # table made the committed summary contradict its own numbers.
+    lines.append("\n## Input-Quality Tier Distribution (arcashla)\n")
+    if input_source == "validated":
+        lines.append(
+            "Note: this run used --input-source validated, because the 1000 "
+            "Genomes types are Sanger-validated reference data. The ambiguity "
+            "penalty (×0.75) is suppressed under that mode, leaving the "
+            "two-field resolution penalty (×0.90), so most calls land in the "
+            "detailed tier.\n"
+        )
+    else:
+        lines.append(
+            "Note: this run used --input-source typing_tool (the default). "
+            "Two-field calls take the ambiguity penalty (×0.75) on top of the "
+            "two-field resolution penalty (×0.90), so nearly all of them land "
+            "in the limited tier. That is the intended conservative behaviour "
+            "for unvalidated input, not an annotation failure.\n"
+        )
     lines.append("| Tier | Count | Percentage |")
     lines.append("|------|-------|------------|")
     if ref:
@@ -767,6 +776,7 @@ def main() -> None:
         imgt_version,
         len(gt),
         args.output_dir / "benchmark_summary.md",
+        input_source=args.input_source,
     )
 
     print(f"\nResults written to {args.output_dir}/")
