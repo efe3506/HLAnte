@@ -7,11 +7,17 @@ Allele Frequency Net Database (AFND) client.
 Update mechanism
 ----------------
 ``AFNDClient.update()`` downloads the machine-readable AFND mirror
-published by Slowikowski (2024) at :data:`SLOWIKOWSKI_URL`
-(``https://raw.githubusercontent.com/slowkow/allelefrequencies/main/afnd.tsv``).
+published by Slowikowski (2024) from the ANHIG-style raw GitHub path in
+:data:`AFND_MIRROR_TEMPLATE`, at the ref given to ``update(ref=...)``
+(``db-update --afnd-ref``; :data:`AFND_DEFAULT_REF` otherwise).
 The downloaded file uses Slowikowski's 7-column schema; this module
 automatically transforms it into HLAnte's internal 5-column TSV and
 saves it to ``~/.hlante/afnd/afnd_frequencies.tsv``.
+
+Alongside it a ``version.json`` records the source URL, the ref, the
+acquisition date and the SHA-256 of the installed table, so the snapshot
+behind a past annotation can be named and verified. Because the mirror's
+default branch moves, pass a commit SHA to pin a published snapshot.
 
 When ``update()`` has not been run, HLAnte falls back to a compact
 built-in frequency table (7 loci × 5 populations) bundled with the
@@ -45,12 +51,15 @@ the row's population label. No country is special-cased.
 from __future__ import annotations
 
 import csv
+import json
 import logging
 import urllib.request
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+from hlante.db import sha256_file
 from hlante.db.gwas import (
     _colon_group_count,
     _field_label,
@@ -74,9 +83,20 @@ DEFAULT_MIN_SAMPLE_SIZE: int = 50
 #: Slowikowski (2024), scraped from allelefrequencies.net.
 #: Schema: group / gene / allele / population / indivs_over_n /
 #:          alleles_over_2n / n
-SLOWIKOWSKI_URL: str = (
-    "https://raw.githubusercontent.com/slowkow/allelefrequencies/main/afnd.tsv"
+AFND_MIRROR_TEMPLATE: str = (
+    "https://raw.githubusercontent.com/slowkow/allelefrequencies/{ref}/afnd.tsv"
 )
+
+#: Git ref fetched when none is given. ``"main"`` tracks the mirror's moving
+#: branch; pass an explicit commit SHA or tag to :meth:`AFNDClient.update`
+#: (``ref=...``) / ``db-update --afnd-ref`` to pin a reproducible snapshot. The
+#: ref and the installed file's SHA-256 are recorded in ``version.json``.
+AFND_DEFAULT_REF: str = "main"
+
+SLOWIKOWSKI_URL: str = AFND_MIRROR_TEMPLATE.format(ref=AFND_DEFAULT_REF)
+
+#: Provenance sidecar written next to the installed table.
+AFND_VERSION_FILENAME: str = "version.json"
 
 # Built-in fallback: literature-derived 7-locus × 5-population frequency table
 # Bundled with the package so that AFND works offline without a manual download.
@@ -393,22 +413,35 @@ class AFNDClient:
 
     # ---- Public API ----
 
-    def update(self, source_url: Optional[str] = None) -> Path:
+    def update(
+        self,
+        source_url: Optional[str] = None,
+        *,
+        ref: str = AFND_DEFAULT_REF,
+    ) -> Path:
         """
         Download and install the AFND frequency TSV.
 
         By default, fetches the machine-readable AFND mirror maintained
-        by Slowikowski (2024) from :data:`SLOWIKOWSKI_URL`.  If the
-        downloaded file uses Slowikowski's 7-column schema (detected by
-        the presence of ``alleles_over_2n`` in the header), it is
+        by Slowikowski (2024) from :data:`AFND_MIRROR_TEMPLATE` at ``ref``.
+        If the downloaded file uses Slowikowski's 7-column schema (detected
+        by the presence of ``alleles_over_2n`` in the header), it is
         automatically transformed to HLAnte's 5-column internal format
         before saving.  A user-supplied URL pointing to a file already in
         HLAnte's format is accepted and copied as-is.
 
+        A ``version.json`` sidecar records the source, the ref, the
+        acquisition date and the SHA-256 of the installed file, so the
+        snapshot behind any past annotation can be identified and verified.
+
         Parameters
         ----------
         source_url : str, optional
-            Override the default :data:`SLOWIKOWSKI_URL`.
+            Fetch this URL instead of the mirror. ``ref`` is then not
+            applied and is recorded as ``"custom"``.
+        ref : str, optional
+            Git ref of the mirror — branch, tag or commit SHA. Defaults to
+            :data:`AFND_DEFAULT_REF`; pass a commit SHA to pin a snapshot.
 
         Returns
         -------
@@ -421,7 +454,7 @@ class AFNDClient:
             When the download or transform fails.
         """
         self.local_dir.mkdir(parents=True, exist_ok=True)
-        url = source_url or SLOWIKOWSKI_URL
+        url = source_url or AFND_MIRROR_TEMPLATE.format(ref=ref)
         dest = self.local_dir / DEFAULT_TSV_FILENAME
         tmp = self.local_dir / "_afnd_download.tmp"
 
@@ -460,8 +493,45 @@ class AFNDClient:
             tmp.replace(dest)
             logger.info("AFND: custom TSV saved → %s", dest)
 
+        self._write_version(dest, url, "custom" if source_url else ref)
         self._loaded = False
         return dest
+
+    def _write_version(self, dest: Path, url: str, ref: str) -> None:
+        """Record what was installed, so a report can name its snapshot."""
+        meta = {
+            "source_url": url,
+            "ref": ref,
+            "downloaded_at": datetime.now(timezone.utc).isoformat(),
+            "rows": max(0, sum(1 for _ in dest.open(encoding="utf-8")) - 1),
+            "sha256": {dest.name: sha256_file(dest)},
+        }
+        (self.local_dir / AFND_VERSION_FILENAME).write_text(
+            json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+
+    def version(self) -> Optional[str]:
+        """
+        Identify the installed snapshot, or ``None`` when nothing is recorded.
+
+        The string names the ref and the first twelve hex digits of the file
+        checksum — enough to tell two snapshots apart in a report header.
+        """
+        meta_path = self.local_dir / AFND_VERSION_FILENAME
+        if not meta_path.is_file():
+            return None
+        try:
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return None
+        if not isinstance(meta, dict):
+            return None
+        ref = str(meta.get("ref") or "unknown")
+        digest = ""
+        checksums = meta.get("sha256")
+        if isinstance(checksums, dict) and checksums:
+            digest = str(next(iter(checksums.values())))[:12]
+        return f"mirror {ref[:12]} (sha256 {digest})" if digest else f"mirror {ref[:12]}"
 
     def load(self) -> None:
         """
@@ -774,6 +844,9 @@ __all__ = [
     "AllelFrequency",
     "AFNDDatabaseError",
     "POPULATION_GROUPS",
+    "AFND_DEFAULT_REF",
+    "AFND_MIRROR_TEMPLATE",
+    "AFND_VERSION_FILENAME",
     "SLOWIKOWSKI_URL",
     "DEFAULT_LOCAL_DIR",
     "DEFAULT_TSV_FILENAME",

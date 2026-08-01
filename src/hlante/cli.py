@@ -34,6 +34,7 @@ from hlante.annotator import (
 )
 from hlante.types import InputSource
 from hlante.db.afnd import (
+    AFND_DEFAULT_REF,
     AFNDClient,
     AFNDDatabaseError,
     DEFAULT_LOCAL_DIR as AFND_DEFAULT_DIR,
@@ -218,6 +219,7 @@ def _db_versions(
     imgt_db_path: Optional[Path],
     pharmgkb_dir: Optional[Path],
     gwas_dir: Optional[Path] = None,
+    afnd_dir: Optional[Path] = None,
 ) -> Dict[str, str]:
     """
     Detect local database versions (when available).
@@ -242,6 +244,9 @@ def _db_versions(
     pharm_root = pharmgkb_dir or PHARMGKB_DEFAULT_DIR
     if Path(pharm_root).exists():
         versions["pharmgkb"] = "local"
+    afnd_version = AFNDClient(local_dir=afnd_dir or AFND_DEFAULT_DIR).version()
+    if afnd_version:
+        versions["afnd"] = afnd_version
     gwas_root = gwas_dir or GWAS_DEFAULT_DIR
     gwas_root = Path(gwas_root)
     if gwas_root.exists():
@@ -581,6 +586,7 @@ def annotate_cmd(
             imgt_db_path,
             pharmgkb_dir,
             gwas_dir=getattr(config, "gwas_local_dir", None),
+            afnd_dir=getattr(config, "afnd_local_dir", None),
         ),
         input_source=src.value,
         cli_invocation=" ".join(["hlante", *sys.argv[1:]]),
@@ -761,6 +767,16 @@ def validate_cmd(input_path: Path, tool: str) -> None:
     help="AFND directory (default: ~/.hlante/afnd).",
 )
 @click.option(
+    "--afnd-ref",
+    default=None,
+    metavar="REF",
+    help=(
+        "Git ref of the AFND mirror — branch, tag or commit SHA "
+        "(default: main). Pass a commit SHA to pin a reproducible snapshot; "
+        "the ref and the installed file's SHA-256 are recorded in version.json."
+    ),
+)
+@click.option(
     "--afnd-url",
     default=None,
     help=(
@@ -777,6 +793,7 @@ def db_update_cmd(
     pharmgkb_dir: Optional[Path],
     gwas_cache_dir: Optional[Path],
     afnd_dir: Optional[Path],
+    afnd_ref: Optional[str],
     afnd_url: Optional[str],
 ) -> None:
     """
@@ -832,7 +849,10 @@ def db_update_cmd(
         target = Path(afnd_dir or AFND_DEFAULT_DIR)
         afnd_client = AFNDClient(local_dir=target)
         try:
-            path = afnd_client.update(source_url=afnd_url)
+            path = afnd_client.update(
+                source_url=afnd_url,
+                ref=afnd_ref or AFND_DEFAULT_REF,
+            )
             _echo_success(f"AFND updated → {path}")
         except AFNDDatabaseError as exc:
             # Network or transform failure; built-in fallback still covers basic use.

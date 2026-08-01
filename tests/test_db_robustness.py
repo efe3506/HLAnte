@@ -312,3 +312,107 @@ class TestIMGTRefPinning:
 
         assert calls, "an install with no version.json must be re-fetched"
         assert self._meta(tmp_path)["version"] == "IPD-IMGT/HLA 3.64.0"
+
+
+class TestAFNDSnapshotProvenance:
+    """
+    The AFND mirror's default branch moves, so a published snapshot has to be
+    pinnable and the installed table has to be identifiable afterwards.
+
+    Without this, the manuscript's claim that a report identifies the evidence
+    base behind any past annotation held for IPD-IMGT/HLA only: the AFND table
+    was fetched from a moving branch and left no version or checksum behind.
+    """
+
+    SLOWIKOWSKI = (
+        "group\tgene\tallele\tpopulation\tindivs_over_n\talleles_over_2n\tn\n"
+        "Europe\tA\tA*01:01\tGermany\t0.1\t0.05\t1000\n"
+    )
+
+    @staticmethod
+    def _fake_urlopen(monkeypatch: pytest.MonkeyPatch, payload: str) -> list:
+        from contextlib import contextmanager
+
+        from hlante.db import afnd
+
+        seen: list = []
+
+        @contextmanager
+        def _open(url, timeout=0):  # noqa: ANN001, ARG001
+            seen.append(url)
+
+            class _Resp:
+                @staticmethod
+                def read() -> bytes:
+                    return payload.encode()
+
+            yield _Resp()
+
+        monkeypatch.setattr(afnd.urllib.request, "urlopen", _open)
+        return seen
+
+    def _meta(self, root: Path) -> dict:
+        import json
+
+        return json.loads((root / "version.json").read_text())
+
+    def test_ref_is_interpolated_into_the_mirror_url(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from hlante.db.afnd import AFNDClient
+
+        seen = self._fake_urlopen(monkeypatch, self.SLOWIKOWSKI)
+        AFNDClient(local_dir=tmp_path).update(ref="deadbeef")
+
+        assert seen and seen[0].endswith("/deadbeef/afnd.tsv")
+
+    def test_version_json_records_ref_and_checksum(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from hlante.db import sha256_file
+        from hlante.db.afnd import AFNDClient
+
+        self._fake_urlopen(monkeypatch, self.SLOWIKOWSKI)
+        client = AFNDClient(local_dir=tmp_path)
+        dest = client.update(ref="deadbeef")
+
+        meta = self._meta(tmp_path)
+        assert meta["ref"] == "deadbeef"
+        assert meta["sha256"]["afnd_frequencies.tsv"] == sha256_file(dest)
+        assert meta["source_url"].endswith("/deadbeef/afnd.tsv")
+        assert client.version() is not None
+        assert "deadbeef" in str(client.version())
+
+    def test_custom_url_is_not_recorded_as_a_mirror_ref(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A user-supplied table did not come from the mirror at any ref."""
+        from hlante.db.afnd import AFNDClient
+
+        self._fake_urlopen(monkeypatch, self.SLOWIKOWSKI)
+        AFNDClient(local_dir=tmp_path).update(source_url="https://example.org/afnd.tsv")
+
+        meta = self._meta(tmp_path)
+        assert meta["ref"] == "custom"
+        assert meta["source_url"] == "https://example.org/afnd.tsv"
+
+    def test_version_is_none_without_an_install(self, tmp_path: Path) -> None:
+        from hlante.db.afnd import AFNDClient
+
+        assert AFNDClient(local_dir=tmp_path).version() is None
+
+    def test_two_refs_are_distinguishable_in_a_report_header(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from hlante.db.afnd import AFNDClient
+
+        client = AFNDClient(local_dir=tmp_path)
+        self._fake_urlopen(monkeypatch, self.SLOWIKOWSKI)
+        client.update(ref="aaaaaaaa")
+        first = client.version()
+
+        other = self.SLOWIKOWSKI + "Asia\tA\tA*02:01\tJapan\t0.2\t0.1\t900\n"
+        self._fake_urlopen(monkeypatch, other)
+        client.update(ref="bbbbbbbb")
+
+        assert first != client.version()

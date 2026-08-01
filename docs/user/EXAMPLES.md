@@ -871,7 +871,8 @@ if the analysis must be re-run exactly.
 
 ### 5.4 Reproducibility checklist for a manuscript
 
-- Pin IPD-IMGT/HLA with `--imgt-ref` and archive `version.json`
+- Pin IPD-IMGT/HLA with `--imgt-ref` and AFND with `--afnd-ref`, and archive
+  both `version.json` files — each records the ref and a SHA-256
   (it carries the SHA-256 of all three reference files).
 - Archive the GWAS Catalog and PharmGKB dumps used, or at minimum
   record `gwas_cache_date` from the report header. Both resources

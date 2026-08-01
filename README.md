@@ -67,6 +67,8 @@ hlante db-update --db imgt
 
 Without it, `hlante annotate` stops with an error and writes no report. To
 reproduce a specific release, pin it: `hlante db-update --db imgt --imgt-ref 3.64.0`.
+The AFND mirror pins the same way: `hlante db-update --db afnd --afnd-ref <commit>`.
+Both record the ref and a SHA-256 in `version.json`.
 The GWAS Catalog, PharmGKB, and AFND downloads are optional — see
 [INSTALL.md](INSTALL.md#5-database-setup).
 

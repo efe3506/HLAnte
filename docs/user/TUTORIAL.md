@@ -154,8 +154,9 @@ still says `not installed`, see section 10.
 > **Reproducibility.** `db-update --db imgt` tracks the current release. To pin
 > a specific one — which you should do for any analysis you intend to publish —
 > add `--imgt-ref`, for example
-> `hlante db-update --db imgt --imgt-ref 3.64.0`. The release actually used is
-> recorded in the header of every report.
+> `hlante db-update --db imgt --imgt-ref 3.64.0`. The AFND mirror pins the same
+> way with `--afnd-ref <commit>`. Both snapshots are recorded in the header of
+> every report, and each leaves a `version.json` carrying a SHA-256.
 
 ### Optional: extra evidence sources
 

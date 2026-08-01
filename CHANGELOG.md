@@ -5,6 +5,16 @@ format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **The AFND snapshot can be pinned, and is now identified in every report.**
+  The mirror was fetched from its moving `main` branch and left nothing behind:
+  no ref, no checksum, no entry in the report's `db_versions`. A published
+  figure that depends on population frequencies could not be traced to the
+  table that produced it. `db-update --db afnd --afnd-ref <sha>` now pins a
+  commit, a `version.json` beside the installed table records the source URL,
+  the ref, the acquisition date and the file's SHA-256, and report headers
+  carry an `afnd` entry naming the ref and digest.
+
 ### Fixed
 - **`--imgt-ref` did not replace an installed release, and `version.json`
   claimed it had.** Asking for a release other than the one on disk left the

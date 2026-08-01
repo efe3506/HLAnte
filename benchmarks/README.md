@@ -10,9 +10,11 @@ Sanger-validated samples (`1000g_HLA_types.tsv`). The committed results in
 > (**Step 1** below); committing ~7,700 derived files would only bloat the
 > repository. The committed result tables in `1000g_total_results/` are the
 > reference outputs of the published 2,692-sample run. The
-> IPD-IMGT/HLA (pinned via `db-update --imgt-ref 3.64.0`), GWAS, PharmGKB, and
-> AFND snapshots are likewise fetched with `db-update`, not bundled, and are
-> checksum-verifiable (each `version.json` records a per-file SHA-256).
+> IPD-IMGT/HLA (pinned via `db-update --imgt-ref 3.64.0`) and AFND (pinned via
+> `db-update --afnd-ref 9c0eaa94d034890b19d681f591d9bad202440cfc`) are fetched
+> with `db-update`, not bundled, and each records a `version.json` carrying a
+> SHA-256. The GWAS Catalog and PharmGKB dumps are fetched the same way but
+> record an acquisition date only.
 
 ---
 
