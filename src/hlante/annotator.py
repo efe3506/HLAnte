@@ -95,7 +95,7 @@ SIGNIFICANCE_NULL_ALLELE: str = "Null allele (not expressed) — risk not assess
 # Phrased to AVOID ACMG/AMP variant-classification vocabulary ("pathogenic",
 # "likely pathogenic", "VUS"), which does not apply to statistical HLA
 # Disease/PGx associations.
-SIGNIFICANCE_PATHOGENIC: str = "Actionable pharmacogenomic risk (CPIC 1A — avoid)"
+SIGNIFICANCE_PATHOGENIC: str = "Actionable pharmacogenomic risk (CPIC Level 1A)"
 SIGNIFICANCE_LIKELY_PATHOGENIC: str = "Strong pharmacogenomic risk association"
 #: Emitted when the only actionable evidence is the curated reference table.
 #: It deliberately does NOT assert a CPIC level: the curated table is a

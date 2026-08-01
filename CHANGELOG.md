@@ -5,6 +5,19 @@ format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **The CPIC Level 1A label no longer carries a directive.**
+  `Actionable pharmacogenomic risk (CPIC 1A — avoid)` asserted avoidance for
+  every Level 1A pair, but CPIC's recommendation is pair-specific: it is
+  avoidance for HLA-B*57:01 and abacavir, and "use alternative if available;
+  otherwise increased monitoring" for HLA-A*31:01 and carbamazepine. A single
+  report row therefore carried two contradictory instructions, since
+  `pharm_cpic_action` already held the guideline's own verb. The label is now
+  `Actionable pharmacogenomic risk (CPIC Level 1A)` and states the evidence
+  level only; the action stays in `pharm_cpic_action`. Three user documents
+  that still described the pre-v0.2.0 gating — a curated-table entry asserting
+  CPIC 1A — are corrected with it.
+
 ### Added
 - **The AFND snapshot can be pinned, and is now identified in every report.**
   The mirror was fetched from its moving `main` branch and left nothing behind:

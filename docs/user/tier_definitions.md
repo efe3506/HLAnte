@@ -6,7 +6,7 @@ classifications.
 
 | Label | Meaning |
 |-------|---------|
-| `Actionable pharmacogenomic risk (CPIC 1A — avoid)` | Allele is in the built-in curated table with `pathogenic` significance (e.g., SJS/TEN-causing CPIC Level 1A alleles B\*57:01, B\*58:01, B\*15:02) |
+| `Actionable pharmacogenomic risk (CPIC Level 1A)` | A PharmGKB Level 1A record with a CPIC guideline link. Curated-table entries without such a record get `Actionable pharmacogenomic risk (curated reference)` instead. |
 | `Strong pharmacogenomic risk association` | Allele is in the built-in curated table with `likely pathogenic` significance (e.g., CPIC Level 1A A\*31:01, B\*13:01) |
 | `Suggestive risk factor` | GWAS Catalog hit at p ≤ 5×10⁻⁸ or PharmGKB evidence level 1A / 1B |
 | `Inconclusive evidence` | GWAS or PharmGKB hits present but below the above thresholds |

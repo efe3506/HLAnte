@@ -414,7 +414,7 @@ The allele1 and allele2 sections are separated by `;;`; within each section the 
 
 | Label | What it means |
 |---|---|
-| **`Actionable pharmacogenomic risk (CPIC 1A — avoid)`** | There is a "pathogenic" record for this allele in HLAnte's built-in curated table. Drug-allele pairs with CPIC Level A "AVOID" or SJS/TEN risk. *E.g.: B\*57:01 + abacavir, B\*58:01 + allopurinol, B\*15:02 + carbamazepine.* |
+| **`Actionable pharmacogenomic risk (CPIC Level 1A)`** | A PharmGKB Level 1A record carrying a CPIC guideline link. The guideline action is in `pharm_cpic_action` and differs by pair: avoidance for B\*57:01 + abacavir, but "use alternative if available; otherwise increased monitoring" for A\*31:01 + carbamazepine. |
 | **`Strong pharmacogenomic risk association`** | There is a "likely pathogenic" record in the curated table. Severe drug reaction; CPIC Level A. *E.g.: A\*31:01 + carbamazepine.* |
 | **`Suggestive risk factor`** | There is strong PharmGKB evidence (1A/1B) or a genome-wide significant association in GWAS; but there is no pathogenic/likely-pathogenic record in the curated table. A population-level risk signal. |
 | **`Inconclusive evidence`** | The allele is ambiguous or unknown in IMGT, and no validation source could be found. The result is insufficient to the point of being uninterpretable. |
@@ -427,7 +427,7 @@ The allele1 and allele2 sections are separated by `;;`; within each section the 
 ```
 What is the clinical_significance value?
 │
-├─ Actionable pharmacogenomic risk (CPIC 1A — avoid)  →  look at pharm_cpic_action; the drug-allele interaction is critical
+├─ Actionable pharmacogenomic risk (CPIC Level 1A)  →  look at pharm_cpic_action; the drug-allele interaction is critical
 ├─ Strong pharmacogenomic risk association   →  look at pharm_cpic_action; a drug-specific action may be needed
 ├─ Suggestive risk factor       →  look at gwas_traits and drug_response_summary;
 │                                   a population risk signal; use caution in individual interpretation

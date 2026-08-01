@@ -335,7 +335,7 @@ grep -v '^#' results/hlante_report.tsv \
 # ---- output ----
 locus     allele1     allele2     clinical_significance                                                    allele_frequency   input_quality_tier
 HLA-A     A*01:01     A*02:01     Suggestive risk factor|Suggestive risk factor                            0.064181|0.151974  limited|limited
-HLA-B     B*57:01     B*08:01     Actionable pharmacogenomic risk (CPIC 1A — avoid)|Suggestive risk factor  0.020265|0.040392  limited|limited
+HLA-B     B*57:01     B*08:01     Actionable pharmacogenomic risk (CPIC Level 1A)|Suggestive risk factor  0.020265|0.040392  limited|limited
 HLA-C     C*06:02     C*07:01     Suggestive risk factor|Suggestive risk factor                            0.080365|0.090534  limited|limited
 HLA-DRB1  DRB1*03:01  DRB1*15:01  Suggestive risk factor|Suggestive risk factor                            0.067246|0.080539  limited|limited
 HLA-DQB1  DQB1*02:01  DQB1*06:02  Suggestive risk factor|Suggestive risk factor                            0.117904|0.078371  limited|limited
@@ -392,7 +392,7 @@ frequently asked questions.
 Take the row for *HLA-B* from the table above:
 
 ```
-HLA-B     B*57:01     B*08:01     Actionable pharmacogenomic risk (CPIC 1A — avoid)|Suggestive risk factor  0.020265|0.040392  limited|limited
+HLA-B     B*57:01     B*08:01     Actionable pharmacogenomic risk (CPIC Level 1A)|Suggestive risk factor  0.020265|0.040392  limited|limited
 ```
 
 Now read the disease summary for the same row, one allele per line:
@@ -410,7 +410,7 @@ Moderate association: sclerosing cholangitis (OR=2.82); Curated risk factor: Mya
 Reading it line by line:
 
 1. **Allele 1 is HLA-B\*57:01**, and its `clinical_significance` is
-   `Actionable pharmacogenomic risk (CPIC 1A — avoid)`. That is the strongest
+   `Actionable pharmacogenomic risk (CPIC Level 1A)`. That is the strongest
    label HLAnte assigns, and it is reserved for allele–drug pairs recorded as
    *pathogenic* in the built-in curated table. The reason follows in
    `disease_risk_summary`: **abacavir hypersensitivity**, with the three

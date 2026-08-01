@@ -73,7 +73,7 @@ These are **evidence-strength descriptors**, not ACMG/AMP classifications.
 
 | Label | Meaning |
 |-------|---------|
-| `Actionable pharmacogenomic risk (CPIC 1A — avoid)` | CPIC 1A AVOID or SJS/TEN-level drug reaction in built-in curated table |
+| `Actionable pharmacogenomic risk (CPIC Level 1A)` | A PharmGKB Level 1A record with a CPIC guideline link. The guideline's own action verb is in `pharm_cpic_action` and is not always avoidance. |
 | `Strong pharmacogenomic risk association` | Severe drug reaction (CPIC 1A), not SJS/TEN level |
 | `Suggestive risk factor` | Strong GWAS or PharmGKB (1A/1B) signal without an actionable curated entry |
 | `Inconclusive evidence` | Ambiguous or IMGT-unknown allele with no confirming source |
