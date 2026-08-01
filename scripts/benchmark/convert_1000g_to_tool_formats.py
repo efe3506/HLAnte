@@ -65,6 +65,14 @@ def _resolve_cell(
         first = raw.split("/")[0].strip()
         ambig_log.append(f"{sample_id}\t{gene}\t{raw}\t{first}")
         raw = first
+    # Several typing tools mark an uncertain call with a trailing asterisk, and
+    # HLAnte's own parsers strip it (parser._strip_trailing_asterisk). Rejecting
+    # the cell here would discard a call the tool under test handles — and, in
+    # the per-locus tool formats, take the co-allele on that row down with it.
+    if raw.endswith("*"):
+        raw = raw[:-1].strip()
+        if _is_null(raw):
+            return None
     if not _ALLELE_CELL_RE.match(raw):
         corrupt_log.append(f"{sample_id}\t{gene}\t{raw}")
         logger.warning("Corrupt allele value %r for %s/%s — skipped", raw, sample_id, gene)

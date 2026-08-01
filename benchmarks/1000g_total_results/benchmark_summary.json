@@ -1,8 +1,8 @@
 {
-  "hlante_version": "0.1.0",
+  "hlante_version": "0.2.0",
   "imgt_version": "IPD-IMGT/HLA 3.64.0",
-  "generated_at": "2026-05-04T11:22:00.706612+00:00",
-  "n_samples_total": 2692,
+  "generated_at": "2026-08-01T14:29:33.249714+00:00",
+  "n_samples_total": 2693,
   "tools": {
     "arcashla": {
       "n_samples": 2692,
@@ -26,7 +26,7 @@
     },
     "t1k": {
       "n_samples": 2692,
-      "parse_rate": "99.8%",
+      "parse_rate": "99.9%",
       "norm_rate": "100.0%",
       "cpic_recall": {
         "B*57:01": "100.0%",
@@ -46,7 +46,7 @@
     },
     "hlahd": {
       "n_samples": 2692,
-      "parse_rate": "99.8%",
+      "parse_rate": "99.9%",
       "norm_rate": "100.0%",
       "cpic_recall": {
         "B*57:01": "100.0%",
@@ -66,7 +66,7 @@
     },
     "optitype": {
       "n_samples": 2692,
-      "parse_rate": "98.2%",
+      "parse_rate": "99.8%",
       "norm_rate": "100.0%",
       "cpic_recall": {
         "B*57:01": "100.0%",
@@ -75,9 +75,9 @@
         "A*31:01": "100.0%"
       },
       "gwas_recall": {
-        "DRB1*03:01": "60.7%",
-        "DRB1*04:01": "2.8%",
-        "DRB1*15:01": "26.7%",
+        "DRB1*03:01": "60.9%",
+        "DRB1*04:01": "0.0%",
+        "DRB1*15:01": "26.9%",
         "B*27:05": "100.0%",
         "B*51:01": "100.0%",
         "DQB1*02:01": "0.0%",
@@ -88,33 +88,33 @@
   "population_metrics": {
     "EUR": {
       "n": 529,
-      "freq_pct": "96.7%",
-      "mean_input_quality": "0.895",
+      "freq_pct": "100.0%",
+      "mean_input_quality": "0.894",
       "low_pct": "0.1%"
     },
     "EAS": {
       "n": 536,
-      "freq_pct": "91.2%",
-      "mean_input_quality": "0.888",
-      "low_pct": "0.0%"
+      "freq_pct": "99.9%",
+      "mean_input_quality": "0.892",
+      "low_pct": "0.2%"
     },
     "AMR": {
       "n": 372,
-      "freq_pct": "87.4%",
+      "freq_pct": "99.8%",
       "mean_input_quality": "0.883",
-      "low_pct": "0.0%"
+      "low_pct": "1.0%"
     },
     "SAS": {
       "n": 543,
-      "freq_pct": "87.4%",
-      "mean_input_quality": "0.883",
-      "low_pct": "0.0%"
+      "freq_pct": "99.8%",
+      "mean_input_quality": "0.886",
+      "low_pct": "0.6%"
     },
     "AFR": {
       "n": 712,
-      "freq_pct": "85.0%",
+      "freq_pct": "100.0%",
       "mean_input_quality": "0.880",
-      "low_pct": "0.0%"
+      "low_pct": "0.5%"
     }
   }
 }

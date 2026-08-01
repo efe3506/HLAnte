@@ -1,8 +1,8 @@
 # HLAnte 1000 Genomes Annotation Benchmark
 
-Generated: 2026-05-04  
-HLAnte version: 0.1.0  IMGT-HLA: IPD-IMGT/HLA 3.64.0  
-N samples: 2692
+Generated: 2026-08-01  
+HLAnte version: 0.2.0  IMGT-HLA: IPD-IMGT/HLA 3.64.0  
+N samples: 2693
 
 ## Scope
 
@@ -12,10 +12,10 @@ This benchmark evaluates HLAnte's annotation pipeline using Sanger-validated HLA
 
 | Tool | Alleles parsed | Expected | Success rate |
 |------|----------------|----------|--------------|
-| arcashla  |          26308 |    26332 |        99.9% |
-| t1k       |          26284 |    26332 |        99.8% |
-| hlahd     |          26284 |    26332 |        99.8% |
-| optitype  |          15868 |    16152 |        98.2% |
+| arcashla  |          26301 |    26332 |        99.9% |
+| t1k       |          26294 |    26332 |        99.9% |
+| hlahd     |          26294 |    26332 |        99.9% |
+| optitype  |          16124 |    16152 |        99.8% |
 
 ## Normalisation Success (IMGT-HLA recognised; exact or prefix match)
 
@@ -23,10 +23,10 @@ Note: two-field input alleles have no exact IMGT accession (ambiguous by design)
 
 | Tool | Allele count | IMGT recognised | Rate |
 |------|--------------|-----------------|------|
-| arcashla  |        26308 |           26304 | 100.0% |
-| t1k       |        26284 |           26280 | 100.0% |
-| hlahd     |        26284 |           26280 | 100.0% |
-| optitype  |        15868 |           15864 | 100.0% |
+| arcashla  |        26301 |           26300 | 100.0% |
+| t1k       |        26294 |           26293 | 100.0% |
+| hlahd     |        26294 |           26293 | 100.0% |
+| optitype  |        16124 |           16123 | 100.0% |
 
 ## CPIC Level 1A Pharmacogenomic Recall
 
@@ -41,8 +41,6 @@ Results shown for arcashla (representative; other tools similar).
 
 ## GWAS / Curated Disease Recall
 
-arcasHLA (representative; 100% recall across all sentinels):
-
 | Allele → Trait | Carriers | Hits | Recall |
 |----------------|----------|------|--------|
 | DRB1*03:01 → SLE / T1D              |      327 |  327 | 100.0% |
@@ -53,31 +51,25 @@ arcasHLA (representative; 100% recall across all sentinels):
 | DQB1*02:01 → celiac disease         |      289 |  289 | 100.0% |
 | DQB1*06:02 → narcolepsy             |      390 |  390 | 100.0% |
 
-T1K and HLA-HD show 99.7% recall (356/357) for DRB1\*15:01 → multiple sclerosis.
-The single missed carrier is HG01284: both T1K and HLA-HD fixture files for this
-sample contain only A, B, C, and DQB1 loci — DRB1 was not typed by those tools
-for that sample. arcasHLA reports DRB1\*15:01 for the same sample, achieving 100%
-recall. This is a typing-tool coverage gap, not an HLAnte annotation failure.
-
 ## Population-Stratified Performance (arcashla)
 
-| Super-pop | N | AFND coverage | Mean confidence | limited tier % |
+| Super-pop | N | AFND coverage | Mean confidence | LOW tier % |
 |-----------|---|---------------|-----------------|------------|
-| EUR       | 529 |         96.7% |           0.895 |       0.1% |
-| AFR       | 712 |         85.0% |           0.880 |       0.0% |
-| EAS       | 536 |         91.2% |           0.888 |       0.0% |
-| SAS       | 543 |         87.4% |           0.883 |       0.0% |
-| AMR       | 372 |         87.4% |           0.883 |       0.0% |
+| EUR       | 529 |        100.0% |           0.894 |       0.1% |
+| AFR       | 712 |        100.0% |           0.880 |       0.5% |
+| EAS       | 536 |         99.9% |           0.892 |       0.2% |
+| SAS       | 543 |         99.8% |           0.886 |       0.6% |
+| AMR       | 372 |         99.8% |           0.883 |       1.0% |
 
 ## Confidence Tier Distribution (arcashla)
 
-Note: This benchmark uses --input-source validated because the 1000 Genomes types are Sanger-validated reference data. Under this mode, the ambiguity penalty (×0.75) is suppressed for two-field inputs since the call is exactly correct at its reported resolution; only the two-field resolution penalty (×0.90) applies. This produces predominantly detailed-tier scores. For typing-tool inputs (--input-source typing_tool, default), two-field outputs would receive both penalties and score in the limited range.
+Note: This benchmark uses --input-source validated because the 1000 Genomes types are Sanger-validated reference data. Under this mode, the ambiguity penalty (×0.75) is suppressed for two-field inputs since the call is exactly correct at its reported resolution; only the two-field resolution penalty (×0.90) applies. This produces predominantly HIGH-tier scores. For typing-tool inputs (--input-source typing_tool, default), two-field outputs would receive both penalties and score in the LOW range.
 
 | Tier | Count | Percentage |
 |------|-------|------------|
-| detailed     | 23480 |      89.3% |
-| partial |  2824 |      10.7% |
-| limited      |     4 |       0.0% |
+| detailed | 24546 |      93.3% |
+| partial  |  1632 |       6.2% |
+| limited  |   123 |       0.5% |
 | NA       |     0 |       0.0% |
 
 ---

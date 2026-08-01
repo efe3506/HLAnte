@@ -1,7 +1,7 @@
 # HLAnte 1000 Genomes Annotation Benchmark
 
-Generated: 2026-06-08  
-HLAnte version: 0.1.0  IMGT-HLA: IPD-IMGT/HLA 3.64.0  
+Generated: 2026-08-01  
+HLAnte version: 0.2.0  IMGT-HLA: IPD-IMGT/HLA 3.64.0  
 N samples: 2693
 
 ## Scope
@@ -12,10 +12,10 @@ This benchmark evaluates HLAnte's annotation pipeline using Sanger-validated HLA
 
 | Tool | Alleles parsed | Expected | Success rate |
 |------|----------------|----------|--------------|
-| arcashla  |          26308 |    26332 |        99.9% |
-| t1k       |          26284 |    26332 |        99.8% |
-| hlahd     |          26284 |    26332 |        99.8% |
-| optitype  |          15868 |    16152 |        98.2% |
+| arcashla  |          26301 |    26332 |        99.9% |
+| t1k       |          26294 |    26332 |        99.9% |
+| hlahd     |          26294 |    26332 |        99.9% |
+| optitype  |          16124 |    16152 |        99.8% |
 
 ## Normalisation Success (IMGT-HLA recognised; exact or prefix match)
 
@@ -23,10 +23,10 @@ Note: two-field input alleles have no exact IMGT accession (ambiguous by design)
 
 | Tool | Allele count | IMGT recognised | Rate |
 |------|--------------|-----------------|------|
-| arcashla  |        26308 |           26304 | 100.0% |
-| t1k       |        26284 |           26280 | 100.0% |
-| hlahd     |        26284 |           26280 | 100.0% |
-| optitype  |        15868 |           15864 | 100.0% |
+| arcashla  |        26301 |           26300 | 100.0% |
+| t1k       |        26294 |           26293 | 100.0% |
+| hlahd     |        26294 |           26293 | 100.0% |
+| optitype  |        16124 |           16123 | 100.0% |
 
 ## CPIC Level 1A Pharmacogenomic Recall
 
@@ -53,23 +53,23 @@ Results shown for arcashla (representative; other tools similar).
 
 ## Population-Stratified Performance (arcashla)
 
-| Super-pop | N | AFND coverage | Mean confidence | limited tier % |
+| Super-pop | N | AFND coverage | Mean confidence | LOW tier % |
 |-----------|---|---------------|-----------------|------------|
 | EUR       | 529 |        100.0% |           0.671 |     100.0% |
 | AFR       | 712 |        100.0% |           0.662 |      99.1% |
 | EAS       | 536 |         99.9% |           0.669 |      99.8% |
-| SAS       | 543 |         99.7% |           0.666 |      99.3% |
+| SAS       | 543 |         99.8% |           0.666 |      99.4% |
 | AMR       | 372 |         99.8% |           0.665 |      99.1% |
 
 ## Confidence Tier Distribution (arcashla)
 
-Note: This benchmark uses --input-source validated because the 1000 Genomes types are Sanger-validated reference data. Under this mode, the ambiguity penalty (×0.75) is suppressed for two-field inputs since the call is exactly correct at its reported resolution; only the two-field resolution penalty (×0.90) applies. This produces predominantly detailed-tier scores. For typing-tool inputs (--input-source typing_tool, default), two-field outputs would receive both penalties and score in the limited range.
+Note: This benchmark uses --input-source validated because the 1000 Genomes types are Sanger-validated reference data. Under this mode, the ambiguity penalty (×0.75) is suppressed for two-field inputs since the call is exactly correct at its reported resolution; only the two-field resolution penalty (×0.90) applies. This produces predominantly HIGH-tier scores. For typing-tool inputs (--input-source typing_tool, default), two-field outputs would receive both penalties and score in the LOW range.
 
 | Tier | Count | Percentage |
 |------|-------|------------|
-| detailed     |    58 |       0.2% |
-| partial |    85 |       0.3% |
-| limited      | 26165 |      99.5% |
+| detailed |    58 |       0.2% |
+| partial  |    83 |       0.3% |
+| limited  | 26160 |      99.5% |
 | NA       |     0 |       0.0% |
 
 ---

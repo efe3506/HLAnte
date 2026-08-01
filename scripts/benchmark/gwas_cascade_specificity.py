@@ -37,6 +37,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
@@ -44,7 +45,24 @@ from typing import Dict, List, Optional, Set, Tuple
 from hlante.db.gwas import GWASClient
 
 LOCI = ("HLA-A", "HLA-B", "HLA-C", "HLA-DQB1", "HLA-DRB1")
-NO_CALL = {"", "None", "NA", "-"}
+NO_CALL = {"", "None", "NA", "-", "*", "."}
+
+#: Cell grammar the conversion to typing-tool input accepts. Applied here too:
+#: this analysis has to describe the same cohort the pipeline was run on, not
+#: the raw reference table.
+_CELL_RE = re.compile(r"^\d{2,3}(:\d{2,3})*$")
+
+
+def _resolve_cell(raw: str) -> Optional[str]:
+    """Normalise one reference-table cell the way the conversion does."""
+    raw = raw.strip()
+    if raw in NO_CALL:
+        return None
+    if "/" in raw:
+        raw = raw.split("/")[0].strip()
+    if raw.endswith("*"):
+        raw = raw[:-1].strip()
+    return raw if _CELL_RE.match(raw) else None
 
 
 def cohort_alleles(path: Path) -> Dict[str, Counter]:
@@ -55,8 +73,8 @@ def cohort_alleles(path: Path) -> Dict[str, Counter]:
             for locus in LOCI:
                 gene = locus.split("-", 1)[1]
                 for slot in ("1", "2"):
-                    value = (row.get(f"{locus} {slot}") or "").strip()
-                    if value in NO_CALL:
+                    value = _resolve_cell(row.get(f"{locus} {slot}") or "")
+                    if value is None:
                         continue
                     per_locus[locus][f"{gene}*{value}"] += 1
     return per_locus

@@ -81,6 +81,13 @@ def resolve_cell(raw: str) -> Tuple[Optional[str], Optional[str]]:
     if raw.lower() in NO_CALL:
         return None, None
     candidate = raw.split("/")[0].strip() if "/" in raw else raw
+    # The conversion strips a trailing asterisk rather than rejecting the cell,
+    # because HLAnte's parsers do the same; this must follow it exactly or the
+    # denominator reported here would not be the one the benchmark ran on.
+    if candidate.endswith("*"):
+        candidate = candidate[:-1].strip()
+        if candidate.lower() in NO_CALL:
+            return None, None
     if not CELL_RE.match(candidate):
         return None, rejection_cause(candidate)
     return candidate, None

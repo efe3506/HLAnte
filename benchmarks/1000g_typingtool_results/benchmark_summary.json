@@ -1,7 +1,7 @@
 {
-  "hlante_version": "0.1.0",
+  "hlante_version": "0.2.0",
   "imgt_version": "IPD-IMGT/HLA 3.64.0",
-  "generated_at": "2026-06-08T09:26:31.434228+00:00",
+  "generated_at": "2026-08-01T14:33:58.292635+00:00",
   "n_samples_total": 2693,
   "tools": {
     "arcashla": {
@@ -26,7 +26,7 @@
     },
     "t1k": {
       "n_samples": 2692,
-      "parse_rate": "99.8%",
+      "parse_rate": "99.9%",
       "norm_rate": "100.0%",
       "cpic_recall": {
         "B*57:01": "100.0%",
@@ -46,7 +46,7 @@
     },
     "hlahd": {
       "n_samples": 2692,
-      "parse_rate": "99.8%",
+      "parse_rate": "99.9%",
       "norm_rate": "100.0%",
       "cpic_recall": {
         "B*57:01": "100.0%",
@@ -66,7 +66,7 @@
     },
     "optitype": {
       "n_samples": 2692,
-      "parse_rate": "98.2%",
+      "parse_rate": "99.8%",
       "norm_rate": "100.0%",
       "cpic_recall": {
         "B*57:01": "100.0%",
@@ -75,9 +75,9 @@
         "A*31:01": "100.0%"
       },
       "gwas_recall": {
-        "DRB1*03:01": "60.7%",
-        "DRB1*04:01": "2.8%",
-        "DRB1*15:01": "26.7%",
+        "DRB1*03:01": "60.9%",
+        "DRB1*04:01": "0.0%",
+        "DRB1*15:01": "26.9%",
         "B*27:05": "100.0%",
         "B*51:01": "100.0%",
         "DQB1*02:01": "0.0%",
@@ -106,9 +106,9 @@
     },
     "SAS": {
       "n": 543,
-      "freq_pct": "99.7%",
+      "freq_pct": "99.8%",
       "mean_input_quality": "0.666",
-      "low_pct": "99.3%"
+      "low_pct": "99.4%"
     },
     "AFR": {
       "n": 712,

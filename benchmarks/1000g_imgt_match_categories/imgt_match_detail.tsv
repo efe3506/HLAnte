@@ -1326,6 +1326,7 @@ NA20281	HLA-B	B*53:01	prefix_multiple	46
 NA20281	HLA-C	C*04:01	prefix_multiple	385
 NA20281	HLA-C	C*05:01	prefix_multiple	189
 NA20281	HLA-DQB1	DQB1*02:02	prefix_multiple	68
+NA20281	HLA-DQB1	DQB1*06:39	exact	1
 NA20281	HLA-DRB1	DRB1*11:01	prefix_multiple	76
 NA20281	HLA-DRB1	DRB1*13:03	prefix_multiple	17
 NA20282	HLA-A	A*03:01	prefix_multiple	275
@@ -4096,6 +4097,7 @@ NA19037	HLA-DRB1	DRB1*03:02	prefix_multiple	10
 NA19037	HLA-DRB1	DRB1*11:02	prefix_multiple	12
 NA19038	HLA-A	A*29:02	prefix_multiple	86
 NA19038	HLA-A	A*74:01	prefix_multiple	19
+NA19038	HLA-B	B*15:220	prefix_multiple	7
 NA19038	HLA-B	B*35:01	prefix_multiple	186
 NA19038	HLA-C	C*04:01	prefix_multiple	385
 NA19038	HLA-C	C*12:03	prefix_multiple	181
@@ -4270,6 +4272,7 @@ NA19319	HLA-B	B*53:01	prefix_multiple	46
 NA19319	HLA-C	C*02:10	prefix_multiple	31
 NA19319	HLA-C	C*04:01	prefix_multiple	385
 NA19319	HLA-DQB1	DQB1*03:01	prefix_multiple	165
+NA19319	HLA-DQB1	DQB1*03:19	prefix_multiple	10
 NA19319	HLA-DRB1	DRB1*08:04	prefix_multiple	15
 NA19319	HLA-DRB1	DRB1*11:01	prefix_multiple	76
 NA19320	HLA-A	A*01:02	prefix_multiple	4
@@ -4694,6 +4697,7 @@ NA19428	HLA-DRB1	DRB1*01:02	prefix_multiple	17
 NA19428	HLA-DRB1	DRB1*11:01	prefix_multiple	76
 NA19429	HLA-A	A*02:05	prefix_multiple	41
 NA19429	HLA-A	A*29:02	prefix_multiple	86
+NA19429	HLA-B	B*15:220	prefix_multiple	7
 NA19429	HLA-B	B*41:01	prefix_multiple	19
 NA19429	HLA-C	C*07:01	prefix_multiple	301
 NA19429	HLA-C	C*12:03	prefix_multiple	181
@@ -6067,6 +6071,7 @@ NA18502	HLA-B	B*14:03	exact	1
 NA18502	HLA-B	B*58:01	prefix_multiple	75
 NA18502	HLA-C	C*07:01	prefix_multiple	301
 NA18502	HLA-C	C*08:02	prefix_multiple	91
+NA18502	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA18502	HLA-DQB1	DQB1*05:01	prefix_multiple	103
 NA18502	HLA-DRB1	DRB1*13:01	prefix_multiple	67
 NA18502	HLA-DRB1	DRB1*07:01	prefix_multiple	67
@@ -6074,14 +6079,17 @@ NA18504	HLA-A	A*36:01	prefix_multiple	5
 NA18504	HLA-A	A*36:01	prefix_multiple	5
 NA18504	HLA-B	B*15:03	prefix_multiple	28
 NA18504	HLA-B	B*39:10	prefix_multiple	4
+NA18504	HLA-C	C*02:10	prefix_multiple	31
 NA18504	HLA-C	C*12:03	prefix_multiple	181
 NA18504	HLA-DQB1	DQB1*02:01	prefix_multiple	89
 NA18504	HLA-DQB1	DQB1*05:01	prefix_multiple	103
+NA18504	HLA-DRB1	DRB1*01:23	exact	1
 NA18504	HLA-DRB1	DRB1*03:01	prefix_multiple	70
 NA18505	HLA-A	A*26:01	prefix_multiple	153
 NA18505	HLA-A	A*74:01	prefix_multiple	19
 NA18505	HLA-B	B*15:03	prefix_multiple	28
 NA18505	HLA-B	B*53:01	prefix_multiple	46
+NA18505	HLA-C	C*02:10	prefix_multiple	31
 NA18505	HLA-C	C*07:01	prefix_multiple	301
 NA18505	HLA-DQB1	DQB1*02:01	prefix_multiple	89
 NA18505	HLA-DQB1	DQB1*06:02	prefix_multiple	117
@@ -6091,8 +6099,10 @@ NA18507	HLA-A	A*23:01	prefix_multiple	78
 NA18507	HLA-A	A*30:01	prefix_multiple	59
 NA18507	HLA-B	B*15:03	prefix_multiple	28
 NA18507	HLA-B	B*42:01	prefix_multiple	13
+NA18507	HLA-C	C*02:10	prefix_multiple	31
 NA18507	HLA-C	C*17:01	prefix_multiple	51
 NA18507	HLA-DQB1	DQB1*03:01	prefix_multiple	165
+NA18507	HLA-DQB1	DQB1*06:09	prefix_multiple	16
 NA18507	HLA-DRB1	DRB1*08:04	prefix_multiple	15
 NA18507	HLA-DRB1	DRB1*13:02	prefix_multiple	37
 NA18508	HLA-A	A*33:03	prefix_multiple	102
@@ -6101,6 +6111,7 @@ NA18508	HLA-B	B*53:01	prefix_multiple	46
 NA18508	HLA-B	B*42:01	prefix_multiple	13
 NA18508	HLA-C	C*04:01	prefix_multiple	385
 NA18508	HLA-C	C*17:01	prefix_multiple	51
+NA18508	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA18508	HLA-DQB1	DQB1*04:02	prefix_multiple	48
 NA18508	HLA-DRB1	DRB1*03:02	prefix_multiple	10
 NA18508	HLA-DRB1	DRB1*13:03	prefix_multiple	17
@@ -6130,6 +6141,7 @@ NA18516	HLA-B	B*15:10	prefix_multiple	19
 NA18516	HLA-B	B*53:01	prefix_multiple	46
 NA18516	HLA-C	C*04:01	prefix_multiple	385
 NA18516	HLA-C	C*04:01	prefix_multiple	385
+NA18516	HLA-DQB1	DQB1*03:19	prefix_multiple	10
 NA18516	HLA-DQB1	DQB1*04:02	prefix_multiple	48
 NA18516	HLA-DRB1	DRB1*03:02	prefix_multiple	10
 NA18516	HLA-DRB1	DRB1*08:04	prefix_multiple	15
@@ -6165,6 +6177,7 @@ NA18522	HLA-A	A*03:01	prefix_multiple	275
 NA18522	HLA-A	A*36:01	prefix_multiple	5
 NA18522	HLA-B	B*15:03	prefix_multiple	28
 NA18522	HLA-B	B*49:01	prefix_multiple	51
+NA18522	HLA-C	C*02:10	prefix_multiple	31
 NA18522	HLA-C	C*07:01	prefix_multiple	301
 NA18522	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA18522	HLA-DQB1	DQB1*06:04	prefix_multiple	32
@@ -6184,6 +6197,7 @@ NA18853	HLA-B	B*44:03	prefix_multiple	166
 NA18853	HLA-B	B*52:01	prefix_multiple	98
 NA18853	HLA-C	C*16:01	prefix_multiple	97
 NA18853	HLA-C	C*16:01	prefix_multiple	97
+NA18853	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA18853	HLA-DQB1	DQB1*05:01	prefix_multiple	103
 NA18853	HLA-DRB1	DRB1*13:01	prefix_multiple	67
 NA18853	HLA-DRB1	DRB1*07:01	prefix_multiple	67
@@ -6212,6 +6226,7 @@ NA18861	HLA-B	B*57:03	prefix_multiple	20
 NA18861	HLA-C	C*03:02	prefix_multiple	57
 NA18861	HLA-C	C*07:01	prefix_multiple	301
 NA18861	HLA-DRB1	DRB1*08:04	prefix_multiple	15
+NA18861	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA18864	HLA-A	A*02:02	prefix_multiple	17
 NA18864	HLA-A	A*30:01	prefix_multiple	59
 NA18864	HLA-B	B*13:02	prefix_multiple	83
@@ -6256,7 +6271,10 @@ NA18870	HLA-A	A*30:02	prefix_multiple	59
 NA18870	HLA-A	A*30:02	prefix_multiple	59
 NA18870	HLA-B	B*15:03	prefix_multiple	28
 NA18870	HLA-B	B*57:03	prefix_multiple	20
+NA18870	HLA-C	C*02:10	prefix_multiple	31
 NA18870	HLA-C	C*08:02	prefix_multiple	91
+NA18870	HLA-DQB1	DQB1*02:02	prefix_multiple	68
+NA18870	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA18870	HLA-DRB1	DRB1*13:03	prefix_multiple	17
 NA18870	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA18871	HLA-A	A*30:01	prefix_multiple	59
@@ -6265,6 +6283,8 @@ NA18871	HLA-B	B*42:01	prefix_multiple	13
 NA18871	HLA-B	B*52:01	prefix_multiple	98
 NA18871	HLA-C	C*16:01	prefix_multiple	97
 NA18871	HLA-C	C*17:01	prefix_multiple	51
+NA18871	HLA-DQB1	DQB1*02:02	prefix_multiple	68
+NA18871	HLA-DQB1	DQB1*03:19	prefix_multiple	10
 NA18871	HLA-DRB1	DRB1*08:04	prefix_multiple	15
 NA18871	HLA-DRB1	DRB1*15:03	prefix_multiple	10
 NA18873	HLA-A	A*66:03	prefix_multiple	3
@@ -6383,6 +6403,7 @@ NA18912	HLA-B	B*53:01	prefix_multiple	46
 NA18912	HLA-B	B*53:01	prefix_multiple	46
 NA18912	HLA-C	C*04:01	prefix_multiple	385
 NA18912	HLA-C	C*04:01	prefix_multiple	385
+NA18912	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA18912	HLA-DQB1	DQB1*06:02	prefix_multiple	117
 NA18912	HLA-DRB1	DRB1*11:01	prefix_multiple	76
 NA18912	HLA-DRB1	DRB1*13:03	prefix_multiple	17
@@ -6474,6 +6495,7 @@ NA19093	HLA-C	C*04:01	prefix_multiple	385
 NA19093	HLA-C	C*08:02	prefix_multiple	91
 NA19093	HLA-DQB1	DQB1*05:01	prefix_multiple	103
 NA19093	HLA-DQB1	DQB1*06:02	prefix_multiple	117
+NA19093	HLA-DRB1	DRB1*13:02	prefix_multiple	37
 NA19093	HLA-DRB1	DRB1*15:03	prefix_multiple	10
 NA19095	HLA-A	A*02:01	prefix_multiple	504
 NA19095	HLA-A	A*34:02	prefix_multiple	15
@@ -6501,6 +6523,7 @@ NA19098	HLA-B	B*53:01	prefix_multiple	46
 NA19098	HLA-B	B*51:01	prefix_multiple	253
 NA19098	HLA-C	C*06:02	prefix_multiple	246
 NA19098	HLA-C	C*16:01	prefix_multiple	97
+NA19098	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA19098	HLA-DQB1	DQB1*05:01	prefix_multiple	103
 NA19098	HLA-DRB1	DRB1*01:02	prefix_multiple	17
 NA19098	HLA-DRB1	DRB1*07:01	prefix_multiple	67
@@ -6510,6 +6533,7 @@ NA19099	HLA-B	B*07:02	prefix_multiple	251
 NA19099	HLA-B	B*07:02	prefix_multiple	251
 NA19099	HLA-C	C*07:02	prefix_multiple	385
 NA19099	HLA-C	C*15:05	prefix_multiple	38
+NA19099	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA19099	HLA-DQB1	DQB1*05:02	prefix_multiple	51
 NA19099	HLA-DRB1	DRB1*09:01	prefix_multiple	28
 NA19099	HLA-DRB1	DRB1*15:03	prefix_multiple	10
@@ -6566,9 +6590,11 @@ NA19114	HLA-DRB1	DRB1*15:03	prefix_multiple	10
 NA19116	HLA-A	A*23:01	prefix_multiple	78
 NA19116	HLA-A	A*33:03	prefix_multiple	102
 NA19116	HLA-B	B*07:02	prefix_multiple	251
+NA19116	HLA-B	B*39:24	prefix_multiple	4
 NA19116	HLA-C	C*07:01	prefix_multiple	301
 NA19116	HLA-C	C*07:02	prefix_multiple	385
 NA19116	HLA-DQB1	DQB1*04:02	prefix_multiple	48
+NA19116	HLA-DQB1	DQB1*06:09	prefix_multiple	16
 NA19116	HLA-DRB1	DRB1*03:02	prefix_multiple	10
 NA19116	HLA-DRB1	DRB1*13:02	prefix_multiple	37
 NA19117	HLA-A	A*03:01	prefix_multiple	275
@@ -6591,6 +6617,7 @@ NA19118	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA19118	HLA-DQB1	DQB1*06:08	prefix_multiple	4
 NA19118	HLA-DRB1	DRB1*13:01	prefix_multiple	67
 NA19118	HLA-DRB1	DRB1*09:01	prefix_multiple	28
+NA19119	HLA-A	A*23:17	prefix_multiple	8
 NA19119	HLA-A	A*36:01	prefix_multiple	5
 NA19119	HLA-B	B*35:01	prefix_multiple	186
 NA19119	HLA-B	B*49:01	prefix_multiple	51
@@ -6615,6 +6642,7 @@ NA19129	HLA-A	A*23:01	prefix_multiple	78
 NA19129	HLA-B	B*07:02	prefix_multiple	251
 NA19129	HLA-B	B*58:01	prefix_multiple	75
 NA19129	HLA-C	C*07:02	prefix_multiple	385
+NA19129	HLA-C	C*07:18	prefix_multiple	27
 NA19129	HLA-DRB1	DRB1*01:01	prefix_multiple	71
 NA19129	HLA-DRB1	DRB1*11:02	prefix_multiple	12
 NA19130	HLA-A	A*33:03	prefix_multiple	102
@@ -6627,6 +6655,7 @@ NA19130	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA19130	HLA-DQB1	DQB1*04:02	prefix_multiple	48
 NA19130	HLA-DRB1	DRB1*08:04	prefix_multiple	15
 NA19130	HLA-DRB1	DRB1*13:03	prefix_multiple	17
+NA19131	HLA-A	A*66:03	prefix_multiple	3
 NA19131	HLA-A	A*68:02	prefix_multiple	48
 NA19131	HLA-B	B*53:01	prefix_multiple	46
 NA19131	HLA-B	B*42:01	prefix_multiple	13
@@ -6642,6 +6671,7 @@ NA19137	HLA-B	B*07:02	prefix_multiple	251
 NA19137	HLA-B	B*45:01	prefix_multiple	28
 NA19137	HLA-C	C*07:02	prefix_multiple	385
 NA19137	HLA-C	C*16:01	prefix_multiple	97
+NA19137	HLA-DQB1	DQB1*03:19	prefix_multiple	10
 NA19137	HLA-DQB1	DQB1*06:02	prefix_multiple	117
 NA19137	HLA-DRB1	DRB1*11:02	prefix_multiple	12
 NA19137	HLA-DRB1	DRB1*15:03	prefix_multiple	10
@@ -6650,15 +6680,19 @@ NA19138	HLA-A	A*23:01	prefix_multiple	78
 NA19138	HLA-B	B*07:02	prefix_multiple	251
 NA19138	HLA-B	B*58:01	prefix_multiple	75
 NA19138	HLA-C	C*07:02	prefix_multiple	385
+NA19138	HLA-C	C*07:18	prefix_multiple	27
 NA19138	HLA-DQB1	DQB1*03:01	prefix_multiple	165
+NA19138	HLA-DQB1	DQB1*06:09	prefix_multiple	16
 NA19138	HLA-DRB1	DRB1*13:03	prefix_multiple	17
 NA19138	HLA-DRB1	DRB1*15:03	prefix_multiple	10
 NA19141	HLA-A	A*02:11	prefix_multiple	22
 NA19141	HLA-A	A*36:01	prefix_multiple	5
 NA19141	HLA-B	B*35:01	prefix_multiple	186
 NA19141	HLA-B	B*52:01	prefix_multiple	98
+NA19141	HLA-C	C*07:18	prefix_multiple	27
 NA19141	HLA-C	C*16:01	prefix_multiple	97
 NA19141	HLA-DQB1	DQB1*06:03	prefix_multiple	88
+NA19141	HLA-DQB1	DQB1*06:09	prefix_multiple	16
 NA19141	HLA-DRB1	DRB1*13:01	prefix_multiple	67
 NA19141	HLA-DRB1	DRB1*13:02	prefix_multiple	37
 NA19143	HLA-A	A*02:02	prefix_multiple	17
@@ -6730,6 +6764,7 @@ NA19152	HLA-C	C*08:04	prefix_multiple	8
 NA19152	HLA-DQB1	DQB1*05:02	prefix_multiple	51
 NA19152	HLA-DQB1	DQB1*05:03	prefix_multiple	56
 NA19152	HLA-DRB1	DRB1*11:04	prefix_multiple	34
+NA19152	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA19153	HLA-A	A*33:03	prefix_multiple	102
 NA19153	HLA-A	A*36:01	prefix_multiple	5
 NA19153	HLA-B	B*18:01	prefix_multiple	160
@@ -6739,13 +6774,16 @@ NA19153	HLA-C	C*05:01	prefix_multiple	189
 NA19153	HLA-DQB1	DQB1*04:02	prefix_multiple	48
 NA19153	HLA-DQB1	DQB1*05:03	prefix_multiple	56
 NA19153	HLA-DRB1	DRB1*03:02	prefix_multiple	10
+NA19153	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA19159	HLA-A	A*03:01	prefix_multiple	275
 NA19159	HLA-A	A*23:01	prefix_multiple	78
 NA19159	HLA-B	B*57:02	prefix_multiple	6
 NA19159	HLA-B	B*52:01	prefix_multiple	98
 NA19159	HLA-C	C*18:02	prefix_multiple	8
 NA19159	HLA-C	C*16:01	prefix_multiple	97
+NA19159	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA19159	HLA-DQB1	DQB1*06:03	prefix_multiple	88
+NA19159	HLA-DRB1	DRB1*13:177	exact	1
 NA19159	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA19160	HLA-A	A*26:01	prefix_multiple	153
 NA19160	HLA-A	A*68:01	prefix_multiple	126
@@ -6764,6 +6802,7 @@ NA19171	HLA-B	B*52:01	prefix_multiple	98
 NA19171	HLA-C	C*04:01	prefix_multiple	385
 NA19171	HLA-C	C*16:01	prefix_multiple	97
 NA19171	HLA-DQB1	DQB1*03:01	prefix_multiple	165
+NA19171	HLA-DQB1	DQB1*06:09	prefix_multiple	16
 NA19171	HLA-DRB1	DRB1*13:02	prefix_multiple	37
 NA19171	HLA-DRB1	DRB1*13:03	prefix_multiple	17
 NA19172	HLA-A	A*30:02	prefix_multiple	59
@@ -6772,6 +6811,8 @@ NA19172	HLA-B	B*35:01	prefix_multiple	186
 NA19172	HLA-B	B*44:03	prefix_multiple	166
 NA19172	HLA-C	C*04:01	prefix_multiple	385
 NA19172	HLA-C	C*04:01	prefix_multiple	385
+NA19172	HLA-DQB1	DQB1*02:02	prefix_multiple	68
+NA19172	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA19172	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA19172	HLA-DRB1	DRB1*15:03	prefix_multiple	10
 NA19175	HLA-A	A*23:17	prefix_multiple	8
@@ -6861,13 +6902,17 @@ NA19201	HLA-B	B*18:01	prefix_multiple	160
 NA19201	HLA-C	C*02:02	prefix_multiple	167
 NA19201	HLA-C	C*14:02	prefix_multiple	83
 NA19201	HLA-DQB1	DQB1*02:01	prefix_multiple	89
+NA19201	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA19201	HLA-DRB1	DRB1*03:01	prefix_multiple	70
 NA19201	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA19204	HLA-A	A*02:05	prefix_multiple	41
 NA19204	HLA-A	A*30:02	prefix_multiple	59
 NA19204	HLA-B	B*18:01	prefix_multiple	160
 NA19204	HLA-B	B*58:01	prefix_multiple	75
+NA19204	HLA-C	C*07:18	prefix_multiple	27
 NA19204	HLA-C	C*08:02	prefix_multiple	91
+NA19204	HLA-DQB1	DQB1*02:02	prefix_multiple	68
+NA19204	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA19204	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA19204	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA19206	HLA-A	A*01:01	prefix_multiple	300
@@ -6879,6 +6924,7 @@ NA19206	HLA-C	C*17:01	prefix_multiple	51
 NA19206	HLA-DQB1	DQB1*04:02	prefix_multiple	48
 NA19206	HLA-DQB1	DQB1*06:02	prefix_multiple	117
 NA19206	HLA-DRB1	DRB1*03:02	prefix_multiple	10
+NA19206	HLA-DRB1	DRB1*11:01	prefix_multiple	76
 NA19207	HLA-A	A*30:02	prefix_multiple	59
 NA19207	HLA-A	A*68:02	prefix_multiple	48
 NA19207	HLA-B	B*08:01	prefix_multiple	168
@@ -6935,6 +6981,7 @@ NA19222	HLA-B	B*42:02	prefix_multiple	5
 NA19222	HLA-B	B*45:01	prefix_multiple	28
 NA19222	HLA-C	C*16:01	prefix_multiple	97
 NA19222	HLA-C	C*17:01	prefix_multiple	51
+NA19222	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA19222	HLA-DQB1	DQB1*03:02	prefix_multiple	81
 NA19222	HLA-DRB1	DRB1*13:03	prefix_multiple	17
 NA19222	HLA-DRB1	DRB1*04:03	prefix_multiple	27
@@ -6983,6 +7030,7 @@ NA19238	HLA-A	A*36:01	prefix_multiple	5
 NA19238	HLA-B	B*53:01	prefix_multiple	46
 NA19238	HLA-B	B*57:03	prefix_multiple	20
 NA19238	HLA-C	C*04:01	prefix_multiple	385
+NA19238	HLA-C	C*18:02	prefix_multiple	8
 NA19238	HLA-DQB1	DQB1*05:02	prefix_multiple	51
 NA19238	HLA-DQB1	DQB1*06:02	prefix_multiple	117
 NA19238	HLA-DRB1	DRB1*11:01	prefix_multiple	76
@@ -6996,11 +7044,13 @@ NA19239	HLA-C	C*16:01	prefix_multiple	97
 NA19239	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA19239	HLA-DQB1	DQB1*05:01	prefix_multiple	103
 NA19239	HLA-DRB1	DRB1*13:01	prefix_multiple	67
+NA19239	HLA-DRB1	DRB1*12:01	prefix_multiple	30
 NA19240	HLA-A	A*30:01	prefix_multiple	59
 NA19240	HLA-A	A*68:02	prefix_multiple	48
 NA19240	HLA-B	B*35:01	prefix_multiple	186
 NA19240	HLA-B	B*57:03	prefix_multiple	20
 NA19240	HLA-C	C*04:01	prefix_multiple	385
+NA19240	HLA-C	C*18:02	prefix_multiple	8
 NA19240	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA19240	HLA-DQB1	DQB1*05:02	prefix_multiple	51
 NA19240	HLA-DRB1	DRB1*12:01	prefix_multiple	30
@@ -7097,12 +7147,14 @@ HG01122	HLA-DRB1	DRB1*13:01	prefix_multiple	67
 HG01122	HLA-DRB1	DRB1*04:03	prefix_multiple	27
 HG01124	HLA-A	A*02:11	prefix_multiple	22
 HG01124	HLA-A	A*24:02	prefix_multiple	342
+HG01124	HLA-B	B*40:02	prefix_multiple	83
 HG01124	HLA-B	B*40:04	prefix_multiple	6
 HG01124	HLA-C	C*03:04	prefix_multiple	220
 HG01124	HLA-C	C*03:05	prefix_multiple	4
 HG01124	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 HG01124	HLA-DQB1	DQB1*03:02	prefix_multiple	81
 HG01124	HLA-DRB1	DRB1*14:02	prefix_multiple	14
+HG01124	HLA-DRB1	DRB1*04:92	exact	1
 HG01125	HLA-A	A*24:02	prefix_multiple	342
 HG01125	HLA-A	A*25:01	prefix_multiple	38
 HG01125	HLA-B	B*15:01	prefix_multiple	172
@@ -7159,6 +7211,7 @@ HG01136	HLA-B	B*35:01	prefix_multiple	186
 HG01136	HLA-B	B*53:01	prefix_multiple	46
 HG01136	HLA-C	C*04:01	prefix_multiple	385
 HG01136	HLA-C	C*04:01	prefix_multiple	385
+HG01136	HLA-DQB1	DQB1*03:191	exact	1
 HG01136	HLA-DQB1	DQB1*06:04	prefix_multiple	32
 HG01136	HLA-DRB1	DRB1*11:02	prefix_multiple	12
 HG01136	HLA-DRB1	DRB1*13:02	prefix_multiple	37
@@ -7484,6 +7537,7 @@ HG01353	HLA-B	B*38:01	prefix_multiple	46
 HG01353	HLA-C	C*01:02	prefix_multiple	188
 HG01353	HLA-C	C*12:03	prefix_multiple	181
 HG01353	HLA-DRB1	DRB1*13:01	prefix_multiple	67
+HG01353	HLA-DRB1	DRB1*04:92	exact	1
 HG01354	HLA-A	A*02:01	prefix_multiple	504
 HG01354	HLA-A	A*31:01	prefix_multiple	126
 HG01354	HLA-B	B*35:43	prefix_multiple	4
@@ -7491,6 +7545,7 @@ HG01354	HLA-B	B*49:01	prefix_multiple	51
 HG01354	HLA-C	C*01:02	prefix_multiple	188
 HG01354	HLA-C	C*07:01	prefix_multiple	301
 HG01354	HLA-DRB1	DRB1*13:02	prefix_multiple	37
+HG01354	HLA-DRB1	DRB1*04:92	exact	1
 HG01356	HLA-A	A*24:02	prefix_multiple	342
 HG01356	HLA-A	A*68:01	prefix_multiple	126
 HG01356	HLA-B	B*35:43	prefix_multiple	4
@@ -7500,6 +7555,7 @@ HG01356	HLA-C	C*05:01	prefix_multiple	189
 HG01356	HLA-DQB1	DQB1*02:01	prefix_multiple	89
 HG01356	HLA-DQB1	DQB1*03:02	prefix_multiple	81
 HG01356	HLA-DRB1	DRB1*03:01	prefix_multiple	70
+HG01356	HLA-DRB1	DRB1*04:92	exact	1
 HG01357	HLA-A	A*02:01	prefix_multiple	504
 HG01357	HLA-A	A*30:02	prefix_multiple	59
 HG01357	HLA-B	B*27:05	prefix_multiple	114
@@ -7557,6 +7613,7 @@ HG01365	HLA-B	B*53:01	prefix_multiple	46
 HG01365	HLA-C	C*03:04	prefix_multiple	220
 HG01365	HLA-C	C*04:01	prefix_multiple	385
 HG01365	HLA-DRB1	DRB1*13:03	prefix_multiple	17
+HG01365	HLA-DRB1	DRB1*04:92	exact	1
 HG01366	HLA-A	A*29:02	prefix_multiple	86
 HG01366	HLA-A	A*30:02	prefix_multiple	59
 HG01366	HLA-B	B*57:03	prefix_multiple	20
@@ -7643,6 +7700,7 @@ HG01384	HLA-DRB1	DRB1*01:01	prefix_multiple	71
 HG01384	HLA-DRB1	DRB1*04:07	prefix_multiple	10
 HG01389	HLA-A	A*24:02	prefix_multiple	342
 HG01389	HLA-A	A*29:02	prefix_multiple	86
+HG01389	HLA-B	B*40:02	prefix_multiple	83
 HG01389	HLA-B	B*44:03	prefix_multiple	166
 HG01389	HLA-C	C*03:05	prefix_multiple	4
 HG01389	HLA-C	C*16:01	prefix_multiple	97
@@ -11873,6 +11931,7 @@ NA18536	HLA-C	C*07:02	prefix_multiple	385
 NA18536	HLA-C	C*15:02	prefix_multiple	150
 NA18536	HLA-DRB1	DRB1*08:03	prefix_multiple	18
 NA18536	HLA-DRB1	DRB1*15:01	prefix_multiple	89
+NA18537	HLA-A	A*02:07	prefix_multiple	34
 NA18537	HLA-A	A*11:01	prefix_multiple	239
 NA18537	HLA-B	B*46:01	prefix_multiple	54
 NA18537	HLA-B	B*38:02	prefix_multiple	24
@@ -11974,12 +12033,15 @@ NA18549	HLA-C	C*03:02	prefix_multiple	57
 NA18549	HLA-C	C*12:03	prefix_multiple	181
 NA18549	HLA-DRB1	DRB1*01:01	prefix_multiple	71
 NA18549	HLA-DRB1	DRB1*16:02	prefix_multiple	18
+NA18550	HLA-A	A*02:07	prefix_multiple	34
+NA18550	HLA-A	A*02:07	prefix_multiple	34
 NA18550	HLA-B	B*13:01	prefix_multiple	39
 NA18550	HLA-B	B*46:01	prefix_multiple	54
 NA18550	HLA-C	C*01:02	prefix_multiple	188
 NA18550	HLA-C	C*03:04	prefix_multiple	220
 NA18550	HLA-DRB1	DRB1*09:01	prefix_multiple	28
 NA18550	HLA-DRB1	DRB1*15:01	prefix_multiple	89
+NA18552	HLA-A	A*02:07	prefix_multiple	34
 NA18552	HLA-A	A*11:01	prefix_multiple	239
 NA18552	HLA-B	B*46:01	prefix_multiple	54
 NA18552	HLA-B	B*40:02	prefix_multiple	83
@@ -11999,6 +12061,7 @@ NA18553	HLA-DRB1	DRB1*03:01	prefix_multiple	70
 NA18553	HLA-DRB1	DRB1*12:01	prefix_multiple	30
 NA18555	HLA-A	A*02:06	prefix_multiple	52
 NA18555	HLA-A	A*11:01	prefix_multiple	239
+NA18555	HLA-B	B*07:06	prefix_multiple	12
 NA18555	HLA-B	B*54:01	prefix_multiple	21
 NA18555	HLA-C	C*01:02	prefix_multiple	188
 NA18555	HLA-C	C*07:02	prefix_multiple	385
@@ -12058,6 +12121,7 @@ NA18563	HLA-A	A*02:01	prefix_multiple	504
 NA18563	HLA-A	A*33:03	prefix_multiple	102
 NA18563	HLA-B	B*48:01	prefix_multiple	28
 NA18563	HLA-B	B*51:01	prefix_multiple	253
+NA18563	HLA-C	C*08:03	prefix_multiple	10
 NA18563	HLA-C	C*15:02	prefix_multiple	150
 NA18563	HLA-DRB1	DRB1*14:07	prefix_multiple	3
 NA18563	HLA-DRB1	DRB1*04:03	prefix_multiple	27
@@ -12119,6 +12183,10 @@ NA18572	HLA-B	B*15:01	prefix_multiple	172
 NA18572	HLA-B	B*54:01	prefix_multiple	21
 NA18572	HLA-C	C*01:02	prefix_multiple	188
 NA18572	HLA-C	C*03:03	prefix_multiple	150
+NA18572	HLA-DRB1	DRB1*14:05	prefix_multiple	8
+NA18572	HLA-DRB1	DRB1*14:54	prefix_multiple	30
+NA18573	HLA-A	A*02:07	prefix_multiple	34
+NA18573	HLA-A	A*02:07	prefix_multiple	34
 NA18573	HLA-B	B*46:01	prefix_multiple	54
 NA18573	HLA-B	B*54:01	prefix_multiple	21
 NA18573	HLA-C	C*01:02	prefix_multiple	188
@@ -12155,6 +12223,7 @@ NA18579	HLA-A	A*11:01	prefix_multiple	239
 NA18579	HLA-A	A*11:01	prefix_multiple	239
 NA18579	HLA-B	B*81:02	prefix_multiple	2
 NA18579	HLA-B	B*52:01	prefix_multiple	98
+NA18579	HLA-C	C*08:22	prefix_multiple	6
 NA18579	HLA-C	C*12:02	prefix_multiple	90
 NA18579	HLA-DRB1	DRB1*12:01	prefix_multiple	30
 NA18579	HLA-DRB1	DRB1*15:02	prefix_multiple	30
@@ -12181,6 +12250,7 @@ NA18592	HLA-A	A*31:01	prefix_multiple	126
 NA18592	HLA-B	B*15:18	prefix_multiple	23
 NA18592	HLA-B	B*40:06	prefix_multiple	57
 NA18592	HLA-C	C*08:01	prefix_multiple	64
+NA18592	HLA-C	C*08:22	prefix_multiple	6
 NA18592	HLA-DRB1	DRB1*08:03	prefix_multiple	18
 NA18592	HLA-DRB1	DRB1*15:01	prefix_multiple	89
 NA18593	HLA-A	A*01:01	prefix_multiple	300
@@ -12261,6 +12331,8 @@ NA18608	HLA-B	B*48:01	prefix_multiple	28
 NA18608	HLA-B	B*51:01	prefix_multiple	253
 NA18608	HLA-C	C*08:01	prefix_multiple	64
 NA18608	HLA-C	C*15:02	prefix_multiple	150
+NA18608	HLA-DRB1	DRB1*14:05	prefix_multiple	8
+NA18608	HLA-DRB1	DRB1*14:07	prefix_multiple	3
 NA18609	HLA-A	A*02:03	prefix_multiple	24
 NA18609	HLA-A	A*03:01	prefix_multiple	275
 NA18609	HLA-B	B*35:03	prefix_multiple	88
@@ -12268,6 +12340,7 @@ NA18609	HLA-B	B*38:02	prefix_multiple	24
 NA18609	HLA-C	C*07:02	prefix_multiple	385
 NA18609	HLA-C	C*12:03	prefix_multiple	181
 NA18609	HLA-DRB1	DRB1*08:03	prefix_multiple	18
+NA18609	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA18610	HLA-A	A*11:01	prefix_multiple	239
 NA18610	HLA-A	A*24:02	prefix_multiple	342
 NA18610	HLA-B	B*35:01	prefix_multiple	186
@@ -13721,6 +13794,7 @@ NA18943	HLA-B	B*35:01	prefix_multiple	186
 NA18943	HLA-C	C*01:02	prefix_multiple	188
 NA18943	HLA-C	C*03:03	prefix_multiple	150
 NA18943	HLA-DRB1	DRB1*08:02	prefix_multiple	9
+NA18943	HLA-DRB1	DRB1*08:03	prefix_multiple	18
 NA18944	HLA-A	A*02:06	prefix_multiple	52
 NA18944	HLA-A	A*24:02	prefix_multiple	342
 NA18944	HLA-B	B*40:02	prefix_multiple	83
@@ -13795,6 +13869,7 @@ NA18952	HLA-B	B*07:02	prefix_multiple	251
 NA18952	HLA-B	B*51:01	prefix_multiple	253
 NA18952	HLA-C	C*07:02	prefix_multiple	385
 NA18952	HLA-C	C*14:02	prefix_multiple	83
+NA18952	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA18952	HLA-DRB1	DRB1*09:01	prefix_multiple	28
 NA18953	HLA-A	A*11:01	prefix_multiple	239
 NA18953	HLA-A	A*31:01	prefix_multiple	126
@@ -13804,6 +13879,7 @@ NA18953	HLA-C	C*03:04	prefix_multiple	220
 NA18953	HLA-C	C*03:04	prefix_multiple	220
 NA18953	HLA-DQB1	DQB1*03:02	prefix_multiple	81
 NA18953	HLA-DQB1	DQB1*04:01	prefix_multiple	12
+NA18953	HLA-DRB1	DRB1*08:02	prefix_multiple	9
 NA18953	HLA-DRB1	DRB1*04:05	prefix_multiple	31
 NA18954	HLA-A	A*11:01	prefix_multiple	239
 NA18954	HLA-A	A*24:02	prefix_multiple	342
@@ -13905,6 +13981,7 @@ NA18964	HLA-DQB1	DQB1*04:01	prefix_multiple	12
 NA18964	HLA-DQB1	DQB1*06:02	prefix_multiple	117
 NA18964	HLA-DRB1	DRB1*04:05	prefix_multiple	31
 NA18964	HLA-DRB1	DRB1*15:01	prefix_multiple	89
+NA18965	HLA-A	A*26:02	prefix_multiple	2
 NA18965	HLA-A	A*31:01	prefix_multiple	126
 NA18965	HLA-B	B*40:06	prefix_multiple	57
 NA18965	HLA-B	B*56:01	prefix_multiple	40
@@ -13915,6 +13992,7 @@ NA18965	HLA-DQB1	DQB1*03:03	prefix_multiple	57
 NA18965	HLA-DRB1	DRB1*09:01	prefix_multiple	28
 NA18965	HLA-DRB1	DRB1*09:01	prefix_multiple	28
 NA18966	HLA-A	A*02:06	prefix_multiple	52
+NA18966	HLA-A	A*02:07	prefix_multiple	34
 NA18966	HLA-B	B*15:01	prefix_multiple	172
 NA18966	HLA-B	B*35:01	prefix_multiple	186
 NA18966	HLA-C	C*03:03	prefix_multiple	150
@@ -13947,9 +14025,11 @@ NA18969	HLA-A	A*24:02	prefix_multiple	342
 NA18969	HLA-A	A*31:01	prefix_multiple	126
 NA18969	HLA-B	B*48:01	prefix_multiple	28
 NA18969	HLA-B	B*52:01	prefix_multiple	98
+NA18969	HLA-C	C*08:03	prefix_multiple	10
 NA18969	HLA-C	C*12:02	prefix_multiple	90
 NA18969	HLA-DQB1	DQB1*05:02	prefix_multiple	51
 NA18969	HLA-DQB1	DQB1*06:01	prefix_multiple	48
+NA18969	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA18969	HLA-DRB1	DRB1*15:02	prefix_multiple	30
 NA18970	HLA-A	A*24:02	prefix_multiple	342
 NA18970	HLA-A	A*26:01	prefix_multiple	153
@@ -13969,6 +14049,7 @@ NA18971	HLA-C	C*03:04	prefix_multiple	220
 NA18971	HLA-C	C*07:02	prefix_multiple	385
 NA18971	HLA-DQB1	DQB1*03:03	prefix_multiple	57
 NA18971	HLA-DQB1	DQB1*05:03	prefix_multiple	56
+NA18971	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA18971	HLA-DRB1	DRB1*09:01	prefix_multiple	28
 NA18972	HLA-A	A*24:02	prefix_multiple	342
 NA18972	HLA-A	A*24:02	prefix_multiple	342
@@ -14050,6 +14131,7 @@ NA18979	HLA-DQB1	DQB1*04:01	prefix_multiple	12
 NA18979	HLA-DQB1	DQB1*06:01	prefix_multiple	48
 NA18979	HLA-DRB1	DRB1*04:05	prefix_multiple	31
 NA18979	HLA-DRB1	DRB1*15:02	prefix_multiple	30
+NA18980	HLA-A	A*11:02	prefix_multiple	10
 NA18980	HLA-A	A*31:01	prefix_multiple	126
 NA18980	HLA-B	B*13:01	prefix_multiple	39
 NA18980	HLA-B	B*40:01	prefix_multiple	168
@@ -14057,6 +14139,8 @@ NA18980	HLA-C	C*03:03	prefix_multiple	150
 NA18980	HLA-C	C*03:04	prefix_multiple	220
 NA18980	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA18980	HLA-DQB1	DQB1*06:01	prefix_multiple	48
+NA18980	HLA-DRB1	DRB1*08:03	prefix_multiple	18
+NA18980	HLA-DRB1	DRB1*12:02	prefix_multiple	27
 NA18981	HLA-A	A*02:01	prefix_multiple	504
 NA18981	HLA-A	A*31:01	prefix_multiple	126
 NA18981	HLA-B	B*51:01	prefix_multiple	253
@@ -14117,12 +14201,15 @@ NA18986	HLA-DQB1	DQB1*03:03	prefix_multiple	57
 NA18986	HLA-DQB1	DQB1*05:03	prefix_multiple	56
 NA18986	HLA-DRB1	DRB1*14:05	prefix_multiple	8
 NA18986	HLA-DRB1	DRB1*09:01	prefix_multiple	28
+NA18987	HLA-A	A*02:07	prefix_multiple	34
+NA18987	HLA-A	A*26:02	prefix_multiple	2
 NA18987	HLA-B	B*46:01	prefix_multiple	54
 NA18987	HLA-B	B*40:06	prefix_multiple	57
 NA18987	HLA-C	C*01:02	prefix_multiple	188
 NA18987	HLA-C	C*08:01	prefix_multiple	64
 NA18987	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA18987	HLA-DQB1	DQB1*06:01	prefix_multiple	48
+NA18987	HLA-DRB1	DRB1*08:03	prefix_multiple	18
 NA18987	HLA-DRB1	DRB1*12:01	prefix_multiple	30
 NA18988	HLA-A	A*02:01	prefix_multiple	504
 NA18988	HLA-A	A*24:02	prefix_multiple	342
@@ -14228,6 +14315,7 @@ NA18999	HLA-A	A*24:04	exact	1
 NA18999	HLA-A	A*33:03	prefix_multiple	102
 NA18999	HLA-B	B*46:01	prefix_multiple	54
 NA18999	HLA-B	B*40:06	prefix_multiple	57
+NA18999	HLA-C	C*01:03	prefix_multiple	3
 NA18999	HLA-C	C*08:01	prefix_multiple	64
 NA18999	HLA-DQB1	DQB1*03:03	prefix_multiple	57
 NA18999	HLA-DQB1	DQB1*03:03	prefix_multiple	57
@@ -14303,6 +14391,7 @@ NA19006	HLA-DQB1	DQB1*03:02	prefix_multiple	81
 NA19006	HLA-DQB1	DQB1*05:02	prefix_multiple	51
 NA19006	HLA-DRB1	DRB1*08:02	prefix_multiple	9
 NA19006	HLA-DRB1	DRB1*14:54	prefix_multiple	30
+NA19007	HLA-A	A*02:07	prefix_multiple	34
 NA19007	HLA-A	A*26:03	prefix_multiple	5
 NA19007	HLA-B	B*46:01	prefix_multiple	54
 NA19007	HLA-B	B*35:01	prefix_multiple	186
@@ -15744,6 +15833,8 @@ NA06986	HLA-B	B*44:03	prefix_multiple	166
 NA06986	HLA-B	B*44:03	prefix_multiple	166
 NA06986	HLA-C	C*04:01	prefix_multiple	385
 NA06986	HLA-C	C*16:01	prefix_multiple	97
+NA06986	HLA-DQB1	DQB1*02:02	prefix_multiple	68
+NA06986	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA06986	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA06986	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA06989	HLA-A	A*02:01	prefix_multiple	504
@@ -15838,6 +15929,7 @@ NA10847	HLA-A	A*03:01	prefix_multiple	275
 NA10847	HLA-A	A*25:01	prefix_multiple	38
 NA10847	HLA-B	B*08:01	prefix_multiple	168
 NA10847	HLA-B	B*18:01	prefix_multiple	160
+NA10847	HLA-C	C*07:01	prefix_multiple	301
 NA10847	HLA-C	C*12:03	prefix_multiple	181
 NA10847	HLA-DQB1	DQB1*05:01	prefix_multiple	103
 NA10847	HLA-DQB1	DQB1*05:01	prefix_multiple	103
@@ -15869,6 +15961,7 @@ NA11830	HLA-B	B*14:01	prefix_multiple	29
 NA11830	HLA-B	B*14:02	prefix_multiple	69
 NA11830	HLA-C	C*08:02	prefix_multiple	91
 NA11830	HLA-C	C*08:02	prefix_multiple	91
+NA11830	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA11830	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA11830	HLA-DRB1	DRB1*13:03	prefix_multiple	17
 NA11830	HLA-DRB1	DRB1*07:01	prefix_multiple	67
@@ -15884,6 +15977,7 @@ NA11831	HLA-DRB1	DRB1*03:01	prefix_multiple	70
 NA11831	HLA-DRB1	DRB1*15:01	prefix_multiple	89
 NA11832	HLA-A	A*02:01	prefix_multiple	504
 NA11832	HLA-A	A*32:01	prefix_multiple	114
+NA11832	HLA-B	B*27:05	prefix_multiple	114
 NA11832	HLA-B	B*40:02	prefix_multiple	83
 NA11832	HLA-C	C*02:02	prefix_multiple	167
 NA11832	HLA-C	C*07:04	prefix_multiple	53
@@ -15893,6 +15987,7 @@ NA11832	HLA-DRB1	DRB1*13:01	prefix_multiple	67
 NA11832	HLA-DRB1	DRB1*15:01	prefix_multiple	89
 NA11840	HLA-A	A*02:01	prefix_multiple	504
 NA11840	HLA-A	A*02:01	prefix_multiple	504
+NA11840	HLA-B	B*27:05	prefix_multiple	114
 NA11840	HLA-B	B*57:01	prefix_multiple	90
 NA11840	HLA-C	C*02:02	prefix_multiple	167
 NA11840	HLA-C	C*06:02	prefix_multiple	246
@@ -15972,6 +16067,7 @@ NA11920	HLA-C	C*03:03	prefix_multiple	150
 NA11920	HLA-C	C*05:01	prefix_multiple	189
 NA11920	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA11920	HLA-DQB1	DQB1*05:03	prefix_multiple	56
+NA11920	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA11920	HLA-DRB1	DRB1*04:01	prefix_multiple	52
 NA11930	HLA-A	A*02:01	prefix_multiple	504
 NA11930	HLA-A	A*24:02	prefix_multiple	342
@@ -15979,6 +16075,7 @@ NA11930	HLA-B	B*13:02	prefix_multiple	83
 NA11930	HLA-B	B*13:02	prefix_multiple	83
 NA11930	HLA-C	C*06:02	prefix_multiple	246
 NA11930	HLA-C	C*06:02	prefix_multiple	246
+NA11930	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA11930	HLA-DQB1	DQB1*06:02	prefix_multiple	117
 NA11930	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA11930	HLA-DRB1	DRB1*15:01	prefix_multiple	89
@@ -16035,6 +16132,7 @@ NA11994	HLA-A	A*11:01	prefix_multiple	239
 NA11994	HLA-B	B*07:02	prefix_multiple	251
 NA11994	HLA-B	B*51:01	prefix_multiple	253
 NA11994	HLA-C	C*07:02	prefix_multiple	385
+NA11994	HLA-C	C*15:13	prefix_multiple	4
 NA11994	HLA-DQB1	DQB1*03:02	prefix_multiple	81
 NA11994	HLA-DQB1	DQB1*03:02	prefix_multiple	81
 NA11994	HLA-DRB1	DRB1*04:02	prefix_multiple	7
@@ -16072,6 +16170,7 @@ NA12004	HLA-DRB1	DRB1*15:01	prefix_multiple	89
 NA12005	HLA-A	A*02:01	prefix_multiple	504
 NA12005	HLA-A	A*29:02	prefix_multiple	86
 NA12005	HLA-B	B*07:02	prefix_multiple	251
+NA12005	HLA-B	B*27:05	prefix_multiple	114
 NA12005	HLA-C	C*01:02	prefix_multiple	188
 NA12005	HLA-C	C*07:02	prefix_multiple	385
 NA12005	HLA-DQB1	DQB1*06:02	prefix_multiple	117
@@ -16117,6 +16216,7 @@ NA12045	HLA-C	C*05:01	prefix_multiple	189
 NA12045	HLA-DQB1	DQB1*05:03	prefix_multiple	56
 NA12045	HLA-DQB1	DQB1*06:03	prefix_multiple	88
 NA12045	HLA-DRB1	DRB1*13:01	prefix_multiple	67
+NA12045	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA12046	HLA-A	A*01:01	prefix_multiple	300
 NA12046	HLA-A	A*02:05	prefix_multiple	41
 NA12046	HLA-B	B*57:01	prefix_multiple	90
@@ -16124,12 +16224,15 @@ NA12046	HLA-B	B*50:01	prefix_multiple	41
 NA12046	HLA-C	C*06:02	prefix_multiple	246
 NA12046	HLA-C	C*06:02	prefix_multiple	246
 NA12046	HLA-DQB1	DQB1*02:01	prefix_multiple	89
+NA12046	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA12046	HLA-DRB1	DRB1*03:01	prefix_multiple	70
 NA12046	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA12058	HLA-A	A*02:01	prefix_multiple	504
 NA12058	HLA-A	A*03:01	prefix_multiple	275
+NA12058	HLA-B	B*35:03	prefix_multiple	88
 NA12058	HLA-B	B*40:01	prefix_multiple	168
 NA12058	HLA-C	C*03:04	prefix_multiple	220
+NA12058	HLA-C	C*04:01	prefix_multiple	385
 NA12058	HLA-DQB1	DQB1*03:02	prefix_multiple	81
 NA12058	HLA-DQB1	DQB1*04:02	prefix_multiple	48
 NA12058	HLA-DRB1	DRB1*08:01	prefix_multiple	10
@@ -16168,7 +16271,9 @@ NA12156	HLA-A	A*01:01	prefix_multiple	300
 NA12156	HLA-A	A*11:01	prefix_multiple	239
 NA12156	HLA-B	B*50:01	prefix_multiple	41
 NA12156	HLA-B	B*51:01	prefix_multiple	253
+NA12156	HLA-C	C*06:06	prefix_multiple	2
 NA12156	HLA-C	C*15:02	prefix_multiple	150
+NA12156	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA12156	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA12156	HLA-DRB1	DRB1*04:07	prefix_multiple	10
 NA12156	HLA-DRB1	DRB1*07:01	prefix_multiple	67
@@ -16178,6 +16283,7 @@ NA12234	HLA-B	B*40:02	prefix_multiple	83
 NA12234	HLA-B	B*44:03	prefix_multiple	166
 NA12234	HLA-C	C*15:02	prefix_multiple	150
 NA12234	HLA-C	C*16:01	prefix_multiple	97
+NA12234	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA12234	HLA-DQB1	DQB1*05:03	prefix_multiple	56
 NA12234	HLA-DRB1	DRB1*14:04	prefix_multiple	11
 NA12234	HLA-DRB1	DRB1*07:01	prefix_multiple	67
@@ -16199,6 +16305,7 @@ NA12272	HLA-C	C*07:04	prefix_multiple	53
 NA12272	HLA-C	C*07:04	prefix_multiple	53
 NA12272	HLA-DQB1	DQB1*05:01	prefix_multiple	103
 NA12272	HLA-DQB1	DQB1*05:03	prefix_multiple	56
+NA12272	HLA-DRB1	DRB1*14:54	prefix_multiple	30
 NA12272	HLA-DRB1	DRB1*10:01	prefix_multiple	23
 NA12273	HLA-A	A*02:01	prefix_multiple	504
 NA12273	HLA-A	A*32:01	prefix_multiple	114
@@ -16246,12 +16353,14 @@ NA12286	HLA-B	B*13:02	prefix_multiple	83
 NA12286	HLA-B	B*57:01	prefix_multiple	90
 NA12286	HLA-C	C*06:02	prefix_multiple	246
 NA12286	HLA-C	C*06:02	prefix_multiple	246
+NA12286	HLA-DQB1	DQB1*02:02	prefix_multiple	68
 NA12286	HLA-DQB1	DQB1*03:03	prefix_multiple	57
 NA12286	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA12286	HLA-DRB1	DRB1*07:01	prefix_multiple	67
 NA12287	HLA-A	A*02:01	prefix_multiple	504
 NA12287	HLA-A	A*11:01	prefix_multiple	239
 NA12287	HLA-B	B*15:01	prefix_multiple	172
+NA12287	HLA-B	B*51:01	prefix_multiple	253
 NA12287	HLA-C	C*03:04	prefix_multiple	220
 NA12287	HLA-C	C*15:02	prefix_multiple	150
 NA12287	HLA-DRB1	DRB1*04:01	prefix_multiple	52
@@ -20553,6 +20662,7 @@ NA20805	HLA-A	A*24:02	prefix_multiple	342
 NA20805	HLA-A	A*30:02	prefix_multiple	59
 NA20805	HLA-B	B*18:01	prefix_multiple	160
 NA20805	HLA-B	B*44:02	prefix_multiple	191
+NA20805	HLA-C	C*05:37	exact	1
 NA20805	HLA-C	C*16:04	prefix_multiple	7
 NA20805	HLA-DQB1	DQB1*03:01	prefix_multiple	165
 NA20805	HLA-DQB1	DQB1*03:03	prefix_multiple	57

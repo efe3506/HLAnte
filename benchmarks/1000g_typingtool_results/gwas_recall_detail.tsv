@@ -20,10 +20,10 @@ hlahd	B*27:05	AS	ankylosing|spondylitis	66	66	100.0%
 hlahd	B*51:01	Behcet	behcet|behçet	259	259	100.0%
 hlahd	DQB1*02:01	celiac	celiac|coeliac	289	289	100.0%
 hlahd	DQB1*06:02	narcolepsy	narcolepsy	390	390	100.0%
-optitype	DRB1*03:01	SLE/T1D	lupus|diabetes|type 1|t1d|sle	323	196	60.7%
-optitype	DRB1*04:01	RA	arthritis|rheumatoid	106	3	2.8%
-optitype	DRB1*15:01	MS	multiple sclerosis|sclerosis	352	94	26.7%
+optitype	DRB1*03:01	SLE/T1D	lupus|diabetes|type 1|t1d|sle	327	199	60.9%
+optitype	DRB1*04:01	RA	arthritis|rheumatoid	107	0	0.0%
+optitype	DRB1*15:01	MS	multiple sclerosis|sclerosis	357	96	26.9%
 optitype	B*27:05	AS	ankylosing|spondylitis	66	66	100.0%
-optitype	B*51:01	Behcet	behcet|behçet	256	256	100.0%
-optitype	DQB1*02:01	celiac	celiac|coeliac	287	0	0.0%
-optitype	DQB1*06:02	narcolepsy	narcolepsy	383	0	0.0%
+optitype	B*51:01	Behcet	behcet|behçet	259	259	100.0%
+optitype	DQB1*02:01	celiac	celiac|coeliac	289	0	0.0%
+optitype	DQB1*06:02	narcolepsy	narcolepsy	390	0	0.0%
