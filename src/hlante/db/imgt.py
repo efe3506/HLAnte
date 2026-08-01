@@ -22,7 +22,7 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 from hlante.db import (
     DBRecord,
@@ -184,6 +184,24 @@ def _parse_allelelist_version(path: Path) -> Optional[str]:
     return None
 
 
+def _read_version_meta(root: Path) -> Dict[str, Any]:
+    """
+    Return the ``version.json`` written by the last install, or ``{}``.
+
+    An unreadable or malformed file is treated as absent, so a caller can only
+    ever conclude "nothing is known about what is installed here" — never
+    something wrong about it.
+    """
+    meta_path = root / VERSION_FILENAME
+    if not meta_path.is_file():
+        return {}
+    try:
+        loaded = json.loads(meta_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
+
+
 def download_imgt_db(
     target_dir: Optional[Path] = None,
     *,
@@ -229,9 +247,26 @@ def download_imgt_db(
     g_url = f"{base}/wmda/hla_nom_g.txt"
     p_url = f"{base}/wmda/hla_nom_p.txt"
 
+    # A pin that leaves the cached copy in place is not a pin. When the caller
+    # names a release other than the installed one, the files have to be
+    # replaced even without ``force`` — otherwise the metadata written below
+    # would record the requested ref against data fetched from a different one,
+    # and version.json would describe a snapshot that was never installed.
+    previous = _read_version_meta(root)
+    previous_ref = previous.get("ref")
+    refresh = force or previous_ref != ref
+    if previous_ref is not None and previous_ref != ref and not force:
+        logger.info(
+            "Installed IPD-IMGT/HLA ref is %s but %s was requested; refreshing.",
+            previous_ref,
+            ref,
+        )
+
+    fetched = False
     allele_dest = root / ALLELE_LIST_FILENAME
-    if force or not allele_dest.exists():
+    if refresh or not allele_dest.exists():
         _http_fetch(allele_url, allele_dest)
+        fetched = True
     else:
         logger.info("Allelelist.txt is already present, skipping: %s", allele_dest)
 
@@ -239,8 +274,9 @@ def download_imgt_db(
         g_dest = root / G_GROUP_FILENAME
         p_dest = root / P_GROUP_FILENAME
         for url, dest in ((g_url, g_dest), (p_url, p_dest)):
-            if force or not dest.exists():
+            if refresh or not dest.exists():
                 _http_fetch(url, dest)
+                fetched = True
             else:
                 logger.info("%s is already present, skipping: %s", dest.name, dest)
 
@@ -253,9 +289,16 @@ def download_imgt_db(
         if (root / name).is_file()
     }
     version = _parse_allelelist_version(allele_dest)
+    # Nothing was fetched, so the acquisition date belongs to the earlier
+    # install; refreshing it would misdate a snapshot that did not move.
+    downloaded_at = (
+        datetime.now(timezone.utc).isoformat()
+        if fetched or not previous.get("downloaded_at")
+        else str(previous["downloaded_at"])
+    )
     meta = {
         "version": version,
-        "downloaded_at": datetime.now(timezone.utc).isoformat(),
+        "downloaded_at": downloaded_at,
         "source_base": base,
         "ref": ref,
         "sha256": checksums,

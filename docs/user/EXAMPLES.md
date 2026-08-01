@@ -747,7 +747,7 @@ ANHIG/IMGTHLA mirror. For an analysis you intend to publish, pin an
 explicit release with `--imgt-ref` and keep it in its own directory:
 
 ```bash
-hlante db-update --db imgt --imgt-ref 3640 --imgt-dir /tmp/ex_out/imgt_3640
+hlante db-update --db imgt --imgt-ref 3.64.0 --imgt-dir /tmp/ex_out/imgt_3640
 ```
 
 ```
@@ -758,11 +758,17 @@ IPD-IMGT/HLA download complete (version=IPD-IMGT/HLA 3.64.0) → /tmp/ex_out/img
 ✓ IPD-IMGT/HLA updated → /tmp/ex_out/imgt_3640
 ```
 
-> **`--imgt-ref` takes a git ref of the ANHIG/IMGTHLA repository, not a
-> release number.** Release 3.64.0 lives on the branch `3640` (the tag
-> `v3.64.0-alpha` also resolves). Passing `3.64.0` fails with
-> `HTTP Error 404: Not Found`. Check the branch and tag list at
-> <https://github.com/ANHIG/IMGTHLA> before pinning.
+> **`--imgt-ref` accepts either a release number or a git ref of the
+> ANHIG/IMGTHLA repository.** The mirror names its release branches without
+> separators, so `3.64.0` is translated to the branch `3640` for you; a branch
+> name, a tag (`v3.64.0-alpha`) or a commit SHA is passed through unchanged.
+> The branch and tag list is at <https://github.com/ANHIG/IMGTHLA>.
+>
+> Pointing an existing directory at a different release replaces the files in
+> it: the recorded ref is compared with the one you ask for, and they are
+> refetched when the two differ, so `version.json` always describes the data
+> beside it. Re-running the same ref is a no-op; use `--force` to refetch it
+> anyway.
 
 The download records what it fetched, with per-file SHA-256 checksums:
 

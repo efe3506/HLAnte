@@ -3,6 +3,20 @@
 This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 format and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **`--imgt-ref` did not replace an installed release, and `version.json`
+  claimed it had.** Asking for a release other than the one on disk left the
+  cached files in place — the download was skipped because the files existed —
+  while the metadata was rewritten with the requested ref. A snapshot recorded
+  as `ref: 3650` could therefore hold 3.64.0 data together with 3.64.0
+  checksums, so the record used to identify a historical annotation described a
+  snapshot that was never installed. A ref that differs from the recorded one
+  now refreshes the files without needing `--force`, and the acquisition
+  timestamp is preserved when nothing is fetched. An installation carrying no
+  `version.json` is re-fetched rather than described.
+
 ## [0.2.0] - 2026-07-29
 
 ### Changed

@@ -196,3 +196,119 @@ class TestIMGTRefNormalization:
 
         for ref in ("Latest", "3640", "v3.64.0-alpha", "a1b2c3d"):
             assert normalize_imgt_ref(ref) == ref
+
+
+class TestIMGTRefPinning:
+    """
+    ``--imgt-ref`` has to replace the installed release, and ``version.json``
+    has to describe the files that are actually on disk.
+
+    The failure these cover was silent in both directions: asking for a
+    different release left the cached copy in place, and the metadata was
+    rewritten with the requested ref anyway, so a snapshot recorded as 3.65.0
+    could hold 3.64.0 data together with 3.64.0 checksums.
+    """
+
+    @staticmethod
+    def _fake_fetch(monkeypatch: pytest.MonkeyPatch, version: str) -> list:
+        """Record every fetch and write an Allelelist carrying ``version``."""
+        from hlante.db import imgt
+
+        calls: list = []
+
+        def _fetch(url: str, dest: Path, timeout: int = 60) -> Path:
+            calls.append(url)
+            if dest.name == "Allelelist.txt":
+                dest.write_text(f"# version: {version}\nA*01:01:01:01,HLA00001\n")
+            else:
+                dest.write_text(f"# {version}\n")
+            return dest
+
+        monkeypatch.setattr(imgt, "_http_fetch", _fetch)
+        return calls
+
+    def _meta(self, root: Path) -> dict:
+        import json
+
+        return json.loads((root / "version.json").read_text())
+
+    def test_changing_ref_refreshes_without_force(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from hlante.db.imgt import download_imgt_db
+
+        self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.64.0")
+        download_imgt_db(tmp_path, ref="3.64.0")
+        first = self._meta(tmp_path)
+
+        calls = self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.65.0")
+        download_imgt_db(tmp_path, ref="3.65.0")
+        second = self._meta(tmp_path)
+
+        assert calls, "a differing ref must re-fetch even without force"
+        assert all("/3650/" in url for url in calls)
+        assert second["ref"] == "3650"
+        assert second["version"] == "IPD-IMGT/HLA 3.65.0"
+        assert second["sha256"] != first["sha256"]
+
+    def test_metadata_never_records_an_unfetched_ref(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from hlante.db.imgt import download_imgt_db
+
+        self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.64.0")
+        download_imgt_db(tmp_path, ref="3.64.0")
+
+        # The requested release is never fetched, so it must not be recorded.
+        self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.65.0")
+        download_imgt_db(tmp_path, ref="3.65.0")
+        meta = self._meta(tmp_path)
+
+        recorded_release = meta["ref"].replace("3650", "3.65.0").replace("3640", "3.64.0")
+        assert recorded_release in str(meta["version"]), (
+            "version.json records a ref that does not match the installed data"
+        )
+        assert meta["source_base"].endswith(meta["ref"])
+
+    def test_same_ref_skips_and_keeps_the_acquisition_date(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from hlante.db.imgt import download_imgt_db
+
+        self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.64.0")
+        download_imgt_db(tmp_path, ref="3.64.0")
+        first = self._meta(tmp_path)
+
+        calls = self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.64.0")
+        download_imgt_db(tmp_path, ref="3.64.0")
+        second = self._meta(tmp_path)
+
+        assert calls == [], "an unchanged ref must not re-download"
+        assert second["downloaded_at"] == first["downloaded_at"]
+        assert second["sha256"] == first["sha256"]
+
+    def test_force_redownloads_the_same_ref(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from hlante.db.imgt import download_imgt_db
+
+        self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.64.0")
+        download_imgt_db(tmp_path, ref="3.64.0")
+
+        calls = self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.64.0")
+        download_imgt_db(tmp_path, ref="3.64.0", force=True)
+
+        assert calls, "force must re-fetch even when the ref is unchanged"
+
+    def test_files_without_metadata_are_replaced(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A copy we cannot vouch for is not a copy we may describe."""
+        from hlante.db.imgt import download_imgt_db
+
+        (tmp_path / "Allelelist.txt").write_text("# version: unknown\n")
+        calls = self._fake_fetch(monkeypatch, "IPD-IMGT/HLA 3.64.0")
+        download_imgt_db(tmp_path, ref="3.64.0")
+
+        assert calls, "an install with no version.json must be re-fetched"
+        assert self._meta(tmp_path)["version"] == "IPD-IMGT/HLA 3.64.0"
